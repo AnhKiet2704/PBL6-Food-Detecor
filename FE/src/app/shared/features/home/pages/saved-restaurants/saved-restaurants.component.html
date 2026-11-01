@@ -1,0 +1,262 @@
+<main class="w-full bg-background min-h-screen pb-12">
+  <div class="flex flex-col w-full">
+
+    <div class="max-w-[1280px] w-full mx-auto px-6 lg:px-margin py-8 flex flex-col gap-8">
+
+        <!-- User Profile Summary Card -->
+        <div class="w-full bg-surface-container-lowest rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div class="flex items-center gap-5 sm:gap-6 min-w-0">
+            <div class="relative flex-shrink-0">
+              <span class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-primary text-on-primary flex items-center justify-center text-3xl shadow-sm ring-4 ring-surface-container">
+                <i class="fa-solid fa-user"></i>
+              </span>
+            </div>
+
+            <div class="flex flex-col min-w-0 gap-1.5">
+              <div class="flex items-center flex-wrap gap-2.5">
+                <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight truncate">{{ userProfile.full_name || userProfile.email || 'Tài khoản của bạn' }}</h1>
+              </div>
+              <div class="flex items-center flex-wrap gap-y-1 gap-x-4 font-body-sm text-body-sm text-on-surface-variant">
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-envelope text-[16px] text-primary"></i>
+                  {{ userProfile.email || 'Email chưa tải được' }}
+                </span>
+                @if (userProfile.phone) {
+                  <span class="flex items-center gap-1">
+                    <i class="fa-solid fa-phone text-[16px] text-primary"></i>
+                    {{ userProfile.phone }}
+                  </span>
+                }
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-calendar-days text-[16px] text-outline"></i>
+                  Gia nhập {{ userProfile.created_at ? (userProfile.created_at | date:'MM/yyyy') : 'chưa rõ' }}
+                </span>
+              </div>
+
+              <!-- Quick Metrics Bar -->
+              <div class="flex items-center gap-6 pt-2">
+                <div class="flex items-baseline gap-1.5">
+                  <span class="font-headline-sm text-headline-sm text-primary font-bold">{{ userProfile.saved_restaurant_count ?? '—' }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Quán đã lưu</span>
+                </div>
+                <div class="w-1 h-3 rounded-full bg-surface-variant"></div>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="font-headline-sm text-headline-sm text-tertiary-container font-bold">{{ userProfile.foods_reviewed_count ?? '—' }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Món đã đánh giá</span>
+                </div>
+                <div class="w-1 h-3 rounded-full bg-surface-variant"></div>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="font-headline-sm text-headline-sm text-secondary font-bold">{{ userProfile.review_count ?? '—' }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Đánh giá</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-2.5 self-stretch sm:self-auto justify-end flex-shrink-0 pt-2 md:pt-0">
+            <button (click)="isEditingProfile = !isEditingProfile; profileNotice = ''" class="flex-1 sm:flex-none font-label-lg text-label-lg px-5 py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2" type="button">
+              <i class="fa-solid fa-pen text-[15px]"></i>
+              {{ isEditingProfile ? 'Đóng chỉnh sửa' : 'Chỉnh sửa hồ sơ' }}
+            </button>
+            <button aria-label="Cài đặt tài khoản" (click)="openProfileSettings()" class="w-11 h-11 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high flex items-center justify-center transition-colors" type="button">
+              <i class="fa-solid fa-gear text-[18px]"></i>
+            </button>
+          </div>
+        </div>
+
+        @if (isEditingProfile) {
+          <section id="account-settings" class="w-full bg-surface-container-lowest rounded-2xl p-5 sm:p-6 shadow-sm">
+            <h2 class="font-title-md text-title-md text-on-surface mb-4">Thông tin tài khoản</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label class="font-label-md text-label-md text-on-surface">
+                Họ và tên
+                <input [(ngModel)]="profileForm.full_name" maxlength="100" class="mt-1 w-full px-4 py-2.5 rounded-xl bg-surface-container-low text-on-surface outline-none focus:ring-2 focus:ring-primary/20" type="text" />
+              </label>
+              <label class="font-label-md text-label-md text-on-surface">
+                Số điện thoại
+                <input [(ngModel)]="profileForm.phone" maxlength="20" class="mt-1 w-full px-4 py-2.5 rounded-xl bg-surface-container-low text-on-surface outline-none focus:ring-2 focus:ring-primary/20" type="tel" />
+              </label>
+              <label class="font-label-md text-label-md text-on-surface sm:col-span-2">
+                Email
+                <input [value]="userProfile.email" class="mt-1 w-full px-4 py-2.5 rounded-xl bg-surface-container text-on-surface-variant" readonly type="email" />
+              </label>
+            </div>
+            @if (profileNotice) {
+              <p class="mt-3 text-sm text-on-surface-variant" role="status">{{ profileNotice }}</p>
+            }
+            <div class="mt-4 flex justify-end gap-2">
+              <button (click)="cancelProfileEdit()" class="px-4 py-2 rounded-full bg-surface-container text-on-surface" type="button">Hủy</button>
+              <button (click)="saveProfile()" [disabled]="isSavingProfile || !profileForm.full_name.trim() || !profileForm.phone.trim()" class="px-5 py-2 rounded-full bg-primary text-on-primary disabled:opacity-50" type="button">
+                {{ isSavingProfile ? 'Đang lưu...' : 'Lưu thay đổi' }}
+              </button>
+            </div>
+          </section>
+        } @else if (profileNotice) {
+          <p class="text-sm text-secondary" role="status">{{ profileNotice }}</p>
+        }
+
+        <section id="taste-profile" class="w-full bg-surface-container-low rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-sliders text-[18px]"></i>
+            </div>
+            <div class="flex flex-col">
+              <span class="font-title-md text-title-md text-on-surface">Gu ẩm thực của bạn</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">Bạn chưa thiết lập sở thích ẩm thực trên tài khoản.</span>
+            </div>
+          </div>
+          <a routerLink="/food-search" class="font-label-md text-label-md text-primary hover:text-primary-container font-semibold transition-colors flex items-center gap-1">
+            Khám phá món ăn
+            <i class="fa-solid fa-arrow-right text-[14px]"></i>
+          </a>
+        </section>
+
+        <nav class="w-full flex items-center gap-2 overflow-x-auto pb-1" aria-label="Điều hướng hồ sơ">
+          @if (!isLoadingSaved && !savedErrorMessage && restaurants.length > 0) {
+            <a href="#saved-restaurants" class="bg-primary text-on-primary font-label-lg text-label-lg px-5 py-2.5 rounded-full flex items-center gap-2 shadow-sm flex-shrink-0">
+              <i class="fa-solid fa-bookmark text-[16px]"></i>
+              Quán đã lưu ({{ userProfile.saved_restaurant_count ?? '—' }})
+            </a>
+          }
+          <a href="#taste-profile" class="bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg px-5 py-2.5 rounded-full flex items-center gap-2 transition-colors flex-shrink-0">
+            <i class="fa-solid fa-utensils text-[16px]"></i>
+            Hồ sơ khẩu vị
+          </a>
+          <a href="#my-reviews" class="bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg px-5 py-2.5 rounded-full flex items-center gap-2 transition-colors flex-shrink-0">
+            <i class="fa-solid fa-star-half-stroke text-[16px]"></i>
+            Đánh giá ({{ userProfile.review_count ?? '—' }})
+          </a>
+          <button (click)="openProfileSettings()" class="bg-surface-container-lowest text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg px-5 py-2.5 rounded-full flex items-center gap-2 transition-colors flex-shrink-0" type="button">
+            <i class="fa-solid fa-user-gear text-[16px]"></i>
+            Cài đặt tài khoản
+          </button>
+        </nav>
+
+        @if (!isLoadingSaved && !savedErrorMessage && restaurants.length > 0) {
+        <section id="saved-restaurants" class="w-full flex flex-col gap-4 pt-1" aria-label="Danh sách quán đã lưu">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            @for (district of districtFilters; track district.name) {
+              <button (click)="selectedDistrict = district.name" [ngClass]="selectedDistrict === district.name ? 'bg-primary-fixed text-on-primary-fixed font-bold' : 'bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container'" class="px-4 py-1.5 rounded-full font-label-md text-label-md flex-shrink-0 transition-colors" type="button">
+                {{ district.name }} ({{ district.count }})
+              </button>
+            }
+          </div>
+          <div class="relative w-full sm:w-72 flex-shrink-0">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[16px] text-outline"></i>
+            <input [(ngModel)]="searchTerm" class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest rounded-full font-body-sm text-body-sm text-on-surface placeholder-on-surface-variant/60 outline-none shadow-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Tìm trong danh sách lưu..." type="search"/>
+          </div>
+        </section>
+
+        <!-- Restaurant Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          @for (item of filteredRestaurants; track item.id) {
+            <article class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col group">
+              <div class="relative w-full aspect-[16/10] overflow-hidden bg-surface-container">
+                @if (item.image_url) {
+                  <img [src]="item.image_url" [alt]="item.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center text-outline">
+                    <i class="fa-solid fa-utensils text-4xl"></i>
+                  </div>
+                }
+                <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/70 via-transparent to-black/20"></div>
+
+                <button (click)="toggleSave(item)" [disabled]="savingIds.has(item.id)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-surface-container-lowest/90 text-primary hover:bg-surface-container-lowest flex items-center justify-center transition-transform hover:scale-110 shadow-sm disabled:opacity-50" title="Bỏ lưu quán" type="button">
+                  <i class="fa-solid fa-bookmark text-[16px]"></i>
+                </button>
+
+              </div>
+
+              <div class="p-5 flex flex-col flex-1 justify-between gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <div class="flex items-start justify-between gap-2">
+                    <h2 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors line-clamp-1">{{ item.name }}</h2>
+                    <div class="flex items-center gap-1 flex-shrink-0 text-tertiary font-label-md text-label-md">
+                      <i class="fa-solid fa-star text-[13px]"></i>
+                      <span class="font-bold">{{ item.average_rating }}</span>
+                      <span class="text-outline font-normal text-label-xs">({{ item.review_count }})</span>
+                    </div>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 truncate">
+                    <i class="fa-solid fa-store text-[14px] text-outline flex-shrink-0"></i>
+                    {{ item.address }}{{ item.district ? ', ' + item.district : '' }}
+                  </p>
+                  <div class="flex items-center gap-2 pt-1 font-label-md text-label-md text-tertiary-container">
+                    <i class="fa-solid fa-money-bill-wave text-[14px]"></i>
+                    <span>{{ formatPriceRange(item) }}</span>
+                  </div>
+                  @if (item.opening_hours) {
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      <i class="fa-regular fa-clock text-outline"></i> {{ item.opening_hours }}
+                    </p>
+                  }
+                </div>
+
+                <div class="flex items-center gap-2 pt-2 border-t border-surface-container">
+                  <a [routerLink]="['/restaurant', item.id]" class="flex-1 py-2 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md text-center transition-colors">
+                    Xem quán
+                  </a>
+                  @if (item.phone) {
+                    <a [href]="'tel:' + item.phone" class="px-4 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md flex items-center justify-center gap-1 transition-colors">
+                      <i class="fa-solid fa-phone text-[15px]"></i>
+                      Gọi
+                    </a>
+                  }
+                </div>
+              </div>
+            </article>
+          } @empty {
+            <div class="col-span-full flex flex-col items-center justify-center py-12 text-on-surface-variant">
+              <i class="fa-solid fa-bowl-food text-4xl mb-4 text-surface-container-highest"></i>
+              <p class="font-title-md">Không tìm thấy quán phù hợp với bộ lọc</p>
+              <button (click)="searchTerm = ''; selectedDistrict = 'Tất cả'" class="mt-4 px-4 py-2 rounded-full bg-surface-container text-primary font-label-md" type="button">
+                Xóa bộ lọc
+              </button>
+            </div>
+          }
+        </div>
+        }
+
+        @if (!reviewsErrorMessage) {
+        <section id="my-reviews" class="w-full bg-surface-container-lowest rounded-2xl p-5 sm:p-6 shadow-sm">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <h2 class="font-title-md text-title-md text-on-surface">Đánh giá của bạn</h2>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Các đánh giá bạn đã gửi về món ăn.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-md">{{ reviews.length }}</span>
+          </div>
+          @for (review of reviews; track review.id) {
+            <article class="py-4 border-t border-surface-container">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-label-lg text-label-lg text-on-surface font-semibold">{{ review.food_name }}</h3>
+                <div class="flex items-center gap-2">
+                  <span class="text-tertiary" [attr.aria-label]="review.rating + ' trên 5 sao'">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <i [ngClass]="star <= review.rating ? 'fa-solid' : 'fa-regular'" class="fa-star"></i>
+                    }
+                  </span>
+                  @if (review.created_at) {
+                    <time class="font-body-sm text-body-sm text-on-surface-variant">{{ review.created_at | date:'dd/MM/yyyy' }}</time>
+                  }
+                </div>
+              </div>
+              @if (review.comment) {
+                <p class="mt-2 font-body-sm text-body-sm text-on-surface-variant whitespace-pre-line">{{ review.comment }}</p>
+              }
+            </article>
+          } @empty {
+            <div class="py-8 border-t border-surface-container text-center text-on-surface-variant">
+              <i class="fa-regular fa-comment-dots text-2xl mb-2"></i>
+              <p>Bạn chưa gửi đánh giá nào.</p>
+            </div>
+          }
+        </section>
+        }
+
+      </div>
+
+  </div>
+</main>

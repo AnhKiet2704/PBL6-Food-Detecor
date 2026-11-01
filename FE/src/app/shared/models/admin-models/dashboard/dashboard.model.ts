@@ -34,7 +34,7 @@ export interface Restaurant {
   secret: string;
   matchScore: number;
   matchLabel: string;
-  status: 'verified' | 'pending';
+  status: 'verified' | 'pending' | 'rejected' | 'closed';
 
   heritage: string;
   openHours: string;

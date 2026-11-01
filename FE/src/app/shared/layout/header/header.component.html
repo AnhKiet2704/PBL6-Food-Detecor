@@ -1,9 +1,10 @@
 <header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(45,36,34,0.05)]">
   <div class="h-20 max-w-[1280px] mx-auto px-gutter flex items-center justify-between gap-space-md">
+
     <!-- Logo & Title -->
-    <a class="flex items-center gap-space-sm group" data-path="kham-pha" href="#">
-      <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-        <span class="material-symbols-outlined text-on-primary-container text-[22px]"><i class="fa-solid fa-utensils"></i></span>
+    <a class="flex items-center gap-space-sm group" routerLink="/home">
+      <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300">
+        <i class="fa-solid fa-utensils text-on-primary-container text-[18px]"></i>
       </div>
       <div class="flex flex-col">
         <span class="font-headline-sm text-headline-sm text-on-surface leading-tight tracking-tight">
@@ -14,12 +15,33 @@
     </a>
 
     <!-- Navigation Menu -->
-    <nav class="hidden xl:flex items-center gap-space-xs p-1 bg-surface-container-low/60 rounded-full" data-active-classes="bg-surface-container text-primary font-title-md">
-      <a aria-current="page" class="px-space-md py-space-sm rounded-full transition-all bg-surface-container text-primary font-title-md" data-path="kham-pha" routerLink="/home">Khám phá</a>
-      <a class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="goi-y-cho-toi" routerLink="/food-search">Gợi ý cho tôi</a>
-      <a class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="ban-do" routerLink="#">Bản đồ</a>
-      <a class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="lo-trinh" routerLink="#">Lộ trình</a>
-      <a class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-path="cam-nang" routerLink="#">Cẩm nang</a>
+    <nav class="hidden xl:flex items-center gap-space-xs p-1 bg-surface-container-low/60 rounded-full">
+      <a routerLink="/home"
+         routerLinkActive="bg-surface-container text-primary font-title-md shadow-sm"
+         [routerLinkActiveOptions]="{exact: true}"
+         class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-300">
+        Khám phá
+      </a>
+      <a routerLink="/food-search"
+         routerLinkActive="bg-surface-container text-primary font-title-md shadow-sm"
+         class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-300">
+        Gợi ý cho tôi
+      </a>
+      <a routerLink="/map"
+         routerLinkActive="bg-surface-container text-primary font-title-md shadow-sm"
+         class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-300">
+        Bản đồ
+      </a>
+      <a routerLink="/itinerary"
+         routerLinkActive="bg-surface-container text-primary font-title-md shadow-sm"
+         class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-300">
+        Lộ trình
+      </a>
+      <a routerLink="/food-guide"
+         routerLinkActive="bg-surface-container text-primary font-title-md shadow-sm"
+         class="px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-300">
+        Cẩm nang
+      </a>
     </nav>
 
     <!-- User Actions & Language Switcher -->
@@ -28,9 +50,7 @@
       <div class="flex items-center bg-surface-container-low px-space-sm py-1 rounded-full text-label-md font-label-md">
         <button
           (click)="switchLanguage('VIE')"
-          [class.font-bold]="currentLang === 'VIE'"
-          [class.text-primary]="currentLang === 'VIE'"
-          [class.text-on-surface-variant]="currentLang !== 'VIE'"
+          [ngClass]="currentLang === 'VIE' ? 'font-bold text-primary' : 'text-on-surface-variant'"
           class="px-space-xs py-0.5 rounded-full transition-colors"
           type="button">
           VIE
@@ -38,23 +58,46 @@
         <span class="text-outline-variant px-0.5">/</span>
         <button
           (click)="switchLanguage('ENG')"
-          [class.font-bold]="currentLang === 'ENG'"
-          [class.text-primary]="currentLang === 'ENG'"
-          [class.text-on-surface-variant]="currentLang !== 'ENG'"
+          [ngClass]="currentLang === 'ENG' ? 'font-bold text-primary' : 'text-on-surface-variant'"
           class="hover:text-on-surface px-space-xs py-0.5 rounded-full transition-colors"
           type="button">
           ENG
         </button>
       </div>
 
-      <!-- Auth Buttons -->
-      <a class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface hover:text-primary hover:bg-surface-container-low transition-colors" data-path="dang-nhap" routerLink="auth/login">Đăng nhập</a>
-      <a class="inline-flex items-center justify-center px-space-lg py-space-sm rounded-full font-label-lg text-label-lg bg-primary text-on-primary hover:bg-primary-container shadow-sm transition-all" data-path="dang-ky" routerLink="auth/register">Đăng ký</a>
+      <!-- Khối Control Flow mới của Angular (Thay cho *ngIf) -->
+      @if (!isLoggedIn) {
+        <a routerLink="/auth/login"
+           class="cursor-pointer hidden sm:inline-flex items-center justify-center px-space-md py-space-sm rounded-full font-label-lg text-label-lg text-on-surface hover:text-primary hover:bg-surface-container-low transition-colors">
+          Đăng nhập
+        </a>
+        <a routerLink="/auth/signup" class="inline-flex items-center justify-center px-space-lg py-space-sm rounded-full font-label-lg text-label-lg bg-primary text-on-primary hover:bg-primary-container shadow-sm transition-all">
+          Đăng ký
+        </a>
 
-      <!-- User Avatar Placeholder -->
-      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs">
-        <span class="material-symbols-outlined text-on-primary text-[18px]"><i class="fa-solid fa-user"></i></span>
-      </div>
+      } @else {
+        <!-- Trạng thái: ĐÃ đăng nhập (Hiển thị User Profile) -->
+        <button aria-label="Thông báo" class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors relative ml-2">
+          <i class="fa-regular fa-bell text-[18px]"></i>
+          <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary ring-2 ring-surface"></span>
+        </button>
+
+        <a routerLink="/saved-restaurants" class="flex items-center gap-3 p-1.5 pl-4 bg-surface-container-low hover:bg-surface-container-high rounded-full transition-all group ml-1" title="Danh sách quán đã lưu">
+          <div class="hidden sm:flex flex-col text-right">
+            <span class="font-label-lg text-label-lg text-on-surface leading-tight">{{ currentUser?.full_name || currentUser?.email || 'Tài khoản' }}</span>
+            <span class="font-label-xs text-label-xs text-secondary flex items-center justify-end gap-1 font-bold">
+              <i class="fa-solid fa-bookmark text-[11px]"></i> Quán đã lưu
+            </span>
+          </div>
+          <span aria-hidden="true" class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm ring-2 ring-surface group-hover:ring-primary/30 transition-all">
+            <i class="fa-solid fa-user"></i>
+          </span>
+        </a>
+        <button type="button" (click)="logout()" class="px-space-md py-space-sm rounded-full font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors" title="Đăng xuất">
+          Đăng xuất
+        </button>
+      }
+
     </div>
   </div>
 </header>

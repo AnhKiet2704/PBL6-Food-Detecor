@@ -1,726 +1,230 @@
-<main class="flex-1 w-full pt-20 bg-background">
-  <div class="flex flex-col w-full">
-    <!-- 1. HERO SECTION -->
-    <section class="relative w-full -mt-20 overflow-hidden bg-on-background">
-      <!-- Atmospheric Food Photography Background -->
-      <div class="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-1000 scale-105" data-alt="Rich top-down photography of a vibrant Vietnamese culinary feast in Da Nang, featuring a smoking bowl of Mi Quang noodles, fresh mint, coriander, rice crackers, crispy golden banh xeo pancake, steamed pork rolls, fresh lime wedges and red chili oil sauce on a rustic dark wood table, warm golden hour ambient lighting, fine dining street food aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgrAlqCUF-Y9_CEuB6E5Wxp7E_XWJPAK9Yik58A1HbEjJsebTYbdnYbIu-HwH51PGARzIbQwgWIWZHlzLXBaCW0Lmv7uBMy7nXJFmdmT0qq_GFTN8YQHCrTpxnptloWg4cjzi8hzgXLxZTANNIROtbO5QZ9zzD0FhXNNbOBtRMY_0adjCnzUmzj86xaBkk_ZIXQYl-IslG4dFubcAKNW3X5Kq4vxFk0qjvA4UJ5Ed_bZYE5x7F_s8evg')"></div>
-      <!-- Editorial Gradient Scrims -->
-      <div class="absolute inset-0 bg-gradient-to-b from-on-background/70 via-on-background/40 to-background"></div>
-      <div class="absolute inset-0 bg-gradient-to-r from-on-background/60 via-transparent to-transparent"></div>
-      <!-- Hero Content Container -->
-      <div class="relative max-w-[1280px] mx-auto px-gutter pt-36 pb-20 sm:pb-28 flex flex-col items-start">
-        <!-- Location Tagline Pill -->
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-container-lowest/20 backdrop-blur-md text-surface-bright font-label-xs text-label-xs uppercase tracking-widest mb-4">
-          <span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span>
-          Đà Nẵng • Ăn ngon như người bản địa
-        </div>
-        <!-- Main Catchphrase Title -->
-        <h1 class="font-display-hero text-display-hero text-surface-bright max-w-3xl tracking-tight leading-none mb-3">Khám phá ẩm thực Đà Nẵng qua <span class="text-primary-fixed">từng con ngõ</span></h1>
-        <p class="font-body-lg text-body-lg text-surface-bright/90 max-w-xl mb-8 font-light">Từ tô mì Quảng đậm vị nước nhưn đến gánh ốc cay nồng chiều muộn. Cùng người bản xứ gom nhặt những phong vị chân thật nhất của phố biển.</p>
-        <!-- Elevated Smart Search Pill Bar -->
-        <div class="w-full max-w-2xl bg-surface-container-lowest rounded-full p-2 pl-6 shadow-2xl flex items-center justify-between gap-3 mb-6 transition-all focus-within:ring-2 focus-within:ring-primary">
-          <div class="flex items-center gap-3 flex-1 min-w-0">
-            <span class="material-symbols-outlined text-outline text-[22px] flex-shrink-0"><i class="fa-solid fa-magnifying-glass"></i></span>
-            <input class="w-full bg-transparent font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none truncate" placeholder="Tìm món ngon, con đường hay tên quán quen thuộc..." type="text">
-          </div>
-          <button class="w-11 h-11 rounded-full bg-primary hover:bg-primary-container text-on-primary flex items-center justify-center flex-shrink-0 shadow-md transition-all hover:scale-105 active:scale-95">
-            <span class="material-symbols-outlined text-[20px]"><i class="fa-solid fa-arrow-right"></i></span>
-          </button>
-        </div>
-        <!-- Quick Filter Pills -->
-        <div class="flex flex-wrap items-center gap-2 max-w-3xl mb-8">
-          <span class="font-label-xs text-surface-bright/80 uppercase tracking-wider mr-1">Gợi ý nhanh:</span>
-          <button class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/90 hover:bg-surface-container-lowest text-on-surface font-label-md transition-all">Mì Quảng gia truyền</button>
-          <button class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/80 hover:bg-surface-container-lowest text-on-surface font-label-md transition-all">Bún chả cá nước trong</button>
-          <button class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/80 hover:bg-surface-container-lowest text-on-surface font-label-md transition-all">Bánh tráng cuốn thịt heo</button>
-          <button class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/80 hover:bg-surface-container-lowest text-on-surface font-label-md transition-all">Hải sản ghe sớm</button>
-          <button class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest/80 hover:bg-surface-container-lowest text-on-surface font-label-md transition-all">Ăn vặt chợ Cồn</button>
-        </div>
-        <!-- Action Button Group -->
-        <div class="flex flex-wrap items-center gap-3 mb-6">
-          <a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 active:translate-y-0" href="#taste-quiz">
-            <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-            Gợi ý cho tôi
-          </a>
-          <a class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-lg text-label-lg shadow-md transition-all hover:-translate-y-0.5" href="#nearby-section">
-            <span class="material-symbols-outlined text-primary text-[18px]">explore</span>
-            Xem quán gần bạn
-          </a>
-        </div>
-        <!-- Verification Micro-Metadata -->
-        <div class="flex flex-wrap items-center gap-4 text-surface-bright/70 font-label-xs text-label-xs">
-          <span class="flex items-center gap-1">
-            <span class="material-symbols-outlined text-[14px] text-secondary-fixed">check_circle</span>
-            Dữ liệu được kiểm chứng
-          </span>
-          <span>•</span>
-          <span>Cập nhật 02/10/2026</span>
-          <span>•</span>
-          <span>Không xếp hạng trả phí</span>
-        </div>
-      </div>
-    </section>
+<main class="w-full bg-background">
+  <section class="relative -mt-20 overflow-hidden bg-on-background">
+    <div class="absolute inset-0 scale-105 bg-cover bg-center"
+         style="background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgrAlqCUF-Y9_CEuB6E5Wxp7E_XWJPAK9Yik58A1HbEjJsebTYbdnYbIu-HwH51PGARzIbQwgWIWZHlzLXBaCW0Lmv7uBMy7nXJFmdmT0qq_GFTN8YQHCrTpxnptloWg4cjzi8hzgXLxZTANNIROtbO5QZ9zzD0FhXNNbOBtRMY_0adjCnzUmzj86xaBkk_ZIXQYl-IslG4dFubcAKNW3X5Kq4vxFk0qjvA4UJ5Ed_bZYE5x7F_s8evg')"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-on-background/80 via-on-background/50 to-on-background/10"></div>
+    <div class="relative mx-auto flex max-w-[1280px] flex-col items-start px-gutter pb-24 pt-36 sm:pb-32">
+      <span class="mb-4 inline-flex items-center gap-2 rounded-full bg-surface-container-lowest/20 px-3.5 py-1.5 font-label-xs uppercase tracking-widest text-surface-bright backdrop-blur-md">
+        <span class="h-1.5 w-1.5 rounded-full bg-primary-fixed"></span>
+        Đà Nẵng · Ăn ngon như người bản địa
+      </span>
+      <h1 class="mb-4 max-w-3xl font-display-hero leading-none tracking-tight text-surface-bright">
+        Khám phá ẩm thực Đà Nẵng qua <span class="text-primary-fixed">từng con ngõ</span>
+      </h1>
+      <p class="mb-8 max-w-xl font-body-lg text-surface-bright/90">
+        Tìm món ngon, quán được kiểm chứng và những hương vị chân thật của phố biển.
+      </p>
 
-    <!-- 2. TASTE QUIZ: CÁ NHÂN HÓA TRONG 30 GIÂY -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl" id="taste-curation">
-      <div class="bg-surface-container-low rounded-2xl p-6 md:p-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-          <div>
-            <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Cẩm nang nhịp sống</span>
-            <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Hôm nay bạn muốn thưởng vị thế nào?</h2>
-            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Chọn nhịp cảm xúc để khám phá những quán ăn vừa vặn nhất cho khoảnh khắc này.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="p-5 rounded-xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer border border-outline-variant/30 flex flex-col justify-between group">
-            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary mb-3">
-              <span class="material-symbols-outlined text-[20px]">sunny</span>
-            </div>
-            <h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Ăn sáng thanh cảnh</h4>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-3">Xôi bắp dẻo thơm, cháo lươn xứ Nghệ hay tô bún bò sả thơm sớm mai.</p>
-            <span class="font-label-xs text-primary font-semibold inline-flex items-center gap-1">14 địa chỉ tuyển chọn <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-          </div>
-          <div class="p-5 rounded-xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer border border-outline-variant/30 flex flex-col justify-between group">
-            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-tertiary mb-3">
-              <span class="material-symbols-outlined text-[20px]"><i class="fa-solid fa-book-open-reader"></i></span>
-            </div>
-            <h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Bữa trưa no nê</h4>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-3">Cơm niêu cá bống kho tộ, đĩa mì Quảng ếch thơm nồng rau răm cay cay.</p>
-            <span class="font-label-xs text-primary font-semibold inline-flex items-center gap-1">22 quán chuẩn vị <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-          </div>
-          <div class="p-5 rounded-xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer border border-outline-variant/30 flex flex-col justify-between group">
-            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-secondary mb-3">
-              <span class="material-symbols-outlined text-[20px]">wb_twilight</span>
-            </div>
-            <h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Ăn vặt chiều hoàng hôn</h4>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-3">Bánh bột lọc gói lá chuối, chè bơ mịn màng và ốc hút cay xè ngón tay.</p>
-            <span class="font-label-xs text-primary font-semibold inline-flex items-center gap-1">19 gánh quán ruột <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-          </div>
-          <div class="p-5 rounded-xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer border border-outline-variant/30 flex flex-col justify-between group">
-            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary-container mb-3">
-              <span class="material-symbols-outlined text-[20px]">nightlife</span>
-            </div>
-            <h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Quán nhậu đêm hè</h4>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-3">Mực một nắng nướng than, cá đuối nướng bẹ chuối gió biển rì rào.</p>
-            <span class="font-label-xs text-primary font-semibold inline-flex items-center gap-1">16 góc biển thân tình <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-          </div>
-        </div>
-      </div>
-    </section>
+      <form (ngSubmit)="submitSearch()" class="mb-5 flex w-full max-w-2xl items-center gap-3 rounded-full bg-surface-container-lowest p-2 pl-6 shadow-2xl focus-within:ring-2 focus-within:ring-primary">
+        <i class="fa-solid fa-magnifying-glass text-outline" aria-hidden="true"></i>
+        <input [(ngModel)]="searchQuery" name="searchQuery" class="min-w-0 flex-1 bg-transparent py-2 font-body-md text-on-surface placeholder:text-outline focus:outline-none"
+               placeholder="Tìm món ngon, đặc sản hay tên quán..." type="search" aria-label="Tìm món ăn hoặc quán"/>
+        <button type="submit" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-primary text-on-primary shadow-md transition hover:bg-primary-container" aria-label="Tìm kiếm">
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
 
-    <!-- 3. PERSONALIZED RECOMMENDATIONS: DÀNH CHO BẠN -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-lg">
-      <div class="flex items-end justify-between mb-8">
-        <div>
-          <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Hương vị tiêu biểu</span>
-          <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Món ngon Đà Thành tuần này</h2>
-          <p class="font-body-md text-body-md text-on-surface-variant mt-1">Những gánh hàng và tiệm ăn gia truyền được người bản xứ truyền tai nhau.</p>
-        </div>
-        <a class="inline-flex items-center gap-1 text-primary hover:text-primary-container font-label-lg text-label-lg transition-colors group" href="#">
-          Xem toàn bộ danh bạ
-          <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      <div class="mb-7 flex flex-wrap items-center gap-2">
+        <span class="mr-1 font-label-xs uppercase tracking-wider text-surface-bright/80">Thử tìm:</span>
+        @for (food of popularFoods.slice(0, 4); track food.id) {
+          <button type="button" (click)="submitSearch(food.name)" class="rounded-full bg-surface-container-lowest/90 px-3.5 py-1.5 font-label-md text-on-surface transition hover:bg-surface-bright">{{ food.name }}</button>
+        }
+        @if (popularFoods.length === 0 && !isLoading) {
+          <button type="button" (click)="submitSearch('Mì Quảng')" class="rounded-full bg-surface-container-lowest/90 px-3.5 py-1.5 font-label-md text-on-surface transition hover:bg-surface-bright">Mì Quảng</button>
+          <button type="button" (click)="submitSearch('Bánh xèo')" class="rounded-full bg-surface-container-lowest/90 px-3.5 py-1.5 font-label-md text-on-surface transition hover:bg-surface-bright">Bánh xèo</button>
+        }
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a routerLink="/food-search" class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-label-lg text-on-primary shadow-lg transition hover:-translate-y-0.5 hover:bg-primary-container">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>Khám phá món ăn
         </a>
-      </div>
-      <!-- Recommendations Bento Layout -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Dish Card 1: Mì Quảng gà ta -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-          <div class="relative w-full aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Authentic central Vietnamese Mi Quang noodle bowl with tender free-range chicken, golden broth, quail egg, roasted peanuts, fresh banana blossom herbs and toasted sesame rice cracker garnish, warm daylight food photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-iguhbpHMD6dKRatMRt0_Ztx7-qRr5g6exxq-1VGwcWDyGkESdByXhxyGmTnXtItfifFRkEJtXBcqZp5pce09WxMFVkZB5v5AW82iRSnxwVFx5xyWsCuLGJa9eEdEp5wctIXGlyiCbMA84veOn1wyeyLA2yFfLDabzkJmyi1OGVTmWg7yLQnzzp42Y7jP7Lr0Phr90UI3N6hAXQkFe32Q6NXdyr-OUGcetlRwYnd3jcr2yf49C5EKxw">
-            <div class="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-secondary font-label-xs text-label-xs">
-              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              Đang mở
-            </div>
-          </div>
-          <div class="p-6 flex flex-col flex-1 justify-between">
-            <div>
-              <div class="flex items-start justify-between gap-2 mb-1">
-                <h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Mì Quảng gà ta</h3>
-              </div>
-              <p class="font-label-md text-label-md text-on-surface-variant mb-2">Mì Quảng Bà Tự (ví dụ)</p>
-              <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm mb-4">
-                <span>Hải Châu • 0.8 km</span>
-                <span class="font-title-md text-title-md text-primary font-bold">45.000đ</span>
-                <div class="flex items-center gap-1 text-tertiary">
-                  <span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
-                  <span class="font-bold text-on-surface">4.8</span>
-                  <span class="text-on-surface-variant">(326)</span>
-                </div>
-              </div>
-            </div>
-            <div class="pt-4 flex flex-wrap items-center gap-2 bg-surface-container-low/40 -mx-6 -mb-6 p-4 px-6">
-              <span class="px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-xs font-bold">Quán gia truyền hơn 30 năm</span>
-              <span class="font-label-xs text-on-surface-variant">Nước nhưn đậm đà, bánh tráng mè thơm</span>
-            </div>
-          </div>
-        </div>
-        <!-- Dish Card 2: Bánh xèo tôm thịt -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-          <div class="relative w-full aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Crispy golden Vietnamese sizzling pancake Banh Xeo filled with fresh shrimp, pork belly, bean sprouts, accompanied by green wild herbs and traditional liver-peanut dipping sauce, street restaurant table in Da Nang." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXmaKnVzndKY8UmGOrS9SIxWlod75mczXI8lZBcxDL-X60nmPzW5FBOmkQWVIHGmzSL1W5SQL3XrfC1_jQkQHNsRGbtTygN8ltZIcZz70DnVJmTyebuus1uy83s3dxM_wtkC2HqwFx6RZ8znskSVyopv96JKmr0w4tu_WS8QQxmfz73YP-v7bmbhe8uzhZnwuplEb2w4clrV2LDW6pAvB-uXPd4gjXnawOasjzh8wyIK7DoA-7jt3aPA">
-            <div class="absolute top-3 left-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-secondary font-label-xs text-label-xs">
-              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              Đang mở
-            </div>
-          </div>
-          <div class="p-6 flex flex-col flex-1 justify-between">
-            <div>
-              <div class="flex items-start justify-between gap-2 mb-1">
-                <h3 class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Bánh xèo tôm thịt</h3>
-              </div>
-              <p class="font-label-md text-label-md text-on-surface-variant mb-2">Bếp Cô Ba (ví dụ)</p>
-              <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm mb-4">
-                <span>Sơn Trà • 1.4 km</span>
-                <span class="font-title-md text-title-md text-primary font-bold">65.000đ</span>
-                <div class="flex items-center gap-1 text-tertiary">
-                  <span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
-                  <span class="font-bold text-on-surface">4.6</span>
-                  <span class="text-on-surface-variant">(184)</span>
-                </div>
-              </div>
-            </div>
-            <div class="pt-4 flex flex-wrap items-center gap-2 bg-surface-container-low/40 -mx-6 -mb-6 p-4 px-6">
-              <span class="px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-xs font-bold">Bột gạo đúc củi than</span>
-              <span class="font-label-xs text-on-surface-variant">Nước chấm gan đậu béo bùi, rau sạch</span>
-            </div>
-          </div>
-        </div>
-        <!-- Action Card 3: Lưu gu ăn ngon của riêng bạn -->
-        <div class="bg-primary-fixed/40 rounded-3xl p-8 flex flex-col justify-between shadow-sm relative overflow-hidden">
-          <div class="relative z-10">
-            <div class="w-12 h-12 rounded-xl bg-surface-container-lowest text-primary flex items-center justify-center mb-5 shadow-sm">
-              <span class="material-symbols-outlined text-[24px]"><i class="fa-solid fa-book-open"></i></span>
-            </div>
-            <h3 class="font-headline-md text-headline-md text-on-surface mb-2">Sổ tay ẩm thực xứ Quảng</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">Tập hợp 50 địa chỉ ăn uống lâu năm, cách phân biệt các loại mắm nêm, rau ghém và bí quyết gọi món đúng điệu người miền Trung.</p>
-          </div>
-          <div class="relative z-10 pt-6">
-            <button class="w-full py-3 px-6 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg shadow-md transition-all text-center">Tải cẩm nang miễn phí</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. MUST-TRY SPECIALTIES: ĐẶC SẢN KHÔNG THỂ BỎ QUA -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl">
-      <div class="mb-8">
-        <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Danh sách phải thử</span>
-        <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Đặc sản không thể bỏ qua</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Đúng 6 hương vị kể câu chuyện ẩm thực Đà Nẵng.</p>
-      </div>
-      <!-- 6 Signature Specialties Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Dish 1 -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Traditional Quang noodle bowl with turmeric broth, boiled egg, pork ribbons, sprinkled with crushed peanuts and fresh aromatic Tra Que herbs, soft natural studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFlTljxWXMNla51sBB9v1Z64kqlMOQra_ToK0rb7CkYjJhTgSwGuUsNUFOAsHe0GUQkuCib7PvC0cploRbx6V6581yfDou-sK9rFwwmQIVYKtKtVjkkWOxSztV5nh50i_BPx2xGEuTpjWY8_AudNg5eaox8sOpQNT3irnagGnsG-dSaCdhxYyfaVuBXJgJ5AUziJUCnUSSNbq7GTJzIYZ27vIR3XSm1O1xSyC4oWQ_4vcdVzR5VFF6Jw">
-          </div>
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Mì Quảng</h3>
-              <p class="font-body-sm text-body-sm text-tertiary italic mb-2">Quang-style turmeric noodles</p>
-              <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Sợi mì vàng, nước dùng cô đọng, rau sống và bánh tráng mè nướng giòn rụm.</p>
-            </div>
-            <div class="pt-4 flex items-center justify-between text-on-surface-variant">
-              <span class="font-label-xs text-label-xs font-semibold text-primary">Đậm đà • Bùi</span>
-              <span class="font-label-md text-label-md text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
-                Xem quán phục vụ <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- Dish 2 -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Vietnamese pork belly paper rolls platter with sliced two-end fat pork, delicate rice paper sheets, assorted mountain greens, and fermented anchovy dipping sauce bowl." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVxcMXvzJ-ZWPybD1skkiubRJJM30N6uTOMIAk1x5-bTA9wfQB1y1ofO7SY9t2UQTn7Y0oAK5Ry9NEeKmfWBcmLVYrjFXJMgdzS_B7zYI-CtMNT1k2rPrRkaJZ04EGj_p5RBYLlW7JiUYJ5Xx9Cl3TMbrVqN2A8nsV57JFvIoyUs5dsjdHbpowvLibMSWsYnf5l8Z_bzeDjg_7WtvQo_OZU_K-wHwmZEyNy9CJBhFS6mvG_mcxHh64RQ">
-          </div>
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Bánh tráng cuốn thịt heo</h3>
-              <p class="font-body-sm text-body-sm text-tertiary italic mb-2">Pork &amp; herbs rice-paper rolls</p>
-              <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Thịt heo hai đầu da cuốn ghém rau rừng thanh mát, chấm mắm nêm thơm nồng.</p>
-            </div>
-            <div class="pt-4 flex items-center justify-between text-on-surface-variant">
-              <span class="font-label-xs text-label-xs font-semibold text-primary">Tươi mát • Mắm nêm</span>
-              <span class="font-label-md text-label-md text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
-                Xem quán phục vụ <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- Dish 3 -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Golden crispy sizzling Vietnamese banh xeo crepe stuffed with river shrimp and pork slices, alongside grilled pork skewers nem lui on lemongrass sticks." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBj-8VTQteMk20CFJPfHB3MqdblMSkYbOqI4oflrr154IgEBWZOekLJv9nKZkaqu2piWkGgEhSS4_uqkO0LC4hVdCQAfzUX6-Juhg_jnktQDYJuafViv9mRtyGBuJMzRQKmgJDB-nPMwvFrSV2g3-EDTXuagXofFd1HEf-KTOUzpSXSHtWam9WQMXs2QzNczTYhMbJbVTBlqjr03jOJF02dSxp2t88WeFzpr2zsfuzzAfH3l7cvxeovag">
-          </div>
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Bánh xèo &amp; Nem lụi</h3>
-              <p class="font-body-sm text-body-sm text-tertiary italic mb-2">Crispy Vietnamese pancake</p>
-              <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Vỏ vàng giòn, tôm thịt nóng hổi, hòa quyện sốt chấm gan đậu phộng béo bùi.</p>
-            </div>
-            <div class="pt-4 flex items-center justify-between text-on-surface-variant">
-              <span class="font-label-xs text-label-xs font-semibold text-primary">Giòn • Béo thơm</span>
-              <span class="font-label-md text-label-md text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
-                Xem quán phục vụ <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- Dish 4 -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Steaming hot Da Nang fish cake noodle soup Bun Cha Ca with rich orange pumpkin broth, fried fish patties, pineapple slices, bamboo shoots and fresh herbs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy5jwaEJh9if8O2_9MrUf7FkJ6dQiZYdailtjOhHJVdqT7YYDA-_L6TVDZKxoPljgsz8mRdThBYK0LSArvLJ4CiDI8nGVtql5p7FnyDA8ryCf1Dvxw4vJRsKGNSosr4fOWgDo2fbQBQbhxGu3i95dXs1BnEhE5vzNYCqQi9_c8baEOyw8R6DAJLOoPVD0OoNQoBGqjEITnIULcvTIuUSVB5u2wNUeT9Hhd5hB_GpBntClLg_ZAFJsNHQ">
-          </div>
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Bún chả cá</h3>
-              <p class="font-body-sm text-body-sm text-tertiary italic mb-2">Fish cake noodle soup</p>
-              <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Nước dùng ngọt thanh từ bí đỏ bắp cải, chả cá dai giòn chuẩn phong vị miền Trung.</p>
-            </div>
-            <div class="pt-4 flex items-center justify-between text-on-surface-variant">
-              <span class="font-label-xs text-label-xs font-semibold text-primary">Thanh ngọt • Hơi cay</span>
-              <span class="font-label-md text-label-md text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
-                Xem quán phục vụ <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- Dish 5 -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Bowl of central Vietnam Bun Mam Nem with roast pork, pork ears, fermented anchovy dressing, roasted peanuts, chili and shredded unripe papaya." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP8MQBmheES_GX8JDwpNYzG465st28x5p_ssoxJByKstBdfiaTuoFDGG0a9tYSY_HrFJ-IQdCBtO1co3l0_uGAOLckRJLudwInHrrOQdhYeSvGCy2PxbJM7Ra5v90zRYf_DZj8qU5hcaqUPLaF4wpAYuTZFVwlekl3MY2AL_G_b7W__V3uNqZVKNctRIknQYnCt2zcTTD4kOIN3E-Av2V4PBth948T3g5iotkqlFztjvOWzZEDtClR5g">
-          </div>
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Bún mắm nêm</h3>
-              <p class="font-body-sm text-body-sm text-tertiary italic mb-2">Noodles with anchovy sauce</p>
-              <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Mắm nêm cay xé, thịt quay giòn rụm kết hợp rau răm và mít non thơm bùi nức mũi.</p>
-            </div>
-            <div class="pt-4 flex items-center justify-between text-on-surface-variant">
-              <span class="font-label-xs text-label-xs font-semibold text-primary">Đậm vị • Thơm nồng</span>
-              <span class="font-label-md text-label-md text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
-                Xem quán phục vụ <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- Dish 6 -->
-        <div class="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all group flex flex-col">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Fresh steamed clams with lemongrass, grilled sea scallops with scallion oil, and tamarind crabs served at an open-air seaside seafood restaurant in My Khe beach Da Nang." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChBKZ95oLhF3yG7mDAlRJL7HALRYExQSf_mLWdfJy8o1nABaOuJ-dJ5FozCbtVLdOTju64_1bXj1S2GBgctPkGnlP6o0pnAr6lHKckp9dOqWzLIWoSD3YKiDPFMq2F9ChHluwt61RNDMEKnR45-qhwA_sglzMWRWbos4KWqxwJtHxGbQQjh8XQ6igLCEM-Piu76kxLs257WmiDUri8UyCwo03BG0nZ8TvApmBDuYhO_wc4rXqvvQzbkQ">
-          </div>
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <h3 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Hải sản bén biển</h3>
-              <p class="font-body-sm text-body-sm text-tertiary italic mb-2">Seaside seafood feast</p>
-              <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Tôm sú, mực nháy, nghêu hấp sả chọn tại bể vô cùng tươi sống ngay ven bờ biển.</p>
-            </div>
-            <div class="pt-4 flex items-center justify-between text-on-surface-variant">
-              <span class="font-label-xs text-label-xs font-semibold text-primary">Tươi • Vị biển</span>
-              <span class="font-label-md text-label-md text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
-                Xem quán phục vụ <span class="material-symbols-outlined text-[14px]">chevron_right</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. INTERACTIVE MAP SECTION: ĂN GÌ BÂY GIỜ? GẦN BẠN -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl" id="nearby-section">
-      <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Bản đồ đồ ăn ngon</span>
-          <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Ăn gì bây giờ? Gần bạn</h2>
-          <p class="font-body-md text-body-md text-on-surface-variant mt-1">Tìm quán ăn ngon theo từng ngóc ngách: Hải Châu, Sơn Trà, Ngũ Hành Sơn và Thanh Khê.</p>
-        </div>
-        <!-- Distance and Status Filter Chips -->
-        <div class="flex items-center gap-2">
-          <button (click)="animateButton($event)" class="px-3.5 py-1.5 rounded-full bg-primary text-on-primary font-label-md text-label-md">
-            Tất cả quận
-          </button>
-          <button (click)="animateButton($event)" class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors">
-            Quận Hải Châu
-          </button>
-          <button (click)="animateButton($event)" class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors">Quận Sơn Trà</button>
-          <button (click)="animateButton($event)" class="px-3.5 py-1.5 rounded-full bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container transition-colors">
-            Ngũ Hành Sơn
-          </button>
-        </div>
-      </div>
-      <!-- Map & Venues Split Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        <!-- Left Venue List -->
-        <div class="lg:col-span-5 bg-surface-container-lowest rounded-3xl p-4 sm:p-6 shadow-sm flex flex-col justify-between">
-          <div class="space-y-3">
-            <!-- Item 1 -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-primary text-on-primary font-bold text-label-xs flex items-center justify-center flex-shrink-0">1</span>
-                <div>
-                  <h4 class="font-title-md text-title-md text-on-surface">Mì Quảng Bà Tự (ví dụ)</h4>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant">Hải Châu • 0.8 km • 45.000đ • <span class="text-tertiary font-bold">★ 4.8</span></p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 text-secondary font-label-xs text-label-xs whitespace-nowrap">
-                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Đang mở
-              </span>
-            </div>
-            <!-- Item 2 -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface font-bold text-label-xs flex items-center justify-center flex-shrink-0">2</span>
-                <div>
-                  <h4 class="font-title-md text-title-md text-on-surface">Bún chả cá Cô Hạnh (ví dụ)</h4>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant">Sơn Trà • 1.1 km • 35.000đ • <span class="text-tertiary font-bold">★ 4.6</span></p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 text-secondary font-label-xs text-label-xs whitespace-nowrap">
-                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Đang mở
-              </span>
-            </div>
-            <!-- Item 3 -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface font-bold text-label-xs flex items-center justify-center flex-shrink-0">3</span>
-                <div>
-                  <h4 class="font-title-md text-title-md text-on-surface">Hải sản Biển Xanh (ví dụ)</h4>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant">Mỹ Khê • 1.5 km • 90-120.000đ • <span class="text-tertiary font-bold">★ 4.5</span></p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 text-secondary font-label-xs text-label-xs whitespace-nowrap">
-                <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Đang mở
-              </span>
-            </div>
-            <!-- Item 4 -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface font-bold text-label-xs flex items-center justify-center flex-shrink-0">4</span>
-                <div>
-                  <h4 class="font-title-md text-title-md text-on-surface">Bánh xèo Góc Phố (ví dụ)</h4>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant">Hải Châu • 2.2 km • 65.000đ • <span class="text-tertiary font-bold">★ 4.4</span></p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 text-on-surface-variant font-label-xs text-label-xs whitespace-nowrap">
-                <span class="w-1.5 h-1.5 rounded-full bg-outline"></span> Đã đóng
-              </span>
-            </div>
-            <!-- Item 5 -->
-            <div class="p-3.5 rounded-2xl bg-surface-container-lowest hover:bg-surface-container transition-all cursor-pointer flex items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface font-bold text-label-xs flex items-center justify-center flex-shrink-0">5</span>
-                <div>
-                  <h4 class="font-title-md text-title-md text-on-surface">An Nhiên Quán (ví dụ)</h4>
-                  <p class="font-body-sm text-body-sm text-on-surface-variant">Sơn Trà • 2.8 km • 55.000đ • <span class="text-tertiary font-bold">★ 4.3</span></p>
-                </div>
-              </div>
-              <span class="inline-flex items-center gap-1 text-primary font-label-xs text-label-xs whitespace-nowrap">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Chay
-              </span>
-            </div>
-          </div>
-          <button (click)="animateButton($event)" class="w-full mt-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center justify-center gap-1">
-            Xem thêm 18 địa điểm xung quanh
-            <span class="material-symbols-outlined text-[16px]">expand_more</span>
-          </button>
-        </div>
-        <!-- Right Interactive Map Element -->
-        <div class="lg:col-span-7 min-h-[420px] rounded-3xl overflow-hidden shadow-sm relative">
-          <div class="w-full h-full min-h-[420px] bg-cover bg-center" data-location="Da Nang, Vietnam" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB8c4OWMH-cPcDRP9AzkROo32cmwwshZ_q_Yazg3ydySOcvyZ-MRiZk4QubIYBdId1KzkbxJlvCkknLmWASTCgSJtO__PiBag-LRCJ9O5RKa7S40GJjPhi41cVsMxA7Pn_eul46NH9--KjWt2Iu6PnUphMzLyI5SlagjGOWoDvqRLraRGxPQ4Bb7FUbwV7CrZANcHmG6OWbkAoNh-zw8Rlt59qJI60K6hyYdpaTLUcTgg-usDfOjuKbOQ')"></div>
-          <!-- Map Overlay UI Controls -->
-          <div class="absolute top-4 left-4 bg-surface-container-lowest/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-2 text-on-surface font-label-xs text-label-xs font-semibold">
-            <span class="material-symbols-outlined text-primary text-[16px]">my_location</span>
-            Chọn khu vực của bạn: Hải Châu • Sơn Trà
-          </div>
-          <div class="absolute bottom-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md p-2 rounded-2xl shadow-md flex flex-col gap-1">
-            <button (click)="animateButton($event)" class="w-8 h-8 rounded-xl bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface font-bold text-lg leading-none">+</button>
-            <button (click)="animateButton($event)" class="w-8 h-8 rounded-xl bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface font-bold text-lg leading-none">-</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. THEMATIC COLLECTIONS: BỘ SƯU TẬP THEO CHỦ ĐỀ -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl">
-      <div class="mb-8">
-        <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Chọn theo tâm trạng</span>
-        <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Bộ sưu tập theo chủ đề</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Sáu danh sách cho mọi bữa ăn và mọi nhóm bạn.</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Collection 1 -->
-        <a class="relative h-56 rounded-3xl overflow-hidden shadow-sm group" href="#">
-          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Traditional morning sidewalk coffee and banh mi stall in Da Nang with sunlight casting warm morning glow on plastic tables and fresh herb baskets." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQ96C7-hBR3K_7fwaBjwL6wg8IzCT2yuZl7TEnitdr6AJXdSglojBxKXMvveqAubfsRzFL_LtFgHyN5ojTx08pD_LS0z0DnrRwsLtyLtcrCjGsBqxHuDF3ldmNAXM1ZB0VUAfnEVRpOSqFD7kgKJ-7eX9gCUoyVPwLOpQ79vvL0hzUBL16nlTMGAD3BBvI2ulnxrmStxZN12Yaknjsx1wy6u9_v36rt4gspaF4jUoCYFv6RYvLr7f31w')"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/30 to-transparent"></div>
-          <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-lowest/40 backdrop-blur-md flex items-center justify-center text-surface-bright group-hover:bg-primary transition-colors">
-            <span class="material-symbols-outlined text-[18px]">north_east</span>
-          </div>
-          <div class="absolute bottom-5 left-5 right-5 text-surface-bright">
-            <h3 class="font-title-md text-title-md font-bold mb-0.5">Ăn sáng như người Đà Nẵng</h3>
-            <p class="font-label-xs text-label-xs text-surface-bright/80">8 địa điểm</p>
-          </div>
-        </a>
-        <!-- Collection 2 -->
-        <a class="relative h-56 rounded-3xl overflow-hidden shadow-sm group" href="#">
-          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Vibrant seafood barbecue feast overlooking Son Tra peninsula coast at dusk, steaming grilled clams and lemongrass steamed prawns on outdoor beach tables." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAbL2wiXMz_Hxy69tlgIAxXDv0m5j4DLCCetyz53vX0KYcOtqct1tahlDi7BEJFUd69mxYfEifAdItFbSPOtVuX6kYFQEpv5cGVyRykMFfevIPME9Z7vbSBLJvinprzmaspCZK01qmXkaFxViungPvzOo6lU4eCKSKNVqleuv9QXQEwRBYd4Y02WptOGCaXtl3AHClTwqcNJGwiPWdPuE_2tkYvVH4vz3h4d4ueCbYtiEx_MMGRCDCxNA')"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/30 to-transparent"></div>
-          <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-lowest/40 backdrop-blur-md flex items-center justify-center text-surface-bright group-hover:bg-primary transition-colors">
-            <span class="material-symbols-outlined text-[18px]">north_east</span>
-          </div>
-          <div class="absolute bottom-5 left-5 right-5 text-surface-bright">
-            <h3 class="font-title-md text-title-md font-bold mb-0.5">Hải sản Sơn Trà</h3>
-            <p class="font-label-xs text-label-xs text-surface-bright/80">12 địa điểm</p>
-          </div>
-        </a>
-        <!-- Collection 3 -->
-        <a class="relative h-56 rounded-3xl overflow-hidden shadow-sm group" href="#">
-          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Peaceful vegan Vietnamese lunch set with lotus root soup, braised mushrooms, fresh tofu and organic herb salad in ceramic bowls in Da Nang." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB85Mlq8Gwrv9IO3qsxWAvbJ6gA8RSh4E4i08167otVXJjk-lgw5xS4sYjZp9uZN2n1_qJ4RvZatv3nx5YiyKb6a5yN9q8B9xXk4hwqrsFV8b1PaGjP5mQPSkxIyJRAro7YEb2lzPCFbZDc36PbJx9c6zDEyQwwFa7O4PzvuANlbrsDUCEtfQ4CHQ__LOWqUT2lbiXhv41qjm5qGT2pLQum5PmJ3cbYr_LXv6QJ5DGCQoA9pkbyDO4TKw')"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/30 to-transparent"></div>
-          <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-lowest/40 backdrop-blur-md flex items-center justify-center text-surface-bright group-hover:bg-primary transition-colors">
-            <span class="material-symbols-outlined text-[18px]">north_east</span>
-          </div>
-          <div class="absolute bottom-5 left-5 right-5 text-surface-bright">
-            <h3 class="font-title-md text-title-md font-bold mb-0.5">Ăn chay thanh đạm</h3>
-            <p class="font-label-xs text-label-xs text-surface-bright/80">9 địa điểm</p>
-          </div>
-        </a>
-        <!-- Collection 4 -->
-        <a class="relative h-56 rounded-3xl overflow-hidden shadow-sm group" href="#">
-          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Bustling night market in Son Tra Da Nang with sizzling street snacks, grilled quail eggs, avocado ice cream bowls, lantern lit crowd atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA5FS_5Am05cIzwZcPk6ErOxATXdworjojBlE49B_1ottlqvCvwDqwQ5bUNCPLCHJjiPdTStl5bES3lS6E9d6uVXojuFeHSL_WhmzrRcBA_e_5qQUEtnDdMjTpMeYCyR2lddivp56dE1AdHAcQYGYmVs475T_jArh3zLgTtMk0AOAbSRgrCCr0VpuGrahB1LkuXQQrmDXLlJvQed13VKiWTEx44EaFcHVV7H28jGX5Frtj93ZiqtwS90w')"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/30 to-transparent"></div>
-          <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-lowest/40 backdrop-blur-md flex items-center justify-center text-surface-bright group-hover:bg-primary transition-colors">
-            <span class="material-symbols-outlined text-[18px]">north_east</span>
-          </div>
-          <div class="absolute bottom-5 left-5 right-5 text-surface-bright">
-            <h3 class="font-title-md text-title-md font-bold mb-0.5">Ăn vặt về đêm</h3>
-            <p class="font-label-xs text-label-xs text-surface-bright/80">15 địa điểm</p>
-          </div>
-        </a>
-        <!-- Collection 5 -->
-        <a class="relative h-56 rounded-3xl overflow-hidden shadow-sm group" href="#">
-          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Spacious airy Vietnamese garden family restaurant in Da Nang, cheerful multigenerational dining table with banh xeo rolls and fresh fruit smoothies." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJdeAkUxsCXEH2G1kG_PBjKC-chlq1e4Md5t7f_uHWMZmfImr2HII5Onf9-TCK3GGB2cuqdXX8sp4y5y1tOY5Zx3rogq1pCe6vx5FIqUXoKiOFYoO0OEojq-cvzoLyhStd6MQ2ayGOx-EWTgQcbnwDkyjIUhRn6Nk-5hsMxa8Fm7dGATd-MqbrbGBwceS1QKDk32atrELHHjG189tT2lfBqrpN1rgRY_p9RtxdUVaqs9-F6P-qTKoEcg')"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/30 to-transparent"></div>
-          <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-lowest/40 backdrop-blur-md flex items-center justify-center text-surface-bright group-hover:bg-primary transition-colors">
-            <span class="material-symbols-outlined text-[18px]">north_east</span>
-          </div>
-          <div class="absolute bottom-5 left-5 right-5 text-surface-bright">
-            <h3 class="font-title-md text-title-md font-bold mb-0.5">Đi cùng gia đình có trẻ nhỏ</h3>
-            <p class="font-label-xs text-label-xs text-surface-bright/80">10 địa điểm</p>
-          </div>
-        </a>
-        <!-- Collection 6 -->
-        <a class="relative h-56 rounded-3xl overflow-hidden shadow-sm group" href="#">
-          <div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Affordable authentic Da Nang street food alley stalls with student crowds enjoying rice paper rolls, avocado puddings and spicy beef jerky salad." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBgybN_HrX-EcU2m0JhOJVoHu-rvtYCdTsAtENzZQjTddPK9YoPOEv-i5uyNMggmbOtXM1Gi1mvgP_RY-FuJkMdG93oV6uBKrwNTVCUfXANOUBDpqj25fChvaY3wJaag12PFpcT13hToFaHWV9pNROv1_p6JgMXxmT04RMfsquT9K5bA4PLsMHwPUT95nSpmrS2cCBg5mH5ao-afDtmMHF3P0mKPnrvcqtAlYpHrK-CnXRVwIBSUewdXQ')"></div>
-          <div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/30 to-transparent"></div>
-          <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container-lowest/40 backdrop-blur-md flex items-center justify-center text-surface-bright group-hover:bg-primary transition-colors">
-            <span class="material-symbols-outlined text-[18px]">north_east</span>
-          </div>
-          <div class="absolute bottom-5 left-5 right-5 text-surface-bright">
-            <h3 class="font-title-md text-title-md font-bold mb-0.5">Dưới 50.000đ</h3>
-            <p class="font-label-xs text-label-xs text-surface-bright/80">18 địa điểm</p>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <!-- 7. ONE-DAY CULINARY ITINERARY: LỘ TRÌNH ẨM THỰC MỘT NGÀY -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl">
-      <div class="bg-secondary-fixed/30 rounded-3xl p-6 sm:p-10 shadow-sm flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-        <div class="space-y-4 max-w-xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-xs text-label-xs font-bold">
-            Lộ trình gợi ý
-          </div>
-          <h2 class="font-headline-lg text-headline-lg text-on-surface">Lộ trình ẩm thực một ngày</h2>
-          <div class="flex flex-wrap items-center gap-2 text-on-surface-variant font-label-md text-label-md">
-            <span class="font-bold text-on-surface">Sáng – Trưa – Xế – Tối</span>
-            <span>•</span>
-            <span class="font-bold text-primary">230.000đ/người</span>
-            <span>•</span>
-            <span>8.6 km</span>
-          </div>
-          <p class="font-body-md text-body-md text-on-surface-variant">Bốn điểm dừng cân bằng, ít vòng lại và còn thời gian ngắm biển Đà Nẵng lúc hoàng hôn.</p>
-          <button class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md transition-all">
-            <span class="material-symbols-outlined text-[18px]">map</span>
-            Tạo lộ trình cho tôi
-          </button>
-        </div>
-        <!-- Timeline Schedule Module -->
-        <div class="w-full lg:w-auto flex-1 max-w-md bg-surface-container-lowest rounded-2xl p-6 shadow-sm space-y-4">
-          <div class="flex items-center justify-between text-body-sm text-body-sm">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
-              <span class="font-bold text-on-surface">Sáng • 07:30</span>
-              <span class="text-on-surface-variant">Bún chả cá gần cầu Rồng</span>
-            </div>
-            <span class="font-bold text-primary">35.000đ</span>
-          </div>
-          <div class="flex items-center justify-between text-body-sm text-body-sm">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-              <span class="font-bold text-on-surface">Trưa • 12:00</span>
-              <span class="text-on-surface-variant">Mì Quảng gà ta Hải Châu</span>
-            </div>
-            <span class="font-bold text-primary">45.000đ</span>
-          </div>
-          <div class="flex items-center justify-between text-body-sm text-body-sm">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
-              <span class="font-bold text-on-surface">Xế • 15:30</span>
-              <span class="text-on-surface-variant">Chè sầu Liên Chiểu</span>
-            </div>
-            <span class="font-bold text-primary">30.000đ</span>
-          </div>
-          <div class="flex items-center justify-between text-body-sm text-body-sm">
-            <div class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
-              <span class="font-bold text-on-surface">Tối • 18:30</span>
-              <span class="text-on-surface-variant">Hải sản bén biển Mỹ Khê</span>
-            </div>
-            <span class="font-bold text-primary">120.000đ</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 8. ORDERING PHRASES GUIDE: CẨM NANG GỌI MÓN -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl">
-      <div class="mb-8">
-        <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Nói một câu, hiểu nhau hơn</span>
-        <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Cẩm nang gọi món</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Tiếng Việt, tiếng Anh và phát âm dễ đọc dành cho du khách.</p>
-      </div>
-      <!-- 3 Ordering Phrase Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Phrase 1 -->
-        <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="font-title-md text-title-md text-on-surface font-bold">Không cay</h3>
-              <span class="material-symbols-outlined text-outline text-[20px]">volume_up</span>
-            </div>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mb-1">Not spicy, please</p>
-            <p class="font-label-xs text-label-xs text-tertiary">Phát âm: /khong kai/</p>
-          </div>
-          <button class="mt-6 w-full py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors text-center">
-            Hiển thị cho nhân viên
-          </button>
-        </div>
-        <!-- Phrase 2 -->
-        <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="font-title-md text-title-md text-on-surface font-bold">Tôi không ăn hải sản</h3>
-              <span class="material-symbols-outlined text-outline text-[20px]">volume_up</span>
-            </div>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mb-1">I don't eat seafood</p>
-            <p class="font-label-xs text-label-xs text-tertiary">Phát âm: /toy khong un hi-san/</p>
-          </div>
-          <button class="mt-6 w-full py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors text-center">
-            Hiển thị cho nhân viên
-          </button>
-        </div>
-        <!-- Phrase 3 -->
-        <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="font-title-md text-title-md text-on-surface font-bold">Bao nhiêu tiền?</h3>
-              <span class="material-symbols-outlined text-outline text-[20px]">volume_up</span>
-            </div>
-            <p class="font-body-sm text-body-sm text-on-surface-variant mb-1">How much is it?</p>
-            <p class="font-label-xs text-label-xs text-tertiary">Phát âm: /bao nyew tee-en/</p>
-          </div>
-          <button class="mt-6 w-full py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors text-center">
-            Hiển thị cho nhân viên
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- 9. TRAVELER REVIEWS: DU KHÁCH NÓI GÌ -->
-    <section class="w-full max-w-[1280px] mx-auto px-gutter py-space-xl">
-      <div class="mb-4">
-        <span class="font-label-xs text-label-xs uppercase tracking-wider text-primary font-bold">Đánh giá giả định</span>
-        <h2 class="font-headline-lg text-headline-lg text-on-surface mt-1">Du khách nói gì</h2>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Những câu chuyện minh họa từ ba quốc gia.</p>
-      </div>
-      <!-- Review Filter Badges -->
-      <div class="flex flex-wrap items-center gap-4 text-label-xs font-label-xs mb-6">
-        <span class="text-secondary font-bold inline-flex items-center gap-1">
-          <span class="material-symbols-outlined text-[14px]">check</span> Du khách thường khen: Dễ tìm món địa phương
-        </span>
-        <span class="text-tertiary font-bold inline-flex items-center gap-1">
-          <span class="material-symbols-outlined text-[14px]">warning</span> Hay phàn nàn: Giờ mở cửa đôi khi thay đổi
-        </span>
-      </div>
-      <!-- Review Testimonial Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <!-- Review 1 -->
-        <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-          <p class="font-body-sm text-body-sm text-on-surface italic mb-6">
-            “Mì Quảng ngon và phần giải thích nguyên liệu rất hữu ích.”
-          </p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-label-md">ER</div>
-            <div>
-              <div class="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-bold">LiemLOL0943<br><span class="text-tertiary">★ 4.8</span></div>
-              <span class="font-label-xs text-label-xs text-on-surface-variant">Đánh giá giả định • minh họa nội dung</span>
-            </div>
-          </div>
-        </div>
-        <!-- Review 2 -->
-        <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-          <p class="font-body-sm text-body-sm text-on-surface italic mb-6">
-            “Bản đồ dễ dùng, bộ lọc ngân sách chính xác.”
-          </p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary font-bold text-label-md">KS</div>
-            <div>
-              <div class="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-bold">KietBuloz<span class="text-tertiary">★ 4.6</span></div>
-              <span class="font-label-xs text-label-xs text-on-surface-variant">Đánh giá giả định • minh họa nội dung</span>
-            </div>
-          </div>
-        </div>
-        <!-- Review 3 -->
-        <div class="bg-surface-container-lowest rounded-3xl p-6 shadow-sm flex flex-col justify-between">
-          <p class="font-body-sm text-body-sm text-on-surface italic mb-6">
-            “Lộ trình một ngày rất hợp cho gia đình tôi.”
-          </p>
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary font-bold text-label-md">MJ</div>
-            <div>
-              <div class="flex items-center gap-1.5 font-label-md text-label-md text-on-surface font-bold">LuanCac&nbsp;<br><span class="text-tertiary">★ 4.7</span></div>
-              <span class="font-label-xs text-label-xs text-on-surface-variant">Đánh giá giả định • minh họa nội dung</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <button class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors">
-          <span class="material-symbols-outlined text-[16px]">edit</span>
-          Viết đánh giá
+        <button type="button" (click)="findNearby()" [disabled]="isLocating" class="inline-flex items-center gap-2 rounded-full bg-surface-container-lowest px-6 py-3 font-label-lg text-on-surface shadow-md transition hover:-translate-y-0.5 disabled:opacity-60">
+          <i class="fa-solid fa-location-crosshairs"></i>{{ isLocating ? 'Đang lấy vị trí...' : 'Tìm quán gần bạn' }}
         </button>
       </div>
-    </section>
+      @if (locationMessage) {
+        <p class="mt-3 rounded-full bg-on-background/50 px-3 py-1.5 text-sm text-surface-bright" role="status">{{ locationMessage }}</p>
+      }
+    </div>
+  </section>
 
-    <!-- 11. BOTTOM CTA BANNER: BẮT ĐẦU HÀNH TRÌNH ẨM THỰC -->
-    <section class="w-full bg-primary-container py-space-xxl text-center px-gutter">
-      <div class="max-w-2xl mx-auto flex flex-col items-center">
-        <h2 class="font-display-hero text-display-hero text-on-primary-container tracking-tight leading-tight mb-3">
-          Bắt đầu hành trình ẩm thực của bạn
-        </h2>
-        <p class="font-body-lg text-body-lg text-on-primary-container/90 mb-8">
-          Để mỗi bữa ăn ở Đà Nẵng thành một kỷ niệm ngon lành.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <button class="px-8 py-3.5 rounded-full bg-surface-container-lowest hover:bg-surface-bright text-primary font-label-lg text-label-lg shadow-lg transition-all hover:scale-105 active:scale-95">
-            Đăng ký miễn phí
-          </button>
-          <button class="px-8 py-3.5 rounded-full bg-on-primary-container/20 hover:bg-on-primary-container/30 text-on-primary-container font-label-lg text-label-lg transition-colors">
-            Dùng thử không cần đăng ký
-          </button>
-        </div>
+  @if (errorMessage) {
+    <section class="mx-auto max-w-[1280px] px-gutter pt-8" role="alert">
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-error/30 bg-error-container/30 p-4 text-on-error-container">
+        <span>{{ errorMessage }}</span>
+        <button type="button" (click)="loadHomepage()" class="rounded-full bg-surface-container-lowest px-4 py-2 font-semibold">Thử lại</button>
       </div>
     </section>
-  </div>
+  }
+
+  <section id="taste-curation" class="mx-auto w-full max-w-[1280px] px-gutter py-space-xl">
+    <div class="mb-6">
+      <span class="font-label-xs uppercase tracking-wider text-primary">Cẩm nang nhịp sống</span>
+      <h2 class="mt-1 font-headline-lg text-on-surface">Hôm nay bạn muốn ăn gì?</h2>
+      <p class="mt-1 text-on-surface-variant">Chọn một chủ đề để tìm món phù hợp cho bữa ăn của bạn.</p>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      @for (mood of [
+        { title: 'Bữa sáng', query: 'Bún', icon: 'fa-solid fa-cloud-sun', description: 'Món nóng hổi, đủ năng lượng bắt đầu ngày mới.' },
+        { title: 'Bữa trưa', query: 'Mì Quảng', icon: 'fa-solid fa-bowl-food', description: 'Đặc sản địa phương cho bữa trưa no nê.' },
+        { title: 'Ăn vặt', query: 'Ốc hút', icon: 'fa-solid fa-ice-cream', description: 'Món ăn nhẹ thú vị cho buổi chiều.' },
+        { title: 'Hải sản', query: 'Hải sản', icon: 'fa-solid fa-fish', description: 'Thưởng thức hương vị tươi ngon miền biển.' }
+      ]; track mood.title) {
+        <button type="button" (click)="submitSearch(mood.query)" class="group flex min-h-44 flex-col items-start rounded-xl border border-outline-variant/30 bg-surface-container-lowest p-5 text-left transition hover:-translate-y-1 hover:bg-surface-container hover:shadow-md">
+          <span class="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-surface-container text-primary">
+            <i class="{{ mood.icon }}"></i>
+          </span>
+          <span class="font-title-md text-on-surface group-hover:text-primary">{{ mood.title }}</span>
+          <span class="mt-1 text-sm text-on-surface-variant">{{ mood.description }}</span>
+          <span class="mt-auto pt-3 text-xs font-semibold text-primary">Tìm món phù hợp →</span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <section class="mx-auto w-full max-w-[1280px] px-gutter py-space-lg">
+    <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <span class="font-label-xs uppercase tracking-wider text-primary">Gợi ý địa điểm từ Google Maps</span>
+        <h2 class="mt-1 font-headline-lg text-on-surface">Món ngon nổi bật</h2>
+        <p class="mt-1 text-on-surface-variant">Tên món dùng làm từ khóa tìm kiếm; địa điểm và xếp hạng được gợi ý từ Google Maps.</p>
+      </div>
+      <a routerLink="/food-search" class="inline-flex items-center gap-1 font-semibold text-primary hover:underline">Xem tất cả món ăn <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    @if (isLoading) {
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        @for (placeholder of [1, 2, 3]; track placeholder) {
+          <div class="h-80 animate-pulse rounded-3xl bg-surface-container"></div>
+        }
+      </div>
+    } @else if (featuredFoods.length > 0) {
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        @for (food of featuredFoods; track food.id) {
+          <article class="group flex flex-col overflow-hidden rounded-3xl bg-surface-container-lowest shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+            <a [routerLink]="['/food-search']" [queryParams]="{ q: food.name }" class="relative aspect-[16/10] overflow-hidden bg-surface-container">
+              @if (food.image_url) {
+                <img [src]="food.image_url" [alt]="food.name" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105"/>
+              } @else {
+                <div class="flex h-full items-center justify-center text-primary"><i class="fa-solid fa-utensils text-6xl"></i></div>
+              }
+              @if (food.category) {
+                <span class="absolute left-3 top-3 rounded-full bg-surface-container-lowest/90 px-3 py-1 text-xs font-semibold text-on-surface backdrop-blur">{{ food.category }}</span>
+              }
+            </a>
+            <div class="flex flex-1 flex-col p-5">
+              <a [routerLink]="['/food-search']" [queryParams]="{ q: food.name }" class="font-headline-sm text-on-surface transition group-hover:text-primary">{{ food.name }}</a>
+              <p class="mt-1 line-clamp-2 min-h-10 text-sm text-on-surface-variant">{{ food.description || 'Khám phá hương vị đặc trưng của món ăn này tại Đà Nẵng.' }}</p>
+              <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
+                <span class="font-bold text-primary">{{ formatPrice(food.average_price) }}</span>
+                <span class="inline-flex items-center gap-1 text-on-surface-variant">
+                  <i class="fa-solid fa-star text-[17px] text-tertiary"></i>
+                  {{ food.average_rating | number:'1.1-1' }} <span>({{ food.review_count }})</span>
+                </span>
+              </div>
+              <p class="mt-3 border-t border-outline-variant/30 pt-3 text-xs text-on-surface-variant">
+                {{ food.restaurants.length ? food.restaurants[0].name : 'Chưa có quán liên kết' }}
+                @if (food.restaurants.length > 1) { <span> · +{{ food.restaurants.length - 1 }} quán</span> }
+              </p>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="rounded-2xl border border-dashed border-outline-variant p-10 text-center text-on-surface-variant">
+        Chưa có món ăn nổi bật được công bố. Bạn vẫn có thể tìm món trong danh bạ.
+      </div>
+    }
+  </section>
+
+  <section class="mx-auto w-full max-w-[1280px] px-gutter py-space-xl">
+    <div class="mb-7">
+      <span class="font-label-xs uppercase tracking-wider text-primary">Khám phá theo khẩu vị</span>
+      <h2 class="mt-1 font-headline-lg text-on-surface">Danh mục món ăn</h2>
+    </div>
+    @if (categories.length > 0) {
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        @for (category of categories; track category.slug) {
+          <button type="button" (click)="submitSearch(category.name)" class="group relative h-44 overflow-hidden rounded-2xl bg-surface-container text-left shadow-sm">
+            @if (category.image_url) {
+              <img [src]="category.image_url" [alt]="category.name" loading="lazy" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"/>
+            }
+            <div class="absolute inset-0 bg-gradient-to-t from-on-background/85 via-on-background/15 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4 text-surface-bright">
+              <h3 class="font-title-md font-bold">{{ category.name }}</h3>
+              <p class="text-xs text-surface-bright/80">{{ category.food_count }} món gợi ý</p>
+            </div>
+          </button>
+        }
+      </div>
+    } @else if (!isLoading) {
+      <p class="rounded-xl bg-surface-container-low p-6 text-center text-on-surface-variant">Danh mục sẽ xuất hiện khi có món ăn được công bố.</p>
+    }
+  </section>
+
+  <section id="nearby-section" class="bg-surface-container-low py-space-xl">
+    <div class="mx-auto w-full max-w-[1280px] px-gutter">
+      <div class="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div>
+          <span class="font-label-xs uppercase tracking-wider text-primary">Dữ liệu địa điểm từ Google Maps</span>
+          <h2 class="mt-1 font-headline-lg text-on-surface">Quán ngon gần bạn</h2>
+          <p class="mt-1 text-on-surface-variant">Google Maps gợi ý {{ restaurantCount }} địa điểm{{ selectedDistrict ? ' tại ' + selectedDistrict : ' ở Đà Nẵng' }}.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          @for (district of districts; track district) {
+            <button type="button" (click)="selectDistrict(district)" [class]="selectedDistrict === district ? 'bg-primary text-on-primary' : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container'"
+                    class="rounded-full px-3.5 py-2 text-sm font-semibold transition">
+              {{ district || 'Tất cả khu vực' }}
+            </button>
+          }
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div class="flex flex-col gap-3 lg:col-span-5">
+          @if (nearbyRestaurants.length > 0) {
+            @for (restaurant of nearbyRestaurants; track restaurant.id; let index = $index) {
+              <button type="button" (click)="openRestaurant(restaurant)" class="flex items-center gap-3 rounded-2xl bg-surface-container-lowest p-4 text-left shadow-sm transition hover:bg-surface-container hover:shadow-md">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-bold"
+                      [class]="index === 0 ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface'">{{ index + 1 }}</span>
+                @if (restaurant.image_url) {
+                  <img [src]="restaurant.image_url" [alt]="restaurant.name" loading="lazy" class="h-14 w-14 shrink-0 rounded-xl object-cover"/>
+                } @else {
+                  <i class="fa-solid fa-store flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-surface-container text-primary"></i>
+                }
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate font-title-md text-on-surface">{{ restaurant.name }}</span>
+                  <span class="block truncate text-xs text-on-surface-variant">{{ restaurant.district || restaurant.address }}</span>
+                  <span class="mt-1 flex flex-wrap gap-x-3 text-xs text-on-surface-variant">
+                    <span class="text-tertiary">★ {{ restaurant.average_rating | number:'1.1-1' }} ({{ restaurant.review_count }})</span>
+                    <span>{{ formatPrice(restaurant.min_price) }}</span>
+                    @if (restaurant.distance_km !== null) { <span>{{ restaurant.distance_km }} km</span> }
+                  </span>
+                </span>
+              </button>
+            }
+          } @else if (!isLoading) {
+            <div class="rounded-2xl bg-surface-container-lowest p-8 text-center text-on-surface-variant">
+              Chưa tìm thấy quán ăn trong khu vực này.
+            </div>
+          }
+          <a routerLink="/food-search" class="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-surface-container-high px-5 py-3 font-semibold text-on-surface transition hover:bg-surface-container-highest">
+            Khám phá danh bạ món ăn <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="relative min-h-[360px] overflow-hidden rounded-3xl bg-surface-container shadow-sm lg:col-span-7">
+          <iframe title="Bản đồ khu vực Đà Nẵng" class="absolute inset-0 h-full w-full border-0" loading="lazy"
+                  src="https://www.openstreetmap.org/export/embed.html?bbox=108.12%2C15.95%2C108.32%2C16.15&amp;layer=mapnik&amp;marker=16.0678%2C108.2208"></iframe>
+          <a href="https://www.openstreetmap.org/?mlat=16.0678&amp;mlon=108.2208#map=13/16.0678/108.2208" target="_blank" rel="noopener noreferrer"
+             class="absolute bottom-3 right-3 rounded-full bg-surface-container-lowest/95 px-4 py-2 text-xs font-semibold text-on-surface shadow">Mở bản đồ lớn ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-primary-container px-gutter py-space-xxl text-center">
+    <div class="mx-auto flex max-w-2xl flex-col items-center">
+      <h2 class="mb-3 font-display-hero leading-tight text-on-primary-container">Bắt đầu hành trình ẩm thực của bạn</h2>
+      <p class="mb-8 text-on-primary-container/90">Tìm món yêu thích, khám phá quán địa phương và thưởng thức Đà Nẵng theo cách của bạn.</p>
+      <a routerLink="/food-search" class="rounded-full bg-surface-container-lowest px-8 py-3.5 font-label-lg text-primary shadow-lg transition hover:scale-105">Khám phá món ăn</a>
+    </div>
+  </section>
 </main>

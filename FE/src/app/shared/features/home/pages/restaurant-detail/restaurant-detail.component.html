@@ -1,8 +1,19 @@
-<!-- BEGIN: MainContent -->
+@if (isLoading) {
+  <main class="mx-auto max-w-7xl px-4 py-16 text-center text-[#68605C]" role="status">
+    <i class="fa-solid fa-spinner animate-spin text-3xl text-[#EE5A36]" aria-hidden="true"></i>
+    <p class="mt-3">Đang tải thông tin quán...</p>
+  </main>
+} @else if (errorMessage) {
+  <main class="mx-auto max-w-7xl px-4 py-16 text-center">
+    <p class="font-semibold text-rose-700" role="alert">{{ errorMessage }}</p>
+    <button type="button" (click)="loadRestaurant()" class="mt-4 rounded-xl bg-[#EE5A36] px-5 py-2.5 font-bold text-white">Thử lại</button>
+    <a routerLink="/home" class="ml-3 text-[#EE5A36] hover:underline">Về trang chủ</a>
+  </main>
+} @else if (restaurant) {
 <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
   <!-- Breadcrumb & Back Link -->
   <div class="flex items-center justify-between text-sm">
-    <a class="inline-flex items-center gap-2 font-medium text-[#68605C] hover:text-[#EE5A36] transition group" href="#">
+    <a class="inline-flex items-center gap-2 font-medium text-[#68605C] hover:text-[#EE5A36] transition group" routerLink="/food-search">
       <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
       <span>Quay lại danh sách quán {{ restaurant.district }}</span>
     </a>
@@ -16,7 +27,11 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-2 h-[420px]">
       <!-- Main Highlight Image -->
       <div class="md:col-span-2 h-full rounded-2xl overflow-hidden relative group">
-        <img [src]="restaurant.gallery.mainImage.src" [alt]="restaurant.gallery.mainImage.alt" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+        @if (restaurant.gallery.mainImage.src) {
+          <img [src]="restaurant.gallery.mainImage.src" [alt]="restaurant.gallery.mainImage.alt" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+        } @else {
+          <div class="flex h-full items-center justify-center bg-[#FFF8F6] text-[#EE5A36]"><i class="fa-solid fa-store text-5xl"></i></div>
+        }
         <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
         <span class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-medium">
           <i class="fa-solid fa-camera mr-1"></i> Ảnh từ thực khách bản địa
@@ -29,10 +44,13 @@
             <img [src]="img.src" [alt]="img.alt" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
           </div>
         }
+        @if (restaurant.featuredMenu.length === 0) {
+          <p class="rounded-xl bg-[#FFF8F6] p-5 text-sm text-[#68605C] sm:col-span-3">Quán chưa cập nhật món ăn đang phục vụ.</p>
+        }
       </div>
     </div>
     <!-- View All Photos Button -->
-    <button class="absolute bottom-5 right-5 bg-white/95 hover:bg-white text-[#1A1817] px-4 py-2 rounded-xl text-xs font-bold shadow-lg border border-black/5 flex items-center gap-2 transition hover:scale-105">
+    <button type="button" [disabled]="restaurant.gallery.totalPhotosCount === 0" class="absolute bottom-5 right-5 bg-white/95 hover:bg-white text-[#1A1817] px-4 py-2 rounded-xl text-xs font-bold shadow-lg border border-black/5 flex items-center gap-2 transition hover:scale-105 disabled:opacity-50">
       <i class="fa-solid fa-images text-[#EE5A36]"></i>
       <span>Xem tất cả {{ restaurant.gallery.totalPhotosCount }} ảnh</span>
     </button>
@@ -55,7 +73,7 @@
             <span class="bg-amber-400 text-amber-950 text-xs px-2 py-0.5 rounded-md flex items-center gap-1">
               <i class="fa-solid fa-star text-[10px]"></i> {{ restaurant.rating }}
             </span>
-            <span class="text-[#68605C] underline font-medium cursor-pointer">({{ restaurant.reviewCount }} đánh giá)</span>
+            <a href="#restaurant-reviews" class="text-[#68605C] underline font-medium">({{ restaurant.reviewCount }} đánh giá)</a>
           </div>
           <span class="text-neutral-300">•</span>
           <div class="flex items-center gap-1 font-semibold text-[#1A1817]">
@@ -63,10 +81,9 @@
             <span>{{ restaurant.priceRange }}</span>
           </div>
           <span class="text-neutral-300">•</span>
-          <!-- Status Badge -->
-          <span [ngClass]="restaurant.isOpen ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'" class="inline-flex items-center gap-1.5 px-3 py-1 font-semibold text-xs rounded-full border">
-            <span [ngClass]="restaurant.isOpen ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'" class="w-2 h-2 rounded-full"></span>
-            {{ restaurant.isOpen ? 'Đang mở cửa' : 'Đã đóng cửa' }} ({{ restaurant.openingHoursText }})
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+            <i class="fa-regular fa-clock"></i>
+            Giờ hoạt động: {{ restaurant.openingHoursText }}
           </span>
           <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FDF0ED] text-[#EE5A36] font-semibold text-xs rounded-full border border-[#EE5A36]/20">
             <i class="fa-solid fa-circle-check"></i> Đã xác minh ngày {{ restaurant.verifiedDate }}
@@ -75,23 +92,27 @@
       </div>
       <!-- Right Action Button Group -->
       <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 pt-2 lg:pt-0">
-        <button (click)="toggleBookmark()" [ngClass]="restaurant.isBookmarked ? 'bg-[#FDF0ED] border-[#EE5A36] text-[#EE5A36]' : 'bg-white border-[#F0E5E0] text-[#1A1817] hover:text-[#EE5A36] hover:bg-[#FDF0ED] hover:border-[#EE5A36]'" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2">
-          <i [class]="restaurant.isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark'"></i>
-          <span>Lưu quán</span>
-        </button>
-        <button class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#EE5A36] hover:bg-[#D84926] text-white text-xs font-bold transition shadow-sm flex items-center justify-center gap-2">
+        <a [href]="directionsUrl()" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-[#EE5A36] hover:bg-[#D84926] text-white text-xs font-bold transition shadow-sm flex items-center justify-center gap-2">
           <i class="fa-solid fa-diamond-turn-right"></i>
           <span>Chỉ đường</span>
+        </a>
+        @if (restaurant.phone) {
+          <a [href]="'tel:' + restaurant.phone" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-[#F0E5E0] bg-white hover:bg-neutral-50 text-[#1A1817] text-xs font-bold transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-phone"></i><span>Gọi điện</span>
+          </a>
+        }
+        <button type="button" (click)="saveRestaurant()" [disabled]="isSavingRestaurant" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-[#F0E5E0] bg-white hover:bg-neutral-50 text-[#1A1817] text-xs font-bold transition flex items-center justify-center gap-2 disabled:opacity-50">
+          <i class="fa-solid fa-bookmark"></i>
+          <span>{{ isSavingRestaurant ? 'Đang lưu...' : 'Lưu quán' }}</span>
         </button>
-        <button class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-[#F0E5E0] bg-white hover:bg-neutral-50 text-[#1A1817] text-xs font-bold transition flex items-center justify-center gap-2">
-          <i class="fa-solid fa-phone"></i>
-          <span>Gọi điện</span>
-        </button>
-        <button class="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] bg-white hover:bg-neutral-50 text-[#68605C] text-xs font-bold transition flex items-center justify-center">
+        <button type="button" (click)="shareRestaurant()" aria-label="Chia sẻ quán ăn" class="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl border border-[#F0E5E0] bg-white hover:bg-neutral-50 text-[#68605C] text-xs font-bold transition flex items-center justify-center">
           <i class="fa-solid fa-share-nodes"></i>
         </button>
       </div>
     </div>
+    @if (saveNotice) {
+      <p class="mt-4 text-sm text-[#68605C]" role="status">{{ saveNotice }}</p>
+    }
   </section>
   <!-- END: RestaurantHeroSummary -->
 
@@ -121,17 +142,17 @@
           <div class="border border-[#F0E5E0] rounded-2xl p-4 bg-[#FFF8F6]/60">
             <div class="flex items-center justify-between font-bold text-xs text-[#68605C] mb-3 pb-2 border-b border-[#F0E5E0]">
               <span class="flex items-center gap-1.5"><i class="fa-regular fa-clock text-[#EE5A36]"></i> Giờ mở cửa hàng tuần</span>
-              @if (restaurant.isOpen) {
-                <span class="text-[#EE5A36] bg-[#FDF0ED] px-2 py-0.5 rounded">Hôm nay đang hoạt động</span>
-              }
+              <span class="text-[#68605C]">Theo thông tin quán cung cấp</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs">
+            <div class="grid grid-cols-1 gap-x-6 gap-y-2 text-xs">
               @for (schedule of restaurant.weeklySchedule; track $index) {
-                <div [ngClass]="schedule.isToday ? 'bg-[#FDF0ED]/80 font-bold px-2 rounded' : ''"
-                     class="flex justify-between py-1 border-b border-dashed border-[#F0E5E0]/80">
-                  <span [ngClass]="schedule.isToday ? 'text-[#EE5A36]' : 'text-[#68605C]'">{{ schedule.day }}</span>
-                  <span [ngClass]="schedule.isToday ? 'text-[#EE5A36]' : 'font-semibold text-[#1A1817]'">{{ schedule.hours }}</span>
+                <div class="flex justify-between border-b border-dashed border-[#F0E5E0]/80 py-1">
+                  <span class="text-[#68605C]">{{ schedule.day }}</span>
+                  <span class="font-semibold text-[#1A1817]">{{ schedule.hours }}</span>
                 </div>
+              }
+              @if (restaurant.weeklySchedule.length === 0) {
+                <p class="text-[#68605C]">Chưa có thông tin giờ hoạt động.</p>
               }
             </div>
           </div>
@@ -156,13 +177,17 @@
             <i class="fa-solid fa-utensils text-[#EE5A36]"></i>
             <span>Món nổi bật của quán</span>
           </h2>
-          <a class="text-xs font-bold text-[#EE5A36] hover:underline" href="#">Xem menu đầy đủ →</a>
+          <a class="text-xs font-bold text-[#EE5A36] hover:underline" routerLink="/food-search">Tìm món trong danh bạ →</a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           @for (item of restaurant.featuredMenu; track item.id) {
             <div class="border border-[#F0E5E0] rounded-2xl overflow-hidden hover:shadow-md transition group">
               <div class="h-32 bg-neutral-100 overflow-hidden relative">
-                <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                @if (item.image) {
+                  <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                } @else {
+                  <div class="flex h-full items-center justify-center text-[#EE5A36]"><i class="fa-solid fa-utensils text-3xl"></i></div>
+                }
                 @if (item.badge) {
                   <span [ngClass]="item.badgeBgClass || 'bg-[#EE5A36]'" class="absolute top-2 right-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                     {{ item.badge }}
@@ -186,28 +211,26 @@
             <i class="fa-solid fa-map-location-dot text-[#EE5A36]"></i>
             <span>Vị trí quán trên bản đồ</span>
           </h2>
-          <a class="inline-flex items-center gap-1.5 text-xs font-bold text-[#EE5A36] hover:underline" href="https://maps.google.com" target="_blank">
+          <a class="inline-flex items-center gap-1.5 text-xs font-bold text-[#EE5A36] hover:underline" [href]="directionsUrl()" target="_blank" rel="noopener noreferrer">
             <span>Mở Google Maps</span><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
           </a>
         </div>
-        <div class="relative w-full h-64 rounded-2xl overflow-hidden border border-[#F0E5E0] bg-[#E8ECEF] flex items-center justify-center">
-          <div class="absolute inset-0 bg-[#DEE5DC]/50">
-            <div class="absolute top-0 right-1/4 w-32 h-full bg-[#CCE2EC] rotate-12 transform origin-top blur-[1px]"></div>
-            <div class="absolute top-1/2 left-0 w-full h-4 bg-white/80"></div>
-            <div class="absolute top-0 left-1/3 w-4 h-full bg-white/80"></div>
+        @if (mapEmbedUrl(); as mapUrl) {
+          <div class="relative h-64 w-full overflow-hidden rounded-2xl border border-[#F0E5E0] bg-[#E8ECEF]">
+            <iframe [src]="mapUrl" [title]="'Bản đồ vị trí ' + restaurant.name" class="h-full w-full border-0" loading="lazy"></iframe>
+            <div class="absolute bottom-3 left-3 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#1A1817] shadow-sm">
+              <i class="fa-solid fa-location-dot mr-1 text-[#EE5A36]"></i>{{ restaurant.address }}
+            </div>
           </div>
-          <div class="relative z-10 flex flex-col items-center animate-bounce">
-            <div class="bg-[#EE5A36] text-white p-3 rounded-full shadow-xl border-2 border-white"><i class="fa-solid fa-bowl-food text-lg"></i></div>
-            <span class="bg-[#1A1817] text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md mt-1">{{ restaurant.name }}</span>
+        } @else {
+          <div class="rounded-2xl border border-[#F0E5E0] bg-[#FFF8F6] p-5 text-sm text-[#68605C]">
+            Chưa có tọa độ bản đồ cho quán. Địa chỉ: <strong>{{ restaurant.address }}</strong>
           </div>
-          <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-xs font-semibold text-[#1A1817] shadow-sm">
-            <i class="fa-solid fa-location-dot text-[#EE5A36] mr-1"></i> {{ restaurant.address }}
-          </div>
-        </div>
+        }
       </section>
 
       <!-- Card: Reviews from Guests -->
-      <section class="bg-white rounded-3xl p-6 sm:p-7 border border-[#F0E5E0] shadow-sm space-y-6">
+      <section id="restaurant-reviews" class="bg-white rounded-3xl p-6 sm:p-7 border border-[#F0E5E0] shadow-sm space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-bold text-[#1A1817] flex items-center gap-2.5">
@@ -216,11 +239,44 @@
             </h2>
             <p class="text-xs text-[#68605C] mt-0.5">Tổng hợp {{ restaurant.reviewCount }} đánh giá đã được kiểm duyệt thực tế</p>
           </div>
-          <button class="bg-[#FDF0ED] hover:bg-[#EE5A36] text-[#EE5A36] hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
+          <button type="button" (click)="showReviewForm = !showReviewForm" class="bg-[#FDF0ED] hover:bg-[#EE5A36] text-[#EE5A36] hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2">
             <i class="fa-solid fa-pen-to-square"></i>
             <span>Viết đánh giá của bạn</span>
           </button>
         </div>
+        @if (reviewNotice) {
+          <p class="rounded-xl bg-[#FFF8F6] p-3 text-sm text-[#68605C]" role="status">{{ reviewNotice }}</p>
+        }
+        @if (showReviewForm) {
+          <form (ngSubmit)="submitReview()" class="space-y-3 rounded-2xl border border-[#F0E5E0] bg-[#FFF8F6]/60 p-4">
+            @if (restaurant.featuredMenu.length > 0) {
+              <label class="block text-xs font-bold text-[#68605C]">
+                Món bạn đã dùng
+                <select [(ngModel)]="reviewForm.foodId" name="foodId" required class="mt-1 w-full rounded-xl border border-[#F0E5E0] bg-white p-3 text-sm text-[#1A1817]">
+                  @for (food of restaurant.featuredMenu; track food.id) {
+                    <option [ngValue]="food.id">{{ food.name }}</option>
+                  }
+                </select>
+              </label>
+              <label class="block text-xs font-bold text-[#68605C]">
+                Điểm đánh giá
+                <select [(ngModel)]="reviewForm.rating" name="rating" class="mt-1 w-full rounded-xl border border-[#F0E5E0] bg-white p-3 text-sm text-[#1A1817]">
+                  @for (rating of ratings; track rating) { <option [ngValue]="rating">{{ rating }} sao</option> }
+                </select>
+              </label>
+              <label class="block text-xs font-bold text-[#68605C]">
+                Chia sẻ trải nghiệm
+                <textarea [(ngModel)]="reviewForm.comment" name="comment" required maxlength="3000" rows="4" class="mt-1 w-full rounded-xl border border-[#F0E5E0] bg-white p-3 text-sm text-[#1A1817]" placeholder="Món ăn, phục vụ, không gian..."></textarea>
+              </label>
+              <div class="flex justify-end gap-2">
+                <button type="button" (click)="showReviewForm = false" class="rounded-xl border border-[#F0E5E0] px-4 py-2 text-xs font-bold">Hủy</button>
+                <button type="submit" [disabled]="isSubmittingReview" class="rounded-xl bg-[#EE5A36] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">{{ isSubmittingReview ? 'Đang gửi...' : 'Gửi đánh giá' }}</button>
+              </div>
+            } @else {
+              <p class="text-sm text-[#68605C]">Quán cần có món ăn đã công bố trước khi nhận đánh giá.</p>
+            }
+          </form>
+        }
         <!-- Reviews Render -->
         @for (review of restaurant.reviews; track review.id) {
           <article class="space-y-3 pb-5 border-b border-[#F0E5E0] last:border-0 last:pb-0">
@@ -235,22 +291,24 @@
                 </div>
               </div>
               <div class="flex items-center gap-1 text-amber-500 text-xs font-bold">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                <i [class]="review.rating >= 5.0 ? 'fa-solid fa-star' : 'fa-solid fa-star-half-stroke'"></i>
-                <span class="ml-1 text-[#1A1817]">{{ review.rating | number:'1.1-1' }}</span>
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                  <i [class]="star <= review.rating ? 'fa-solid fa-star' : 'fa-regular fa-star'"></i>
+                }
+                <span class="ml-1 text-[#1A1817]">{{ review.rating }}</span>
               </div>
             </div>
             <p class="text-sm text-[#1A1817] leading-relaxed">{{ review.content }}</p>
-            @if (review.image) {
-              <div class="w-24 h-24 rounded-xl overflow-hidden border border-[#F0E5E0]">
-                <img [src]="review.image" alt="Ảnh thực tế" class="w-full h-full object-cover">
-              </div>
-            }
-            <div class="flex items-center gap-4 text-xs text-[#68605C]">
-              <button class="hover:text-[#EE5A36] flex items-center gap-1"><i class="fa-regular fa-thumbs-up"></i> Hữu ích ({{ review.helpfulCount }})</button>
-              <button class="hover:text-[#EE5A36] flex items-center gap-1"><i class="fa-regular fa-flag"></i> Báo cáo</button>
-            </div>
           </article>
+        }
+        @if (restaurant.reviews.length === 0) {
+          <p class="rounded-xl bg-[#FFF8F6] p-5 text-sm text-[#68605C]">Chưa có đánh giá phù hợp. Hãy là người đầu tiên chia sẻ trải nghiệm.</p>
+        }
+        @if (reviewTotalPages > 1) {
+          <nav class="flex items-center justify-center gap-3 border-t border-[#F0E5E0] pt-4" aria-label="Phân trang đánh giá">
+            <button type="button" (click)="setReviewPage(reviewPage - 1)" [disabled]="reviewPage === 1" class="rounded-lg border border-[#F0E5E0] px-3 py-2 text-xs font-bold disabled:opacity-40">Trước</button>
+            <span class="text-xs text-[#68605C]">Trang {{ reviewPage }} / {{ reviewTotalPages }}</span>
+            <button type="button" (click)="setReviewPage(reviewPage + 1)" [disabled]="reviewPage === reviewTotalPages" class="rounded-lg border border-[#F0E5E0] px-3 py-2 text-xs font-bold disabled:opacity-40">Tiếp</button>
+          </nav>
         }
       </section>
 
@@ -260,6 +318,7 @@
     <aside class="lg:col-span-4 space-y-6">
 
       <!-- Aspect Score Breakdown -->
+      @if (restaurant.aspectRatings.length > 0) {
       <section class="bg-white rounded-3xl p-6 border border-[#F0E5E0] shadow-sm space-y-5">
         <div class="flex items-center justify-between pb-3 border-b border-[#F0E5E0]">
           <h3 class="font-bold text-base text-[#1A1817]">Đánh giá theo khía cạnh</h3>
@@ -283,11 +342,18 @@
           <div class="font-bold text-[#EE5A36] flex items-center gap-1.5">
             <i class="fa-solid fa-lightbulb"></i><span>Kinh nghiệm thực tế từ DaNang Guide</span>
           </div>
-          <p class="text-[#68605C] leading-relaxed" [innerHTML]="restaurant.insiderTip"></p>
+          <p class="text-[#68605C] leading-relaxed">{{ restaurant.insiderTip }}</p>
         </div>
       </section>
+      } @else if (restaurant.description) {
+        <section class="rounded-3xl border border-[#F0E5E0] bg-white p-6 shadow-sm">
+          <h3 class="mb-2 flex items-center gap-2 font-bold text-[#1A1817]"><i class="fa-solid fa-circle-info text-[#EE5A36]"></i>Giới thiệu quán</h3>
+          <p class="text-sm leading-relaxed text-[#68605C]">{{ restaurant.description }}</p>
+        </section>
+      }
 
       <!-- Suggested Itinerary -->
+      @if (restaurant.itinerary.length > 0) {
       <section class="bg-white rounded-3xl p-6 border border-[#F0E5E0] shadow-sm space-y-4">
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg bg-[#FDF0ED] text-[#EE5A36] flex items-center justify-center text-sm"><i class="fa-solid fa-route"></i></div>
@@ -309,6 +375,7 @@
           Lưu lộ trình buổi sáng này
         </button>
       </section>
+      }
 
       <!-- Similar Nearby Restaurants -->
       <section class="bg-white rounded-3xl p-6 border border-[#F0E5E0] shadow-sm space-y-4">
@@ -318,9 +385,13 @@
         </h3>
         <div class="space-y-3">
           @for (place of restaurant.similarRestaurants; track place.id) {
-            <a href="#" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-[#FFF8F6] border border-transparent hover:border-[#F0E5E0] transition group">
+            <a [routerLink]="['/restaurant', place.id]" class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-[#FFF8F6] border border-transparent hover:border-[#F0E5E0] transition group">
               <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0">
-                <img [src]="place.image" [alt]="place.name" class="w-full h-full object-cover group-hover:scale-105 transition">
+                @if (place.image) {
+                  <img [src]="place.image" [alt]="place.name" class="w-full h-full object-cover group-hover:scale-105 transition">
+                } @else {
+                  <div class="flex h-full items-center justify-center bg-[#FFF8F6] text-[#EE5A36]"><i class="fa-solid fa-store"></i></div>
+                }
               </div>
               <div class="space-y-0.5 flex-1 min-w-0">
                 <h4 class="font-bold text-xs text-[#1A1817] group-hover:text-[#EE5A36] truncate">{{ place.name }}</h4>
@@ -333,6 +404,9 @@
               </div>
             </a>
           }
+          @if (restaurant.similarRestaurants.length === 0) {
+            <p class="text-xs text-[#68605C]">Chưa có quán tương tự trong cùng khu vực.</p>
+          }
         </div>
       </section>
 
@@ -340,3 +414,4 @@
   </div>
 </main>
 <!-- END: MainContent -->
+}

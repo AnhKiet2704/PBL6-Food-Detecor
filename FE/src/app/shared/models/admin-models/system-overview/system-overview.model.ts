@@ -26,7 +26,9 @@ export interface DistrictStat {
 }
 
 export interface UrgentTask {
-  id: number;
+  id: number | string;
+  apiTaskId?: string;
+  kind?: 'review' | 'price' | 'ai';
   containerClass: string;
   image?: string;
   icon?: string;

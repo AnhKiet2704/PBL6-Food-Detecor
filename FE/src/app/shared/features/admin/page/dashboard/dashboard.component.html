@@ -31,12 +31,12 @@
           <!-- Search -->
           <div class="relative min-w-[280px] flex-1 max-w-md">
             <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-            <input type="text" class="w-full pl-11 pr-4 py-2.5 bg-surface-container rounded-full text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" placeholder="Tìm tên quán, số nhà, ngõ ngách..."/>
+            <input [(ngModel)]="searchQuery" (ngModelChange)="onFiltersChanged()" type="search" class="w-full pl-11 pr-4 py-2.5 bg-surface-container rounded-full text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" placeholder="Tìm tên quán, số nhà, ngõ ngách..." aria-label="Tìm quán ăn"/>
           </div>
 
           <!-- District Select -->
           <div class="relative">
-            <select [(ngModel)]="selectedDistrict" class="appearance-none bg-surface-container rounded-full px-4 py-2.5 pr-10 font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+            <select [(ngModel)]="selectedDistrict" (ngModelChange)="onFiltersChanged()" class="appearance-none bg-surface-container rounded-full px-4 py-2.5 pr-10 font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer" aria-label="Lọc theo quận huyện">
               @for (district of districts; track district) {
                 <option [value]="district">{{ district }}</option>
               }
@@ -46,7 +46,7 @@
 
           <!-- Status Select -->
           <div class="relative">
-            <select [(ngModel)]="selectedStatus" class="appearance-none bg-surface-container rounded-full px-4 py-2.5 pr-10 font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+            <select [(ngModel)]="selectedStatus" (ngModelChange)="onFiltersChanged()" class="appearance-none bg-surface-container rounded-full px-4 py-2.5 pr-10 font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer" aria-label="Lọc theo trạng thái">
               @for (status of statuses; track status) {
                 <option [value]="status">{{ status }}</option>
               }
@@ -57,10 +57,10 @@
 
         <!-- Actions -->
         <div class="flex items-center gap-space-sm self-end xl:self-auto">
-          <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+          <button type="button" (click)="exportRestaurants()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
             <span class="material-symbols-outlined text-[18px]">ios_share</span> Xuất báo cáo CSV
           </button>
-          <button type="button" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:brightness-105 active:scale-95 transition-all">
+          <button type="button" (click)="showAddRestaurantForm = true; notice = ''" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:brightness-105 active:scale-95 transition-all">
             <span class="material-symbols-outlined text-[20px]">add</span> Thêm quán mới
           </button>
         </div>
@@ -89,11 +89,11 @@
           <div class="p-space-md flex items-center justify-between bg-surface-container/30">
             <div class="flex items-center gap-space-sm">
               <span class="font-headline-sm text-headline-sm text-on-surface">Danh bạ quán thực tế</span>
-              <span class="font-label-xs text-label-xs bg-surface-container px-2.5 py-1 rounded-full text-outline font-bold">1 mục đã chọn</span>
+              <span class="font-label-xs text-label-xs bg-surface-container px-2.5 py-1 rounded-full text-outline font-bold">{{ selectedCount }} mục đã chọn</span>
             </div>
             <div class="flex items-center gap-2 text-on-surface-variant font-label-xs text-label-xs">
               <span>Sắp xếp:</span>
-              <button class="font-bold text-primary flex items-center gap-0.5">Đánh giá cao nhất <span class="material-symbols-outlined text-[16px]">arrow_downward</span></button>
+              <button type="button" (click)="toggleSort()" class="font-bold text-primary flex items-center gap-0.5">Đánh giá {{ sortByRatingDescending ? 'cao nhất' : 'thấp nhất' }} <span class="material-symbols-outlined text-[16px]">{{ sortByRatingDescending ? 'arrow_downward' : 'arrow_upward' }}</span></button>
             </div>
           </div>
 
@@ -101,7 +101,7 @@
             <table class="w-full text-left font-body-sm text-body-sm">
               <thead class="bg-surface-container/50 text-outline uppercase font-label-xs text-label-xs tracking-wider">
               <tr>
-                <th class="py-3.5 px-4 w-10 text-center"><input type="checkbox" class="rounded accent-primary w-4 h-4 cursor-pointer"/></th>
+                <th class="py-3.5 px-4 w-10 text-center"><input type="checkbox" [checked]="isPageSelected()" (change)="onPageSelectionChange($event)" aria-label="Chọn tất cả quán trên trang" class="rounded accent-primary w-4 h-4 cursor-pointer"/></th>
                 <th class="py-3.5 px-4">Tên Quán & Địa Chỉ</th>
                 <th class="py-3.5 px-4">Đặc sản & Phân khúc</th>
                 <th class="py-3.5 px-4 text-center">Hợp gu</th>
@@ -110,25 +110,31 @@
               </tr>
               </thead>
               <tbody class="divide-y-0 text-on-surface">
-                @for (item of restaurants; track item.id) {
+                @for (item of pagedRestaurants; track item.id) {
                   <tr (click)="selectSpot(item)"
                       [ngClass]="selectedRestaurant?.id === item.id ? 'bg-surface-container-lowest' : (item.status === 'pending' ? 'bg-tertiary-fixed/10' : 'bg-surface-container-lowest/60')"
                       class="hover:bg-surface-container-low transition-colors group cursor-pointer">
 
                     <td class="py-4 px-4 text-center" (click)="$event.stopPropagation()">
-                      <input type="checkbox" [checked]="selectedRestaurant?.id === item.id" class="rounded accent-primary w-4 h-4 cursor-pointer"/>
+                      <input type="checkbox" [checked]="selectedRestaurantIds.has(item.id)" (change)="onRestaurantSelectionChange(item.id, $event)" [attr.aria-label]="'Chọn ' + item.name" class="rounded accent-primary w-4 h-4 cursor-pointer"/>
                     </td>
 
                     <td class="py-4 px-4">
                       <div class="flex items-center gap-3">
-                        <img [src]="item.image" class="w-12 h-12 rounded-xl object-cover shadow-xs shrink-0" alt="Restaurant cover"/>
+                        @if (item.image) {
+                          <img [src]="item.image" class="w-12 h-12 rounded-xl object-cover shadow-xs shrink-0" alt="Restaurant cover"/>
+                        } @else {
+                          <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined">storefront</span></div>
+                        }
                         <div class="flex flex-col min-w-0">
                           <div class="flex items-center gap-1.5">
                             <span class="font-title-md text-title-md font-bold text-on-surface group-hover:text-primary transition-colors">{{ item.name }}</span>
                             @if (item.status === 'verified') {
                               <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
-                            } @else {
+                            } @else if (item.status === 'pending') {
                               <span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+                            } @else {
+                              <span class="material-symbols-outlined text-error text-[16px]">{{ item.status === 'closed' ? 'store' : 'cancel' }}</span>
                             }
                           </div>
                           <span class="text-on-surface-variant font-body-sm text-body-sm truncate max-w-[210px]">{{ item.address }}</span>
@@ -161,9 +167,13 @@
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-bold">
                           <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> 100% Bản địa
                         </span>
-                      } @else {
+                      } @else if (item.status === 'pending') {
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed/40 text-tertiary font-label-xs text-label-xs font-bold">
                           <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span> Chờ duyệt menu
+                        </span>
+                      } @else {
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container/40 text-error font-label-xs text-label-xs font-bold">
+                          {{ item.status === 'closed' ? 'Tạm đóng cửa' : 'Cần tái thẩm định' }}
                         </span>
                       }
                     </td>
@@ -171,13 +181,22 @@
                     <td class="py-4 px-4 text-right" (click)="$event.stopPropagation()">
                       <div class="flex items-center justify-end gap-1">
                         @if (item.status === 'verified') {
-                          <button type="button" class="p-1.5 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                          <button type="button" (click)="selectSpot(item); openEditRestaurantForm()" [attr.aria-label]="'Sửa hồ sơ ' + item.name" class="p-1.5 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]">edit</span></button>
                           <button type="button" class="p-1.5 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]">restaurant_menu</span></button>
+                        } @else if (item.status === 'pending') {
+                          <button type="button" (click)="reviewRestaurant(item, true)" class="px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Duyệt ngay</button>
+                          <button type="button" (click)="reviewRestaurant(item, false)" class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-xs text-label-xs hover:bg-error-container/80">Từ chối</button>
                         } @else {
-                          <button type="button" class="px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Duyệt ngay</button>
-                          <button type="button" class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-xs text-label-xs hover:bg-error-container/80">Từ chối</button>
+                          <button type="button" (click)="reviewRestaurant(item, true)" class="px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Xác minh lại</button>
                         }
                       </div>
+                    </td>
+                  </tr>
+                }
+                @if (pagedRestaurants.length === 0) {
+                  <tr>
+                    <td colspan="6" class="px-4 py-12 text-center text-sm text-on-surface-variant">
+                      Không tìm thấy quán phù hợp với bộ lọc hiện tại.
                     </td>
                   </tr>
                 }
@@ -188,18 +207,22 @@
           <!-- Pagination -->
           <div class="p-space-md bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-space-md border-t-0">
             <div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
-              <span>Hiển thị <strong class="text-on-surface">1 - 4</strong> trong tổng số <strong class="text-on-surface">486</strong> quán ăn</span>
+              <span>Hiển thị <strong class="text-on-surface">{{ pageStart }} - {{ pageEnd }}</strong> trong tổng số <strong class="text-on-surface">{{ filteredRestaurants.length }}</strong> quán ăn</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <button type="button" disabled class="p-2 rounded-lg bg-surface-container text-on-surface-variant disabled:opacity-40"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
-              <button type="button" class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md font-bold">1</button>
-              <button type="button" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high font-label-md">2</button>
-              <span class="px-1 text-outline">...</span>
-              <button type="button" class="p-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+              <button type="button" (click)="changePage(currentPage - 1)" [disabled]="currentPage <= 1" aria-label="Trang trước" class="p-2 rounded-lg bg-surface-container text-on-surface-variant disabled:opacity-40"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+              @for (pageNumber of pageNumbers; track pageNumber) {
+                <button type="button" (click)="changePage(pageNumber)" [class.bg-primary]="currentPage === pageNumber" [class.text-on-primary]="currentPage === pageNumber" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high font-label-md">{{ pageNumber }}</button>
+              }
+              <button type="button" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages" aria-label="Trang tiếp" class="p-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high disabled:opacity-40"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
             </div>
           </div>
         </div>
       </div>
+
+      @if (notice) {
+        <p class="rounded-xl border border-secondary/20 bg-secondary-container/30 p-3 text-sm text-on-surface" role="status">{{ notice }}</p>
+      }
 
       <!-- RIGHT: Quick Inspector (Requires a selected restaurant) -->
       <div class="lg:col-span-4 flex flex-col gap-space-md sticky top-20">
@@ -222,7 +245,9 @@
 
             <!-- Main Photo -->
             <div class="relative w-full h-44 rounded-xl overflow-hidden shadow-xs">
-              <img [src]="selectedRestaurant.image" class="w-full h-full object-cover" alt="Restaurant"/>
+              @if (selectedRestaurant.image) {
+                <img [src]="selectedRestaurant.image" class="w-full h-full object-cover" alt="Restaurant"/>
+              }
               <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent flex items-end p-space-sm">
                 <div class="flex items-center justify-between w-full text-surface-bright">
                   <span class="font-label-md text-label-md flex items-center gap-1">
@@ -261,7 +286,7 @@
                     <span class="font-label-xs text-label-xs text-on-surface-variant">{{ selectedRestaurant.ownerPhone }}</span>
                   </div>
                 </div>
-                <button class="p-2 rounded-full bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary transition-colors"><span class="material-symbols-outlined text-[16px]">call</span></button>
+                <a [href]="'tel:' + selectedRestaurant.ownerPhone" aria-label="Gọi chủ quán" class="p-2 rounded-full bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary transition-colors"><span class="material-symbols-outlined text-[16px]">call</span></a>
               </div>
             </div>
 
@@ -301,9 +326,9 @@
 
             <!-- Actions -->
             <div class="flex items-center gap-space-xs pt-2">
-              <button type="button" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-label-md hover:brightness-105 transition-all text-center">Cập nhật hồ sơ</button>
-              <button type="button" class="p-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
-              <button type="button" class="p-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">lock</span></button>
+              <button type="button" (click)="openEditRestaurantForm()" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-label-md hover:brightness-105 transition-all text-center">Cập nhật hồ sơ</button>
+              <button type="button" (click)="notice = 'Hồ sơ ' + selectedRestaurant.name + ' đang được hiển thị công khai.'" aria-label="Xem trang quán" class="p-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
+              <button type="button" (click)="toggleRestaurantStatus()" [attr.aria-label]="selectedRestaurant.status === 'verified' ? 'Chuyển về chờ thẩm định' : 'Xác minh quán'" class="p-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">{{ selectedRestaurant.status === 'verified' ? 'lock_open' : 'verified' }}</span></button>
             </div>
 
           </div>
@@ -320,4 +345,52 @@
       </div>
     </div>
   </div>
+
+  @if (showAddRestaurantForm) {
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-inverse-surface/50 p-4" role="presentation" (click)="showAddRestaurantForm = false">
+      <form class="w-full max-w-lg rounded-2xl bg-surface-container-lowest p-space-lg shadow-xl" (submit)="$event.preventDefault(); addRestaurant()" (click)="$event.stopPropagation()">
+        <div class="mb-5 flex items-center justify-between">
+          <h2 class="font-headline-md text-headline-md text-on-surface">Thêm hồ sơ quán ăn</h2>
+          <button type="button" (click)="showAddRestaurantForm = false" aria-label="Đóng" class="rounded-full p-2 hover:bg-surface-container"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="space-y-3">
+          <input [(ngModel)]="newRestaurant.name" name="name" required placeholder="Tên quán" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="newRestaurant.address" name="address" required placeholder="Địa chỉ" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="newRestaurant.category" name="category" required placeholder="Món đặc sản" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="newRestaurant.priceRange" name="priceRange" placeholder="Khoảng giá (không bắt buộc)" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+        </div>
+        @if (notice) {
+          <p class="mt-3 text-sm text-error" role="alert">{{ notice }}</p>
+        }
+        <div class="mt-5 flex justify-end gap-2">
+          <button type="button" (click)="showAddRestaurantForm = false" class="rounded-full bg-surface-container px-5 py-2.5 font-semibold">Hủy</button>
+          <button type="submit" class="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary">Thêm vào danh sách</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (showEditRestaurantForm && selectedRestaurant) {
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-inverse-surface/50 p-4" role="presentation" (click)="showEditRestaurantForm = false">
+      <form class="w-full max-w-lg rounded-2xl bg-surface-container-lowest p-space-lg shadow-xl" (submit)="$event.preventDefault(); saveRestaurantChanges()" (click)="$event.stopPropagation()">
+        <div class="mb-5 flex items-center justify-between">
+          <h2 class="font-headline-md text-headline-md text-on-surface">Cập nhật hồ sơ quán</h2>
+          <button type="button" (click)="showEditRestaurantForm = false" aria-label="Đóng" class="rounded-full p-2 hover:bg-surface-container"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="space-y-3">
+          <input [(ngModel)]="editRestaurantForm.name" name="editName" required placeholder="Tên quán" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="editRestaurantForm.address" name="editAddress" required placeholder="Địa chỉ" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="editRestaurantForm.category" name="editCategory" required placeholder="Món đặc sản" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="editRestaurantForm.priceRange" name="editPriceRange" placeholder="Khoảng giá" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+        </div>
+        @if (notice) {
+          <p class="mt-3 text-sm text-error" role="alert">{{ notice }}</p>
+        }
+        <div class="mt-5 flex justify-end gap-2">
+          <button type="button" (click)="showEditRestaurantForm = false" class="rounded-full bg-surface-container px-5 py-2.5 font-semibold">Hủy</button>
+          <button type="submit" class="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  }
 </main>

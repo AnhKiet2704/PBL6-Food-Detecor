@@ -1,36 +1,34 @@
-<main class="flex-1 max-w-[1440px] w-full mx-auto px-6 py-8">
-  <!-- Top Search & Title Header -->
-  <div class="mb-7">
-    <div
-      class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-brand-border"
-    >
+<main class="mx-auto w-full max-w-[1440px] px-4 py-8 md:px-6">
+  <header class="mb-6 border-b border-brand-border pb-6">
+    <div class="flex flex-col justify-between gap-5 md:flex-row md:items-end">
       <div>
-        <div
-          class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-brand-primary/10 text-brand-primary text-xs font-bold uppercase tracking-wider mb-2.5"
+        <span
+          class="mb-2 inline-flex items-center gap-2 rounded-lg bg-brand-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-primary"
         >
-          <i class="fa-solid fa-location-crosshairs"></i>
-          Khám phá món ngon gần bạn
-        </div>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-brand-dark tracking-tight">
-          Tìm quán hợp gu
+          <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+          Khám phá ẩm thực Đà Nẵng
+        </span>
+        <h1 class="text-3xl font-extrabold tracking-tight text-brand-dark md:text-4xl">
+          Tìm món ngon quanh bạn
         </h1>
-        <p class="text-sm text-brand-muted mt-1.5 font-medium">
-          Hệ thống tự động nhận diện món ăn bằng AI và đề xuất địa điểm phù hợp.
+        <p class="mt-1.5 text-sm font-medium text-brand-muted">
+          Tìm món ăn, xem giá tham khảo và những quán đang phục vụ món đó.
         </p>
       </div>
 
-      <!-- Thanh Tìm kiếm chính -->
-      <div class="w-full md:w-[480px]">
+      <div class="w-full md:max-w-xl">
         <div class="relative flex items-center">
           <i
-            class="fa-solid fa-magnifying-glass absolute left-4 text-brand-muted text-base pointer-events-none"
+            class="fa-solid fa-magnifying-glass pointer-events-none absolute left-4 text-brand-muted"
+            aria-hidden="true"
           ></i>
           <input
             [(ngModel)]="searchQuery"
             (keyup.enter)="onSearch()"
-            class="w-full pl-11 pr-36 py-3.5 bg-white border border-brand-border rounded-2xl text-sm font-medium text-brand-dark focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition shadow-warm-sm"
-            placeholder="Tìm món, quán hoặc dán ảnh (Ctrl+V)..."
-            type="text"
+            class="w-full rounded-2xl border border-brand-border bg-white py-3.5 pl-11 pr-28 text-sm font-medium text-brand-dark shadow-warm-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+            placeholder="Tìm tên món, nguyên liệu hoặc mô tả..."
+            aria-label="Từ khóa tìm món ăn"
+            type="search"
           />
           <input
             #imagePicker
@@ -38,664 +36,365 @@
             accept="image/*"
             class="hidden"
             type="file"
+            aria-label="Chọn ảnh món ăn"
           />
           <button
             type="button"
             (click)="imagePicker.click()"
-            aria-label="Chọn ảnh tìm kiếm"
+            class="absolute right-24 flex h-9 w-9 items-center justify-center rounded-xl text-brand-muted transition hover:bg-brand-warmCard hover:text-brand-primary"
+            aria-label="Tìm món bằng hình ảnh"
             title="Chọn ảnh hoặc dán ảnh bằng Ctrl+V"
-            class="absolute right-28 flex h-9 w-9 items-center justify-center rounded-xl text-brand-muted transition hover:bg-brand-warmCard hover:text-brand-primary"
           >
-            <i class="fa-solid fa-camera text-base" aria-hidden="true"></i>
+            <i class="fa-solid fa-camera" aria-hidden="true"></i>
           </button>
           <button
             type="button"
-            [disabled]="isAnalyzing"
             (click)="onSearch()"
-            class="absolute right-2 px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-xl hover:bg-brand-primaryHover transition disabled:opacity-60 flex items-center gap-1.5"
+            [disabled]="isSearching || isAnalyzing"
+            class="absolute right-2 inline-flex items-center gap-2 rounded-xl bg-brand-primary px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-primaryHover disabled:cursor-not-allowed disabled:opacity-60"
           >
-            @if (isAnalyzing) {
-              <i class="fa-solid fa-spinner animate-spin"></i>
-              <span>Đang quét</span>
+            @if (isSearching || isAnalyzing) {
+              <i class="fa-solid fa-spinner animate-spin" aria-hidden="true"></i>
+              <span>Đang tìm</span>
             } @else {
-              <span>{{ pastedImage ? 'Quét lại AI' : 'Tìm kiếm' }}</span>
+              <span>Tìm kiếm</span>
             }
           </button>
         </div>
-        <div class="mt-2 flex items-center justify-between text-xs text-brand-muted">
-          <span>
-            Dán ảnh bằng
-            <kbd class="rounded border border-brand-border bg-white px-1.5 py-0.5 font-semibold"
-              >Ctrl</kbd
-            >
-            +
-            <kbd class="rounded border border-brand-border bg-white px-1.5 py-0.5 font-semibold"
-              >V</kbd
-            >
-            hoặc bấm biểu tượng máy ảnh.
-          </span>
-        </div>
+        <p class="mt-2 text-xs text-brand-muted">
+          <i class="fa-regular fa-image mr-1 text-brand-primary" aria-hidden="true"></i>
+          Có thể dán ảnh bằng Ctrl+V hoặc chọn ảnh để AI nhận diện món ăn.
+        </p>
       </div>
     </div>
+  </header>
 
-    <!-- ======================================================================= -->
-    <!-- PHƯƠNG ÁN 1: CARD KẾT QUẢ NHẬN DIỆN MÓN ĂN AI (HIỂN THỊ KHI CÓ ẢNH)    -->
-    <!-- ======================================================================= -->
-    @if (imagePreviewUrl) {
-      <div
-        class="mt-6 rounded-3xl border border-brand-border bg-white p-5 md:p-6 shadow-warm-md transition-all"
-      >
-        <!-- Header của Card AI -->
-        <div
-          class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-brand-border/70"
-        >
-          <div class="flex items-center gap-2.5">
-            <span
-              class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary"
-            >
-              <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
-            </span>
-            <div>
-              <h2 class="text-base font-extrabold text-brand-dark flex items-center gap-2">
-                Kết quả nhận diện món ăn (YOLO AI)
-                @if (predictionResult?.success) {
-                  <span
-                    class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  >
-                    Phát hiện {{ predictionResult?.total_dishes }} món
-                  </span>
-                }
-              </h2>
-              <p class="text-xs text-brand-muted font-medium">
-                {{
-                  searchStatus ||
-                    'Click vào khung màu trên ảnh hoặc thẻ bên phải để lọc theo từng món.'
-                }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <button
-              type="button"
-              (click)="imagePicker.click()"
-              class="px-3.5 py-2 rounded-xl border border-brand-border bg-white hover:bg-brand-warmCard text-xs font-bold text-brand-dark transition flex items-center gap-1.5"
-            >
-              <i class="fa-solid fa-image text-brand-primary"></i>
-              Đổi ảnh khác
-            </button>
-            <button
-              type="button"
-              (click)="removePastedImage()"
-              class="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-bold text-rose-600 transition flex items-center gap-1.5"
-            >
-              <i class="fa-solid fa-trash-can"></i>
-              Đóng
-            </button>
+  @if (imagePreviewUrl) {
+    <section
+      class="mb-7 rounded-3xl border border-brand-border bg-white p-4 shadow-warm-md md:p-6"
+      aria-label="Kết quả nhận diện món ăn"
+    >
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-brand-border pb-4">
+        <div class="flex items-center gap-3">
+          <span
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+          </span>
+          <div>
+            <h2 class="font-extrabold text-brand-dark">Nhận diện món ăn bằng AI</h2>
+            <p class="text-xs text-brand-muted" aria-live="polite">
+              {{ searchStatus || 'Đang chuẩn bị phân tích hình ảnh...' }}
+            </p>
           </div>
         </div>
-
-        <!-- Nội dung chính của Card AI: Chia 2 cột (Trái: Ảnh + Bounding Box | Phải: Danh sách món) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          <!-- CỘT TRÁI (7 phần): Khung Ảnh Gốc + Lớp Vẽ Bounding Box -->
-          <div
-            class="lg:col-span-7 flex flex-col items-center justify-center bg-stone-900/95 rounded-2xl p-3 md:p-4 min-h-[280px] relative overflow-hidden"
+        <div class="flex gap-2">
+          <button
+            type="button"
+            (click)="imagePicker.click()"
+            class="rounded-xl border border-brand-border px-3 py-2 text-xs font-bold text-brand-dark transition hover:bg-brand-warmCard"
           >
-            <!-- Wrapper inline-block giữ đúng tỷ lệ ảnh thật 100% để box_percent không bị lệch -->
-            <div class="relative inline-block max-w-full select-none">
-              <img
-                [src]="imagePreviewUrl"
-                alt="Ảnh nhận diện món ăn"
-                class="block max-h-[400px] w-auto h-auto rounded-lg shadow-md"
-              />
-
-              <!-- Hiệu ứng Loading khi đang gọi FastAPI -->
-              @if (isAnalyzing) {
-                <div
-                  class="absolute inset-0 bg-stone-900/65 backdrop-blur-[2px] rounded-lg flex flex-col items-center justify-center text-white z-30"
-                >
-                  <div
-                    class="w-11 h-11 border-4 border-white/30 border-t-brand-primary rounded-full animate-spin mb-3"
-                  ></div>
-                  <p class="text-xs font-bold tracking-wide uppercase">
-                    Đang khoanh vùng món ăn...
-                  </p>
-                </div>
-              }
-
-              <!-- Lớp phủ vẽ các khung Bounding Box từ box_percent -->
-              @if (!isAnalyzing && predictionResult?.success) {
-                <div class="absolute inset-0 pointer-events-none">
-                  @for (dish of predictionResult!.dishes; track dish.order) {
-                    <div
-                      (click)="selectDetectedDish(dish, $event)"
-                      (mouseenter)="hoveredDishOrder = dish.order"
-                      (mouseleave)="hoveredDishOrder = null"
-                      [style.left.%]="dish.box_percent.left"
-                      [style.top.%]="dish.box_percent.top"
-                      [style.width.%]="dish.box_percent.width"
-                      [style.height.%]="dish.box_percent.height"
-                      [style.borderColor]="dish.color"
-                      [style.backgroundColor]="
-                        selectedDishOrder === dish.order ? dish.color + '28' : dish.color + '12'
-                      "
-                      [class.opacity-25]="!isDishHighlighted(dish.order)"
-                      [class.z-20]="
-                        selectedDishOrder === dish.order || hoveredDishOrder === dish.order
-                      "
-                      [class.z-10]="selectedDishOrder !== dish.order"
-                      class="absolute border-[2.5px] rounded-lg pointer-events-auto cursor-pointer transition-all duration-200 hover:scale-[1.01] shadow-sm"
-                    >
-                      <!-- Nhãn tên món + % gắn trên góc khung -->
-                      <div
-                        [style.backgroundColor]="dish.color"
-                        class="absolute -top-6 left-[-2px] px-2 py-0.5 rounded-t-md rounded-br-md text-white text-[11px] font-extrabold whitespace-nowrap shadow-md flex items-center gap-1"
-                      >
-                        <span>#{{ dish.order }} {{ dish.display_name }}</span>
-                        <span class="opacity-90 font-semibold">({{ dish.confidence }}%)</span>
-                      </div>
-                    </div>
-                  }
-                </div>
-              }
-            </div>
-
-            @if (predictionResult?.image_size) {
-              <span class="mt-2.5 text-[11px] text-stone-400 font-medium">
-                Kích thước ảnh gốc: {{ predictionResult!.image_size.width }} ×
-                {{ predictionResult!.image_size.height }} px
-              </span>
-            }
-          </div>
-
-          <!-- CỘT PHẢI (5 phần): Danh sách món ăn nhận diện được / Cảnh báo chụp lại -->
-          <div class="lg:col-span-5 flex flex-col justify-between h-full">
-            <!-- TRẠNG THÁI 1: Đang phân tích -->
-            @if (isAnalyzing) {
-              <div class="space-y-3 py-6">
-                <div class="h-16 rounded-2xl bg-stone-100 animate-pulse"></div>
-                <div class="h-16 rounded-2xl bg-stone-100 animate-pulse"></div>
-                <div class="h-16 rounded-2xl bg-stone-100 animate-pulse"></div>
-              </div>
-            }
-
-            <!-- TRẠNG THÁI 2: Độ chính xác dưới 35% -> Yêu cầu chụp lại (require_retake = true) -->
-            @if (!isAnalyzing && predictionResult && predictionResult.require_retake) {
-              <div
-                class="rounded-2xl border border-amber-200 bg-amber-50/80 p-5 text-center my-auto"
-              >
-                <div
-                  class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-600"
-                >
-                  <i class="fa-solid fa-camera-rotate text-xl"></i>
-                </div>
-                <h3 class="text-base font-extrabold text-amber-900">Chưa nhận diện rõ món ăn</h3>
-                <p class="mt-1.5 text-xs text-amber-800 leading-relaxed">
-                  {{ predictionResult.message }}
-                </p>
-                <div
-                  class="mt-4 pt-3 border-t border-amber-200/70 text-left text-[11px] text-amber-800 space-y-1"
-                >
-                  <p class="font-bold">Mẹo chụp ảnh chuẩn xác hơn:</p>
-                  <p>• Đặt máy ảnh gần món ăn, đủ ánh sáng và không bị mờ nhòe.</p>
-                  <p>• Tránh chụp góc quá nghiêng hoặc bị che khuất nguyên liệu chính.</p>
-                </div>
-                <button
-                  type="button"
-                  (click)="imagePicker.click()"
-                  class="mt-4 w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-xs"
-                >
-                  Chọn hoặc chụp lại ảnh khác
-                </button>
-              </div>
-            }
-
-            <!-- TRẠNG THÁI 3: Nhận diện thành công danh sách món ăn -->
-            @if (!isAnalyzing && predictionResult?.success) {
-              <div class="flex flex-col h-full">
-                <div class="flex items-center justify-between mb-3">
-                  <span class="text-xs font-bold uppercase tracking-wider text-brand-muted">
-                    Danh sách món trong ảnh (Lọc trùng lấy % cao nhất)
-                  </span>
-                  @if (selectedDishOrder !== null) {
-                    <button
-                      type="button"
-                      (click)="showAllDetectedDishes()"
-                      class="text-xs font-bold text-brand-primary hover:underline flex items-center gap-1"
-                    >
-                      <i class="fa-solid fa-layer-group text-[10px]"></i>
-                      Hiện tất cả ({{ predictionResult!.total_dishes }} món)
-                    </button>
-                  }
-                </div>
-
-                <!-- Danh sách thẻ món ăn -->
-                <div class="space-y-2.5 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
-                  @for (dish of predictionResult!.dishes; track dish.order) {
-                    <div
-                      (click)="selectDetectedDish(dish)"
-                      (mouseenter)="hoveredDishOrder = dish.order"
-                      (mouseleave)="hoveredDishOrder = null"
-                      [style.borderColor]="selectedDishOrder === dish.order ? dish.color : ''"
-                      [class.ring-2]="selectedDishOrder === dish.order"
-                      [class.bg-stone-50]="selectedDishOrder === dish.order"
-                      [class.opacity-55]="
-                        selectedDishOrder !== null && selectedDishOrder !== dish.order
-                      "
-                      class="p-3.5 rounded-2xl border border-brand-border bg-white hover:bg-stone-50/80 transition-all cursor-pointer shadow-2xs"
-                    >
-                      <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                          <!-- Huy hiệu số thứ tự #1, #2 đồng bộ màu với khung trên ảnh -->
-                          <span
-                            [style.backgroundColor]="dish.color"
-                            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl text-white font-extrabold text-xs shadow-xs"
-                          >
-                            #{{ dish.order }}
-                          </span>
-                          <div class="min-w-0">
-                            <h3 class="text-sm font-extrabold text-brand-dark truncate">
-                              {{ dish.display_name }}
-                            </h3>
-                            <p class="text-[11px] text-brand-muted font-medium">
-                              Nhãn gốc:
-                              <code class="text-[10px] bg-stone-100 px-1 py-0.5 rounded">{{
-                                dish.class_name
-                              }}</code>
-                            </p>
-                          </div>
-                        </div>
-
-                        <!-- Độ tự tin (%) -->
-                        <div class="text-right flex-shrink-0">
-                          <span [style.color]="dish.color" class="text-sm font-black">
-                            {{ dish.confidence }}%
-                          </span>
-                          <span class="block text-[10px] text-brand-muted font-semibold">
-                            Độ chính xác
-                          </span>
-                        </div>
-                      </div>
-
-                      <!-- Thanh Progress Bar hiển thị % trực quan -->
-                      <div class="mt-2.5 w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                        <div
-                          [style.width.%]="dish.confidence"
-                          [style.backgroundColor]="dish.color"
-                          class="h-full rounded-full transition-all duration-500"
-                        ></div>
-                      </div>
-                    </div>
-                  }
-                </div>
-
-                <!-- Ghi chú hướng dẫn người dùng -->
-                <div
-                  class="mt-4 pt-3 border-t border-brand-border/60 flex items-center justify-between text-[11px] text-brand-muted"
-                >
-                  <span>
-                    <i class="fa-regular fa-hand-pointer text-brand-primary mr-1"></i>
-                    Bấm vào từng món hoặc khung màu để khoanh vùng riêng.
-                  </span>
-                </div>
-              </div>
-            }
-          </div>
+            Đổi ảnh
+          </button>
+          <button
+            type="button"
+            (click)="removePastedImage()"
+            class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-100"
+          >
+            Đóng
+          </button>
         </div>
       </div>
-    }
 
-    <!-- Dải Chips Phân Loại & Nút Bộ Lọc Nâng Cao -->
-    <div class="flex items-center justify-between gap-4 mt-5">
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 custom-scrollbar text-sm">
-        @for (cat of categories; track cat) {
+      <div class="grid items-start gap-5 lg:grid-cols-2">
+        <div class="relative flex min-h-64 items-center justify-center overflow-hidden rounded-2xl bg-stone-900 p-3">
+          <div class="relative inline-block max-w-full select-none">
+            <img
+              [src]="imagePreviewUrl"
+              alt="Ảnh món ăn đang được AI nhận diện"
+              class="block max-h-[440px] w-auto rounded-lg"
+            />
+            @if (isAnalyzing) {
+              <div
+                class="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-stone-900/70 text-white"
+                role="status"
+              >
+                <i class="fa-solid fa-spinner mb-3 animate-spin text-3xl" aria-hidden="true"></i>
+                <span class="text-sm font-bold">AI đang phân tích ảnh...</span>
+              </div>
+            }
+            @if (!isAnalyzing && predictionResult?.success) {
+              <div class="pointer-events-none absolute inset-0">
+                @for (dish of predictionResult.dishes; track dish.order) {
+                  <button
+                    type="button"
+                    (click)="selectDetectedDish(dish)"
+                    (mouseenter)="hoveredDishOrder = dish.order"
+                    (mouseleave)="hoveredDishOrder = null"
+                    [style.left.%]="dish.box_percent.left"
+                    [style.top.%]="dish.box_percent.top"
+                    [style.width.%]="dish.box_percent.width"
+                    [style.height.%]="dish.box_percent.height"
+                    [style.borderColor]="dish.color"
+                    [style.backgroundColor]="dish.color + '20'"
+                    [class.opacity-25]="!isDishHighlighted(dish.order)"
+                    class="pointer-events-auto absolute rounded-md border-2 transition-opacity"
+                    [attr.aria-label]="'Chọn ' + dish.display_name"
+                  >
+                    <span
+                      [style.backgroundColor]="dish.color"
+                      class="absolute -top-6 left-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-bold text-white"
+                    >
+                      #{{ dish.order }} {{ dish.display_name }} · {{ dish.confidence }}%
+                    </span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          @if (isAnalyzing) {
+            <div class="space-y-3" aria-label="Đang tải kết quả">
+              <div class="h-16 animate-pulse rounded-2xl bg-stone-100"></div>
+              <div class="h-16 animate-pulse rounded-2xl bg-stone-100"></div>
+              <div class="h-16 animate-pulse rounded-2xl bg-stone-100"></div>
+            </div>
+          } @else if (predictionResult?.success) {
+            <h3 class="mb-3 text-xs font-bold uppercase tracking-wide text-brand-muted">
+              {{ predictionResult.total_dishes }} món được nhận diện
+            </h3>
+            <div class="max-h-[400px] space-y-2 overflow-y-auto">
+              @for (dish of predictionResult.dishes; track dish.order) {
+                <button
+                  type="button"
+                  (click)="selectDetectedDish(dish)"
+                  (mouseenter)="hoveredDishOrder = dish.order"
+                  (mouseleave)="hoveredDishOrder = null"
+                  [style.borderColor]="selectedDishOrder === dish.order ? dish.color : ''"
+                  class="flex w-full items-center gap-3 rounded-2xl border border-brand-border bg-white p-3 text-left transition hover:bg-stone-50"
+                >
+                  <span
+                    [style.backgroundColor]="dish.color"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-extrabold text-white"
+                  >
+                    #{{ dish.order }}
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block truncate text-sm font-bold text-brand-dark">
+                      {{ dish.display_name }}
+                    </span>
+                    <span class="text-xs text-brand-muted">{{ dish.class_name }}</span>
+                  </span>
+                  <span [style.color]="dish.color" class="text-sm font-extrabold">
+                    {{ dish.confidence }}%
+                  </span>
+                </button>
+              }
+            </div>
+            <p class="mt-3 text-xs text-brand-muted">
+              Chọn món để lọc kết quả bên dưới.
+            </p>
+          } @else if (predictionResult?.require_retake) {
+            <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+              <h3 class="font-extrabold text-amber-900">Ảnh chưa rõ món ăn</h3>
+              <p class="mt-2 text-sm text-amber-800">{{ predictionResult.message }}</p>
+              <p class="mt-3 text-xs text-amber-800">
+                Hãy chụp gần hơn, đủ sáng và tránh để món ăn bị che khuất.
+              </p>
+            </div>
+          } @else {
+            <p class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+              {{ searchStatus }}
+            </p>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <section aria-label="Danh sách món ăn">
+    @if (categoryError) {
+      <p class="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800" role="status">
+        Không tải được danh mục món ăn: {{ categoryError }}
+      </p>
+    }
+    <div class="mb-4 flex flex-col gap-3">
+      <div class="flex gap-2 overflow-x-auto pb-1">
+        <button
+          type="button"
+          (click)="selectCategory('')"
+          [class.bg-brand-primary]="!selectedCategory"
+          [class.text-white]="!selectedCategory"
+          [class.bg-white]="selectedCategory"
+          [class.text-brand-dark]="selectedCategory"
+          class="whitespace-nowrap rounded-full border border-brand-border px-4 py-2 text-xs font-bold transition hover:border-brand-primary"
+        >
+          Tất cả món
+        </button>
+        @for (category of categories; track category) {
           <button
-            (click)="selectCategory(cat)"
-            [class.bg-brand-primary]="selectedCategory === cat"
-            [class.text-white]="selectedCategory === cat"
-            [class.shadow-warm-sm]="selectedCategory === cat"
-            [class.bg-white]="selectedCategory !== cat"
-            [class.hover:bg-brand-warmCard]="selectedCategory !== cat"
-            [class.text-brand-dark]="selectedCategory !== cat"
-            [class.border]="selectedCategory !== cat"
-            [class.border-brand-border]="selectedCategory !== cat"
-            class="px-4 py-2 font-bold rounded-full text-xs whitespace-nowrap transition-colors"
+            type="button"
+            (click)="selectCategory(category)"
+            [class.bg-brand-primary]="selectedCategory === category"
+            [class.text-white]="selectedCategory === category"
+            [class.bg-white]="selectedCategory !== category"
+            [class.text-brand-dark]="selectedCategory !== category"
+            class="whitespace-nowrap rounded-full border border-brand-border px-4 py-2 text-xs font-bold transition hover:border-brand-primary"
           >
-            {{ cat }}
+            {{ category }}
           </button>
         }
       </div>
-      <button
-        class="flex items-center gap-2 px-4 py-2 bg-white hover:bg-brand-warmCard border border-brand-border rounded-full text-xs font-bold text-brand-dark whitespace-nowrap shadow-warm-sm transition-colors"
-      >
-        <i class="fa-solid fa-sliders text-brand-primary"></i>
-        <span>Bộ lọc</span>
-      </button>
-    </div>
 
-    <!-- Trạng Thái Kết Quả & Dropdown Sắp Xếp -->
-    <div
-      class="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-brand-border/60 text-xs"
-    >
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-brand-dark text-sm"
-          >Tìm thấy {{ restaurants.length }} quán ăn</span
-        >
-        <span class="text-brand-muted">•</span>
-        <span class="text-brand-muted font-medium flex items-center gap-1">
-          <i class="fa-solid fa-location-crosshairs text-brand-primary text-[11px]"></i>Khu vực Hải
-          Châu &amp; lân cận
-        </span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-brand-muted font-medium">Sắp xếp theo:</span>
-        <div class="relative inline-block">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-y border-brand-border/70 py-3">
+        <p class="text-sm font-bold text-brand-dark">
+          {{ total }} món ăn
+          @if (selectedCategory) {
+            <span class="font-medium text-brand-muted">trong {{ selectedCategory }}</span>
+          }
+        </p>
+        <label class="flex items-center gap-2 text-xs font-medium text-brand-muted">
+          Sắp xếp:
           <select
-            [(ngModel)]="selectedSort"
-            aria-label="Sắp xếp danh sách quán ăn"
-            class="appearance-none bg-white border border-brand-border rounded-xl pl-3 pr-8 py-1.5 text-xs font-bold text-brand-dark focus:outline-none focus:border-brand-primary cursor-pointer shadow-2xs"
+            [ngModel]="selectedSort"
+            (ngModelChange)="changeSort($event)"
+            class="rounded-xl border border-brand-border bg-white px-3 py-2 text-xs font-bold text-brand-dark focus:border-brand-primary focus:outline-none"
+            aria-label="Sắp xếp kết quả món ăn"
           >
-            @for (option of sortOptions; track option) {
-              <option [value]="option">{{ option }}</option>
+            @for (option of sortOptions; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
             }
           </select>
-          <i
-            class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted text-[10px] pointer-events-none"
-          ></i>
-        </div>
+        </label>
       </div>
     </div>
-  </div>
 
-  <!-- BEGIN: SplitScreenLayout (List & Interactive Map) -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-    <!-- Cột Trái: Danh Sách Quán Ăn (Scrollable) -->
-    <section class="lg:col-span-6 space-y-4 max-h-[820px] overflow-y-auto pr-2 custom-scrollbar">
-      @for (item of restaurants; track item.id) {
-        <article
-          (click)="selectRestaurant(item.id)"
-          [class.border-brand-primary]="selectedRestaurantId === item.id"
-          [class.border-brand-border]="selectedRestaurantId !== item.id"
-          class="p-4 bg-white border rounded-2xl shadow-warm-sm hover:shadow-warm-md hover:border-brand-primary transition-all duration-200 relative group cursor-pointer"
-        >
-          <div class="flex gap-4.5">
-            <div
-              class="relative w-40 h-36 flex-shrink-0 rounded-xl overflow-hidden bg-brand-warmCard"
-            >
-              <img
-                [alt]="item.name"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                [src]="item.image"
-              />
-              <span
-                class="absolute top-2 left-2 px-2.5 py-0.5 rounded-full backdrop-blur-xs text-[10px] font-bold text-white flex items-center gap-1 shadow-xs"
-                [class.bg-emerald-600\90]="item.isOpen"
-                [class.bg-stone-600\90]="!item.isOpen"
-              >
-                @if (item.isOpen) {
-                  <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                } @else {
-                  <i class="fa-regular fa-clock text-[9px]"></i>
-                }
-
-                {{ item.statusText }}
-              </span>
-            </div>
-            <div class="flex-1 flex flex-col justify-between">
-              <div>
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <h2
-                        class="text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors"
-                      >
-                        {{ item.name }}
-                      </h2>
-                      @if (item.tag) {
-                        <span
-                          class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
-                          [class]="item.tagColorClass"
-                        >
-                          {{ item.tag }}
-                        </span>
-                      }
-                    </div>
-                    <p class="text-xs text-brand-muted mt-1 font-medium">
-                      Đặc trưng: {{ item.specialty }}
-                    </p>
-                  </div>
-                  <button
-                    (click)="toggleBookmark(item, $event)"
-                    aria-label="Thêm vào quán yêu thích"
-                    class="w-8 h-8 rounded-full hover:bg-brand-warmCard text-brand-muted hover:text-brand-primary flex items-center justify-center transition-colors"
-                    type="button"
-                  >
-                    <i
-                      [class]="
-                        item.isBookmark
-                          ? 'fa-solid fa-bookmark text-sm text-brand-primary'
-                          : 'fa-regular fa-bookmark text-sm'
-                      "
-                    ></i>
-                  </button>
-                </div>
-                <div class="flex items-center gap-2.5 mt-2.5 text-xs">
-                  <span
-                    class="inline-flex items-center gap-1 font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md"
-                  >
-                    <i class="fa-solid fa-star text-[11px] text-amber-500"></i> {{ item.rating }}
-                  </span>
-                  <span class="text-brand-muted font-medium"
-                    >({{ item.reviewsCount }} khách review)</span
-                  >
-                  <span class="text-brand-border font-black">•</span>
-                  <span class="font-bold text-brand-dark">{{ item.priceRange }}</span>
-                </div>
-              </div>
-              <div
-                class="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-brand-border/60 text-[11px]"
-              >
-                <span
-                  class="px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 font-semibold flex items-center gap-1"
-                >
-                  <i class="fa-solid fa-location-dot text-brand-primary text-[10px]"></i>
-                  {{ item.address }} • {{ item.distance }}
-                </span>
-                <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 font-medium">
-                  {{ item.highlightText }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </article>
-      }
-    </section>
-
-    <!-- Cột Phải: Bản Đồ Tương Tác (Interactive Map) -->
-    <section class="lg:col-span-6 sticky top-28">
+    @if (searchError) {
       <div
-        class="relative w-full h-[660px] rounded-3xl overflow-hidden border border-brand-border shadow-warm-lg bg-[#E6ECEF] flex flex-col justify-between p-5"
+        class="rounded-2xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-700"
+        role="alert"
       >
-        <div class="absolute inset-0 pointer-events-none overflow-hidden select-none">
-          <div
-            class="absolute -top-10 left-[42%] w-32 h-[820px] bg-[#C5E1ED] -rotate-12 border-x border-[#B2D5E3]/80"
-          >
-            <div
-              class="absolute top-1/3 left-3 text-[11px] font-extrabold tracking-widest text-sky-800/40 rotate-90 uppercase"
-            >
-              Sông Hàn
-            </div>
-          </div>
-          <div
-            class="absolute top-0 right-0 w-28 h-full bg-[#D4EFF2] border-l border-[#B7E5EC] flex items-center justify-center"
-          >
-            <span
-              class="rotate-90 text-[11px] uppercase font-bold tracking-widest text-teal-800/50 whitespace-nowrap"
-              >Biển Mỹ Khê</span
-            >
-          </div>
-          <div
-            class="absolute top-[38%] left-0 w-[55%] h-3.5 bg-white border-y border-stone-300 shadow-2xs rotate-2 flex items-center justify-center"
-          >
-            <span class="text-[8px] font-bold text-stone-500 uppercase tracking-wider"
-              >Đường Nguyễn Văn Linh</span
-            >
-          </div>
-          <div
-            class="absolute top-[36%] left-[40%] w-36 h-3 bg-amber-200/90 border-y border-amber-300 rotate-6 flex items-center justify-center z-1"
-          >
-            <span class="text-[8px] font-black text-amber-800 uppercase tracking-tight"
-              >Cầu Rồng</span
-            >
-          </div>
-          <div
-            class="absolute top-0 left-[26%] w-3 h-full bg-white border-x border-stone-300 shadow-2xs flex items-center justify-center"
-          >
-            <span
-              class="rotate-90 text-[8px] font-bold text-stone-500 uppercase tracking-wider whitespace-nowrap"
-              >Đường Bạch Đằng</span
-            >
-          </div>
-          <div
-            class="absolute top-0 left-[16%] w-2.5 h-full bg-white border-x border-stone-300 shadow-2xs flex items-center justify-center"
-          >
-            <span
-              class="rotate-90 text-[8px] font-bold text-stone-500 uppercase tracking-wider whitespace-nowrap"
-              >Đường Trần Phú</span
-            >
-          </div>
-          <div
-            class="absolute top-[65%] left-0 w-[50%] h-2.5 bg-white border-y border-stone-300 rotate-6 flex items-center justify-center"
-          >
-            <span class="text-[8px] font-bold text-stone-500 uppercase tracking-wider"
-              >Đường Lê Đình Dương</span
-            >
-          </div>
-          <div
-            class="absolute top-0 right-[28%] w-3 h-full bg-white border-x border-stone-300 flex items-center justify-center"
-          >
-            <span
-              class="rotate-90 text-[8px] font-bold text-stone-500 uppercase tracking-wider whitespace-nowrap"
-              >Đường Võ Văn Kiệt</span
-            >
-          </div>
-          <div
-            class="absolute top-8 left-8 text-[11px] font-extrabold uppercase tracking-wider text-stone-500 bg-white/70 px-2 py-0.5 rounded backdrop-blur-xs"
-          >
-            Quận Hải Châu
-          </div>
-          <div
-            class="absolute top-8 right-36 text-[11px] font-extrabold uppercase tracking-wider text-stone-500 bg-white/70 px-2 py-0.5 rounded backdrop-blur-xs"
-          >
-            Quận Sơn Trà
-          </div>
-        </div>
-
-        <div class="relative z-10 flex items-center justify-between gap-3">
-          <div
-            class="bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-2xl shadow-warm-sm border border-brand-border flex items-center gap-2.5"
-          >
-            <span class="relative flex h-2.5 w-2.5">
-              <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-              ></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-            <span class="text-xs font-bold text-brand-dark"
-              >Bạn đang ở: P. Phước Ninh, Q. Hải Châu</span
-            >
-          </div>
-          <button
-            class="bg-white/95 backdrop-blur-md hover:bg-white text-xs font-bold text-brand-dark px-3.5 py-2 rounded-2xl shadow-warm-sm border border-brand-border flex items-center gap-2 transition hover:text-brand-primary"
-          >
-            <i class="fa-solid fa-arrows-rotate text-brand-primary"></i>
-            <span>Tìm lại khi di chuyển bản đồ</span>
-          </button>
-        </div>
-
-        <div class="relative z-10 w-full h-full pointer-events-none mt-2">
-          @for (item of restaurants; track item.id) {
-            <div
-              [style.top]="item.topPercent"
-              [style.left]="item.leftPercent"
-              class="absolute pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
-              (click)="selectRestaurant(item.id)"
-            >
-              <div class="relative flex flex-col items-center">
-                <div
-                  [class.bg-brand-primary]="selectedRestaurantId === item.id"
-                  [class.text-white]="selectedRestaurantId === item.id"
-                  [class.bg-white]="selectedRestaurantId !== item.id"
-                  [class.text-brand-dark]="selectedRestaurantId !== item.id"
-                  class="px-2.5 py-1 font-extrabold text-xs rounded-full shadow-lg border-2 border-white flex items-center gap-1 hover:scale-105 transition-transform"
-                >
-                  <i class="fa-solid fa-utensils text-[10px]"></i> {{ item.priceTag }}
-                </div>
-
-                @if (selectedRestaurantId === item.id) {
-                  <div
-                    class="mt-1.5 bg-white p-3 rounded-2xl shadow-2xl w-64 border border-brand-border/80 text-brand-dark animate-in fade-in zoom-in-95 duration-200 z-20"
-                  >
-                    <div class="flex items-center justify-between gap-1">
-                      <h3 class="text-xs font-bold truncate text-brand-dark">{{ item.name }}</h3>
-                      <span class="text-amber-500 font-bold text-xs flex items-center gap-0.5">
-                        <i class="fa-solid fa-star text-[10px]"></i> {{ item.rating }}
-                      </span>
-                    </div>
-                    <p class="text-[11px] text-brand-muted mt-1">
-                      {{ item.address }} • {{ item.distance }}
-                    </p>
-                    <div
-                      class="mt-2 pt-2 border-t border-brand-border/60 flex items-center justify-between text-[11px]"
-                    >
-                      <span class="font-bold text-brand-primary">{{ item.priceRange }}</span>
-                      <span
-                        class="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded"
-                      >
-                        {{ item.isOpen ? 'Mở cửa' : 'Đã đóng' }}
-                      </span>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-        </div>
-
-        <div class="relative z-10 flex items-end justify-between mt-auto">
-          <div
-            class="text-[11px] font-semibold text-brand-muted bg-white/90 backdrop-blur-xs px-3 py-1.5 rounded-xl border border-brand-border flex items-center gap-1.5 shadow-2xs"
-          >
-            <i class="fa-regular fa-map text-brand-primary text-xs"></i> Bản đồ ẩm thực trung tâm Đà
-            Nẵng
-          </div>
-          <div class="flex flex-col gap-2">
-            <button
-              aria-label="Định vị lại vị trí của bạn"
-              class="w-9 h-9 rounded-xl bg-white hover:bg-brand-warmCard text-brand-dark shadow-warm-sm border border-brand-border flex items-center justify-center transition"
-            >
-              <i class="fa-solid fa-location-arrow text-brand-primary text-xs"></i>
-            </button>
-            <div
-              class="flex flex-col rounded-xl bg-white shadow-warm-sm border border-brand-border overflow-hidden"
-            >
-              <button
-                aria-label="Phóng to bản đồ"
-                class="w-9 h-8 hover:bg-brand-warmCard text-brand-dark flex items-center justify-center border-b border-brand-border text-sm font-bold"
-              >
-                +
-              </button>
-              <button
-                aria-label="Thu nhỏ bản đồ"
-                class="w-9 h-8 hover:bg-brand-warmCard text-brand-dark flex items-center justify-center text-sm font-bold"
-              >
-                −
-              </button>
-            </div>
-          </div>
-        </div>
+        {{ searchError }}
+        <button
+          type="button"
+          (click)="searchFoods()"
+          class="ml-2 font-bold underline"
+        >
+          Thử lại
+        </button>
       </div>
-    </section>
-  </div>
-  <!-- END: SplitScreenLayout -->
+    } @else if (isSearching) {
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Đang tải món ăn">
+        @for (placeholder of [1, 2, 3, 4, 5, 6]; track placeholder) {
+          <div class="h-72 animate-pulse rounded-2xl bg-stone-100"></div>
+        }
+      </div>
+    } @else if (foods.length === 0) {
+      <div class="rounded-3xl border border-dashed border-brand-border bg-white px-5 py-16 text-center">
+        <i class="fa-solid fa-bowl-food mb-4 text-4xl text-brand-primary/50" aria-hidden="true"></i>
+        <h2 class="text-lg font-extrabold text-brand-dark">Chưa tìm thấy món phù hợp</h2>
+        <p class="mt-2 text-sm text-brand-muted">
+          Thử từ khóa khác hoặc chọn danh mục “Tất cả món”.
+        </p>
+      </div>
+    } @else {
+      <div class="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+        @for (food of foods; track food.id) {
+          <article class="overflow-hidden rounded-2xl border border-brand-border bg-white shadow-warm-sm transition hover:-translate-y-0.5 hover:shadow-warm-md">
+            <div class="relative h-48 bg-brand-warmCard">
+              @if (food.image_url) {
+                <img
+                  [src]="food.image_url"
+                  [alt]="food.name"
+                  loading="lazy"
+                  class="h-full w-full object-cover"
+                />
+              } @else {
+                <div class="flex h-full items-center justify-center text-brand-primary/50">
+                  <i class="fa-solid fa-bowl-food text-5xl" aria-hidden="true"></i>
+                </div>
+              }
+              @if (food.category) {
+                <span class="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-brand-dark shadow">
+                  {{ food.category }}
+                </span>
+              }
+            </div>
+
+            <div class="p-4">
+              <div class="flex items-start justify-between gap-3">
+                <h2 class="text-lg font-extrabold text-brand-dark">{{ food.name }}</h2>
+                <span class="shrink-0 text-right text-sm font-extrabold text-brand-primary">
+                  {{ formatPrice(food.average_price) }}
+                </span>
+              </div>
+              @if (food.description) {
+                <p class="mt-1 line-clamp-2 text-sm text-brand-muted">{{ food.description }}</p>
+              }
+              <div class="mt-3 flex items-center gap-2 text-xs">
+                <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 font-bold text-amber-700">
+                  <i class="fa-solid fa-star text-amber-500" aria-hidden="true"></i>
+                  {{ food.average_rating.toFixed(1) }}
+                </span>
+                <span class="text-brand-muted">{{ food.review_count }} đánh giá</span>
+                <span class="text-brand-border">•</span>
+                <span class="text-brand-muted">{{ food.restaurants.length }} quán phục vụ</span>
+              </div>
+
+              @if (food.restaurants.length > 0) {
+                <div class="mt-4 border-t border-brand-border/70 pt-3">
+                  <h3 class="mb-2 text-[11px] font-bold uppercase tracking-wide text-brand-muted">
+                    Quán đang phục vụ
+                  </h3>
+                  <div class="space-y-2">
+                    @for (restaurant of food.restaurants.slice(0, 3); track restaurant.id) {
+                      <a [routerLink]="['/restaurant', restaurant.id]" class="flex items-center justify-between gap-3 text-xs hover:text-brand-primary">
+                        <div class="min-w-0">
+                          <p class="truncate font-bold text-brand-dark">{{ restaurant.name }}</p>
+                          <p class="truncate text-brand-muted">{{ restaurant.address }}</p>
+                        </div>
+                        <span class="shrink-0 font-bold text-brand-primary">
+                          {{ formatPrice(restaurant.price) }}
+                        </span>
+                      </a>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <p class="mt-4 border-t border-brand-border/70 pt-3 text-xs text-brand-muted">
+                  Chưa có thông tin quán phục vụ món này.
+                </p>
+              }
+            </div>
+          </article>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <nav class="mt-7 flex items-center justify-center gap-3" aria-label="Phân trang món ăn">
+          <button
+            type="button"
+            (click)="changePage(page - 1)"
+            [disabled]="page <= 1 || isSearching"
+            class="rounded-xl border border-brand-border bg-white px-4 py-2 text-sm font-bold text-brand-dark disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Trước
+          </button>
+          <span class="text-sm font-medium text-brand-muted">
+            Trang {{ page }} / {{ totalPages }}
+          </span>
+          <button
+            type="button"
+            (click)="changePage(page + 1)"
+            [disabled]="page >= totalPages || isSearching"
+            class="rounded-xl border border-brand-border bg-white px-4 py-2 text-sm font-bold text-brand-dark disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Tiếp
+          </button>
+        </nav>
+      }
+    }
+  </section>
 </main>

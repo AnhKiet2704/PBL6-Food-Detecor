@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import {
   AuditorActivity,
   DistrictStat,
@@ -8,14 +11,265 @@ import {
   TrendLegend, UrgentTask
 } from '../../../../models/admin-models/system-overview/system-overview.model';
 
+interface AdminOverviewResponse {
+  kpis: Array<{ key: string; title: string; value: number | string; detail: string }>;
+  districts: Array<{ name: string; restaurant_count: number; percent: number }>;
+  tasks: Array<{
+    id: string;
+    kind: 'review' | 'price' | 'ai';
+    title: string;
+    description: string;
+    status: string;
+  }>;
+  task_counts: Record<string, number>;
+}
+
 @Component({
   selector: 'app-system-overview',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './system-overview.component.html',
 })
-export class SystemOverviewComponent {
+export class SystemOverviewComponent implements OnInit {
   searchQuery: string = '';
+  activeTaskFilter: 'review' | 'price' | 'ai' = 'review';
+  trendPeriod: '7 ngày' | '30 ngày' | 'Quý này' = '7 ngày';
+  readonly trendPaths: Record<
+    '7 ngày' | '30 ngày' | 'Quý này',
+    { primaryArea: string; primaryLine: string; secondaryArea: string; secondaryLine: string; tertiaryLine: string }
+  > = {
+    '7 ngày': {
+      primaryArea: 'M 0 170 Q 116 140, 233 110 T 466 70 T 700 35 L 700 220 L 0 220 Z',
+      primaryLine: 'M 0 170 Q 116 140, 233 110 T 466 70 T 700 35',
+      secondaryArea: 'M 0 195 Q 116 175, 233 160 T 466 120 T 700 65 L 700 220 L 0 220 Z',
+      secondaryLine: 'M 0 195 Q 116 175, 233 160 T 466 120 T 700 65',
+      tertiaryLine: 'M 0 150 Q 116 160, 233 145 T 466 140 T 700 115',
+    },
+    '30 ngày': {
+      primaryArea: 'M 0 190 Q 116 175, 233 145 T 466 95 T 700 50 L 700 220 L 0 220 Z',
+      primaryLine: 'M 0 190 Q 116 175, 233 145 T 466 95 T 700 50',
+      secondaryArea: 'M 0 205 Q 116 190, 233 175 T 466 145 T 700 100 L 700 220 L 0 220 Z',
+      secondaryLine: 'M 0 205 Q 116 190, 233 175 T 466 145 T 700 100',
+      tertiaryLine: 'M 0 175 Q 116 165, 233 170 T 466 130 T 700 125',
+    },
+    'Quý này': {
+      primaryArea: 'M 0 205 Q 116 195, 233 160 T 466 105 T 700 30 L 700 220 L 0 220 Z',
+      primaryLine: 'M 0 205 Q 116 195, 233 160 T 466 105 T 700 30',
+      secondaryArea: 'M 0 210 Q 116 200, 233 185 T 466 150 T 700 80 L 700 220 L 0 220 Z',
+      secondaryLine: 'M 0 210 Q 116 200, 233 185 T 466 150 T 700 80',
+      tertiaryLine: 'M 0 165 Q 116 180, 233 150 T 466 125 T 700 95',
+    },
+  };
+  notice = '';
+  private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8000/api/admin';
+  isLoading = true;
+  private taskCounts: Record<string, number> = {};
+
+  ngOnInit(): void {
+    this.kpis.forEach((kpi) => {
+      kpi.value = '—';
+      kpi.subText = 'Đang tải dữ liệu từ máy chủ';
+    });
+    this.districts = [];
+    this.urgentTasks = [];
+    void this.loadOverview();
+  }
+
+  get filteredTasks(): UrgentTask[] {
+    const query = this.searchQuery.trim().toLocaleLowerCase('vi');
+    return this.urgentTasks.filter((task) => {
+      const matchesQuery =
+        !query || `${task.title} ${task.description}`.toLocaleLowerCase('vi').includes(query);
+      const matchesFilter =
+        this.activeTaskFilter === 'price'
+          ? task.kind === 'price'
+          : this.activeTaskFilter === 'ai'
+            ? task.kind === 'ai'
+            : task.kind === 'review';
+      return matchesQuery && matchesFilter;
+    });
+  }
+
+  get reviewTaskCount(): number {
+    return this.taskCounts['review'] ?? this.urgentTasks.filter((task) => task.kind === 'review').length;
+  }
+
+  get priceTaskCount(): number {
+    return this.taskCounts['price'] ?? this.urgentTasks.filter((task) => task.kind === 'price').length;
+  }
+
+  get aiTaskCount(): number {
+    return this.taskCounts['ai'] ?? this.urgentTasks.filter((task) => task.kind === 'ai').length;
+  }
+
+  get allTaskCount(): number {
+    return this.taskCounts['all'] ?? this.urgentTasks.length;
+  }
+
+  get trendDescription(): string {
+    return this.trendPeriod === '7 ngày'
+      ? 'Lượng tìm kiếm món ăn đặc sản 7 ngày qua (đơn vị: nghìn lượt)'
+      : this.trendPeriod === '30 ngày'
+        ? 'Tổng hợp lượng tìm kiếm món ăn đặc sản trong 30 ngày gần nhất'
+        : 'Tổng hợp lượng tìm kiếm món ăn đặc sản trong quý hiện tại';
+  }
+
+  get trendLabels(): string[] {
+    if (this.trendPeriod === '30 ngày') {
+      return ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'];
+    }
+    if (this.trendPeriod === 'Quý này') {
+      return ['Tháng 1', 'Tháng 2', 'Tháng 3'];
+    }
+    return ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Hôm nay (CN)'];
+  }
+
+  selectTrendPeriod(period: '7 ngày' | '30 ngày' | 'Quý này'): void {
+    this.trendPeriod = period;
+    void this.loadOverview();
+  }
+
+  setTaskFilter(filter: 'review' | 'price' | 'ai'): void {
+    this.activeTaskFilter = filter;
+  }
+
+  openRestaurantManagement(): void {
+    void this.router.navigateByUrl('/admin/dashboard');
+  }
+
+  inspectTask(task: UrgentTask): void {
+    this.notice = `Đang xem chi tiết: ${task.title}`;
+  }
+
+  async completeTask(task: UrgentTask): Promise<void> {
+    if (!task.apiTaskId) {
+      this.notice = 'Tác vụ này không có mã hợp lệ trên máy chủ.';
+      return;
+    }
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.apiUrl}/tasks/${encodeURIComponent(task.apiTaskId)}/resolve`, {
+          decision: 'approved',
+        }),
+      );
+      this.notice = `Đã xử lý tác vụ "${task.title}".`;
+      await this.loadOverview();
+    } catch (error: unknown) {
+      this.notice = error instanceof Error ? error.message : 'Không thể cập nhật tác vụ.';
+    }
+  }
+
+  exportReport(): void {
+    const rows = [
+      ['Chỉ số', 'Giá trị'],
+      ...this.kpis.map((kpi) => [kpi.title, kpi.value]),
+      [],
+      ['Tác vụ cần xử lý', 'Mô tả', 'Trạng thái'],
+      ...this.urgentTasks.map((task) => [task.title, task.description, task.badge]),
+    ];
+    const csv = rows
+      .map((row) => row.map((cell) => `"${String(cell ?? '').replace(/"/g, '""')}"`).join(','))
+      .join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'bao-cao-tong-quan.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+    this.notice = 'Đã xuất báo cáo tổng quan CSV.';
+  }
+
+  private async loadOverview(): Promise<void> {
+    this.isLoading = true;
+    this.notice = '';
+    const period = this.trendPeriod === '30 ngày'
+      ? '30d'
+      : this.trendPeriod === 'Quý này'
+        ? 'quarter'
+        : '7d';
+    const params = new HttpParams().set('period', period);
+    try {
+      const overview = await firstValueFrom(
+        this.http.get<AdminOverviewResponse>(`${this.apiUrl}/overview`, { params }),
+      );
+      const kpiByKey = new Map(overview.kpis.map((kpi) => [kpi.key, kpi]));
+      const bindings = [
+        ['restaurants', 0],
+        ['published_foods', 1],
+        ['moderation', 2],
+        ['reviews', 3],
+      ] as const;
+      for (const [key, index] of bindings) {
+        const kpi = kpiByKey.get(key);
+        if (kpi) {
+          this.kpis[index].value = String(kpi.value);
+          this.kpis[index].subText = kpi.detail;
+          this.kpis[index].trendText = 'Số liệu hiện tại';
+          this.kpis[index].progressValue = 0;
+        }
+      }
+      const colors = [
+        ['text-primary', 'bg-primary'],
+        ['text-secondary', 'bg-secondary'],
+        ['text-tertiary', 'bg-tertiary'],
+        ['text-on-surface-variant', 'bg-outline-variant'],
+      ];
+      this.districts = overview.districts.map((district, index) => ({
+        name: district.name,
+        percent: district.percent,
+        count: district.restaurant_count,
+        colorClass: colors[index % colors.length][0],
+        barClass: colors[index % colors.length][1],
+      }));
+      this.taskCounts = overview.task_counts;
+      this.urgentTasks = overview.tasks.map((task) => this.mapTask(task));
+    } catch (error: unknown) {
+      this.urgentTasks = [];
+      this.taskCounts = {};
+      this.notice = error instanceof Error
+        ? error.message
+        : 'Không thể tải dữ liệu tổng quan từ máy chủ.';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private mapTask(task: AdminOverviewResponse['tasks'][number]): UrgentTask {
+    const isAiTask = task.kind === 'ai';
+    const isPriceTask = task.kind === 'price';
+    return {
+      id: task.id,
+      apiTaskId: task.id,
+      kind: task.kind,
+      containerClass: isAiTask ? 'bg-error-container/20' : 'bg-surface-container-lowest hover:shadow-md',
+      icon: isAiTask ? 'warning' : isPriceTask ? 'payments' : 'restaurant',
+      iconBgClass: isAiTask
+        ? 'bg-error-container text-error'
+        : isPriceTask
+          ? 'bg-tertiary-fixed text-tertiary'
+          : 'bg-primary-fixed text-primary',
+      title: task.title,
+      titleColorClass: isAiTask ? 'text-on-error-container' : 'text-on-surface',
+      badge: task.status === 'pending' ? 'Chờ xử lý' : task.status,
+      badgeClass: isAiTask
+        ? 'bg-error text-on-error'
+        : 'bg-tertiary-fixed text-on-tertiary-fixed',
+      description: task.description,
+      secondaryBtn: {
+        label: 'Chi tiết',
+        class: 'bg-surface-container-high hover:bg-surface-variant text-on-surface',
+      },
+      primaryBtn: {
+        label: isPriceTask ? 'Duyệt cập nhật giá' : isAiTask ? 'Duyệt mẫu' : 'Phê duyệt',
+        class: isAiTask
+          ? 'bg-error text-on-error hover:bg-on-error-container'
+          : 'bg-primary text-on-primary hover:bg-primary-container',
+      },
+    };
+  }
 
   // --- 1. DỮ LIỆU KPI ---
   kpis: KpiStat[] = [
@@ -52,10 +306,10 @@ export class SystemOverviewComponent {
 
   // --- 2. DỮ LIỆU BIỂU ĐỒ & BẢN ĐỒ ---
   trendLegends: TrendLegend[] = [
-    { label: 'Mì Quảng (+24%)', colorClass: 'bg-primary' },
-    { label: 'Bánh xèo (+16%)', colorClass: 'bg-secondary' },
-    { label: 'Bún mắm nêm (+9%)', colorClass: 'bg-tertiary' },
-    { label: 'Hải sản tươi sống (+31%)', colorClass: 'bg-outline' }
+    { label: 'Mì Quảng', colorClass: 'bg-primary' },
+    { label: 'Bánh xèo', colorClass: 'bg-secondary' },
+    { label: 'Bún mắm nêm', colorClass: 'bg-tertiary' },
+    { label: 'Hải sản tươi sống', colorClass: 'bg-outline' }
   ];
 
   districts: DistrictStat[] = [

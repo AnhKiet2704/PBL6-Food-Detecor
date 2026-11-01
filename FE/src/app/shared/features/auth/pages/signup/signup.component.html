@@ -6,7 +6,7 @@
       <div class="flex items-center justify-between mb-6">
         <a class="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors group" href="#">
           <span class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface group-hover:bg-primary group-hover:text-on-primary transition-all">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            <i class="fa-solid fa-arrow-left text-[18px]"></i>
           </span>
           <span class="font-label-lg text-label-lg">Quay lại trang chủ</span>
         </a>
@@ -30,7 +30,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
                 <span class="w-10 h-10 rounded-2xl bg-primary text-on-primary flex items-center justify-center font-display-hero-mobile text-display-hero-mobile shadow-md">
-                  <span class="material-symbols-outlined text-[24px]">restaurant_menu</span>
+                  <i class="fa-solid fa-utensils text-[24px]"></i>
                 </span>
                 <div>
                   <span class="block font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">{{ brandName }}</span>
@@ -53,7 +53,7 @@
               @for (benefit of benefits; track benefit.title) {
                 <div class="flex items-start gap-3.5 p-3.5 rounded-2xl bg-surface-container/60 hover:bg-surface-container transition-all">
                   <div [class]="benefit.iconBgClass + ' ' + benefit.iconColorClass" class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-[20px]">{{ benefit.icon }}</span>
+                    <i [class]="'fa-solid ' + benefit.icon + ' text-[20px]'"></i>
                   </div>
                   <div class="min-w-0">
                     <h2 class="font-label-lg text-label-lg text-on-surface font-bold">{{ benefit.title }}</h2>
@@ -98,7 +98,7 @@
 
           <div class="mb-8">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-xs text-label-xs mb-3">
-              <span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+              <i class="fa-solid fa-fire text-[14px]"></i>
               TÀI KHOẢN THÀNH VIÊN VIP MIỄN PHÍ
             </div>
             <h2 class="font-display-hero-mobile text-display-hero-mobile md:font-headline-lg md:text-headline-lg text-on-surface font-extrabold tracking-tight">
@@ -135,7 +135,7 @@
             <div>
               <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1.5" for="fullname">Họ và tên</label>
               <div class="relative flex items-center">
-                <span class="material-symbols-outlined absolute left-4 text-outline text-[20px] pointer-events-none">person</span>
+                <i class="fa-solid fa-user absolute left-4 text-outline text-[20px] pointer-events-none"></i>
                 <input class="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline/70 focus:outline-none focus:bg-surface-container transition-all"
                        id="fullname" name="fullname" [(ngModel)]="formData.fullname" placeholder="Ví dụ: Nguyễn Văn A" required type="text">
               </div>
@@ -146,7 +146,7 @@
               <div>
                 <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1.5" for="email">Địa chỉ Email</label>
                 <div class="relative flex items-center">
-                  <span class="material-symbols-outlined absolute left-4 text-outline text-[20px] pointer-events-none">mail</span>
+                  <i class="fa-solid fa-envelope absolute left-4 text-outline text-[20px] pointer-events-none"></i>
                   <input class="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline/70 focus:outline-none focus:bg-surface-container transition-all"
                          id="email" name="email" [(ngModel)]="formData.email" placeholder="email@example.com" required type="email">
                 </div>
@@ -158,9 +158,15 @@
                   <span class="font-label-xs text-label-xs text-outline">Xác thực OTP</span>
                 </div>
                 <div class="relative flex items-center">
-                  <span class="material-symbols-outlined absolute left-4 text-outline text-[20px] pointer-events-none">phone_iphone</span>
-                  <input class="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline/70 focus:outline-none focus:bg-surface-container transition-all"
-                         id="phone" name="phone" [(ngModel)]="formData.phone" placeholder="0905 xxx xxx" type="tel">
+                  <i class="fa-solid fa-mobile-screen-button absolute left-4 text-outline text-[20px] pointer-events-none"></i>
+                  <input
+                    class="w-full pl-11 pr-4 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline/70 focus:outline-none focus:bg-surface-container transition-all"
+                    id="phone"
+                    name="phone"
+                    [(ngModel)]="formData.phone"
+                    placeholder="0905 xxx xxx"
+                    required
+                    type="tel"/>
                 </div>
               </div>
             </div>
@@ -172,13 +178,13 @@
                 <span [class]="passwordStrengthLabelClass">{{ passwordStrengthLabel }}</span>
               </div>
               <div class="relative flex items-center">
-                <span class="material-symbols-outlined absolute left-4 text-outline text-[20px] pointer-events-none">lock</span>
+                <i class="fa-solid fa-lock absolute left-4 text-outline text-[20px] pointer-events-none"></i>
                 <input class="w-full pl-11 pr-12 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline/70 focus:outline-none focus:bg-surface-container transition-all"
                        id="password" name="password" minlength="8" [(ngModel)]="formData.password"
                        (ngModelChange)="onPasswordInput($event)" placeholder="Tối thiểu 8 ký tự (chữ & số)" required [type]="showPassword ? 'text' : 'password'">
                 <button aria-label="Ẩn/Hiện mật khẩu" class="absolute right-3.5 p-1 rounded-lg text-outline hover:text-on-surface transition-colors"
                         type="button" (click)="showPassword = !showPassword">
-                  <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                  <i class="fa-solid text-[20px]" [class]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
               </div>
 
@@ -195,12 +201,12 @@
             <div>
               <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1.5" for="confirm-password">Nhập lại mật khẩu</label>
               <div class="relative flex items-center">
-                <span class="material-symbols-outlined absolute left-4 text-outline text-[20px] pointer-events-none">lock_clock</span>
+                <i class="fa-solid fa-key absolute left-4 text-outline text-[20px] pointer-events-none"></i>
                 <input class="w-full pl-11 pr-12 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md placeholder:text-outline/70 focus:outline-none focus:bg-surface-container transition-all"
                        id="confirm-password" name="confirm-password" [(ngModel)]="formData.confirmPassword" placeholder="Khớp với mật khẩu đã nhập" required [type]="showConfirmPassword ? 'text' : 'password'">
                 <button aria-label="Ẩn/Hiện mật khẩu" class="absolute right-3.5 p-1 rounded-lg text-outline hover:text-on-surface transition-colors"
                         type="button" (click)="showConfirmPassword = !showConfirmPassword">
-                  <span class="material-symbols-outlined text-[20px]">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</span>
+                  <i class="fa-solid text-[20px]" [class]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                 </button>
               </div>
             </div>
@@ -245,12 +251,12 @@
 
                 @if (submitState === 'idle') {
                   <span>Đăng ký tài khoản</span>
-                  <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+                  <i class="fa-solid fa-arrow-right text-[20px] transition-transform group-hover:translate-x-1"></i>
                 } @else if (submitState === 'loading') {
-                  <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                  <i class="fa-solid fa-spinner animate-spin text-[20px]"></i>
                   <span>Đang tạo tài khoản...</span>
                 } @else if (submitState === 'success') {
-                  <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                  <i class="fa-solid fa-circle-check text-[20px]"></i>
                   <span>Đăng ký thành công!</span>
                 }
               </button>
@@ -259,7 +265,7 @@
 
           <div class="mt-6 text-center">
             <p class="font-body-md text-body-md text-on-surface-variant">
-              Đã có tài khoản? <a class="text-primary font-bold hover:underline ml-1" href="#">Đăng nhập ngay</a>
+              Đã có tài khoản? <a class="text-primary font-bold hover:underline ml-1" routerLink="/auth/login">Đăng nhập ngay</a>
             </p>
           </div>
         </div>
@@ -270,7 +276,7 @@
         @for (perk of perks; track perk.title) {
           <div class="flex items-center gap-3.5 p-4 rounded-2xl bg-surface-container-low shadow-sm">
             <div [class]="perk.iconBgClass + ' ' + perk.iconColorClass" class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
-              <span class="material-symbols-outlined">{{ perk.icon }}</span>
+              <i [class]="'fa-solid ' + perk.icon"></i>
             </div>
             <div>
               <span class="block font-label-lg text-label-lg font-bold text-on-surface">{{ perk.title }}</span>

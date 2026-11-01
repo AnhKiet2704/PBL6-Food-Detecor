@@ -16,16 +16,26 @@
         <p class="font-body-md text-body-md text-on-surface-variant">Hệ thống thị giác máy tính nhận diện đặc sản miền Trung, phân tích thành phần dĩa ăn và thẩm định nguồn gốc bởi chuyên gia bản địa.</p>
       </div>
       <div class="flex items-center gap-space-sm self-start lg:self-auto shrink-0">
-        <button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg hover:bg-surface-variant transition-colors shadow-sm" type="button">
+        <label class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg shadow-sm">
           <span class="material-symbols-outlined text-[18px]">tune</span>
-          <span>Ngưỡng tin cậy (>85%)</span>
-        </button>
-        <button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-all shadow-md" type="button">
+          <span>Ngưỡng tin cậy</span>
+          <select [(ngModel)]="confidenceThreshold" class="rounded-full bg-transparent py-1 text-sm font-bold focus:outline-none" aria-label="Ngưỡng độ tin cậy">
+            <option [ngValue]="70">≥70%</option>
+            <option [ngValue]="80">≥80%</option>
+            <option [ngValue]="85">≥85%</option>
+            <option [ngValue]="90">≥90%</option>
+          </select>
+        </label>
+        <button (click)="downloadSampleDataset()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-all shadow-md" type="button">
           <span class="material-symbols-outlined text-[18px]">publish</span>
           <span>Tải bộ dữ liệu mẫu</span>
         </button>
       </div>
     </div>
+
+    @if (notice) {
+      <p class="mb-space-md rounded-xl border border-secondary/30 bg-secondary-container/30 p-space-sm text-sm text-on-surface" role="status">{{ notice }}</p>
+    }
 
     <!-- Performance Metric Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-xl">
@@ -102,9 +112,9 @@
             </div>
           </div>
           <div class="flex items-center gap-space-xs">
-            <button class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">arrow_back</span></button>
-            <span class="font-label-md text-label-md text-on-surface-variant px-space-xs">03 / 14</span>
-            <button class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[18px]">arrow_forward</span></button>
+            <button (click)="showPreviousSample()" [disabled]="sampleHistory.length === 0" aria-label="Mẫu trước" class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors disabled:opacity-40" type="button"><span class="material-symbols-outlined text-[18px]">arrow_back</span></button>
+            <span class="font-label-md text-label-md text-on-surface-variant px-space-xs">{{ queuePosition }} / {{ queueTotal }}</span>
+            <button (click)="showNextSample()" [disabled]="apiQueue.length === 0" aria-label="Mẫu tiếp theo" class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors disabled:opacity-40" type="button"><span class="material-symbols-outlined text-[18px]">arrow_forward</span></button>
           </div>
         </div>
 
@@ -143,7 +153,14 @@
                   </span>
                 </div>
                 <div>
-                  <h3 class="font-headline-md text-headline-md text-primary font-extrabold leading-snug">{{ activeSample.aiPrediction.title }}</h3>
+                  @if (isEditingLabel) {
+                    <div class="flex gap-2">
+                      <input [(ngModel)]="editedLabel" aria-label="Nhãn món ăn" class="min-w-0 flex-1 rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-1 font-bold text-primary"/>
+                      <button type="button" (click)="saveLabel()" class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-on-primary">Lưu</button>
+                    </div>
+                  } @else {
+                    <h3 class="font-headline-md text-headline-md text-primary font-extrabold leading-snug">{{ activeSample.aiPrediction.title }}</h3>
+                  }
                   <p class="font-body-sm text-body-sm text-on-surface-variant">{{ activeSample.aiPrediction.desc }}</p>
                 </div>
 
@@ -160,6 +177,12 @@
 
                 <div class="mt-space-sm p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-xs">
                   <span class="font-label-xs text-label-xs text-on-surface-variant font-semibold">Gợi ý địa chỉ khớp toạ độ &amp; hình ảnh:</span>
+                  @if (isAssigningVenue) {
+                    <div class="flex gap-2">
+                      <input [(ngModel)]="editedVenue" aria-label="Tên quán phục vụ" class="min-w-0 flex-1 rounded-lg border border-outline-variant px-2 py-1 text-sm"/>
+                      <button type="button" (click)="assignVenue()" class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-on-primary">Gán</button>
+                    </div>
+                  } @else {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-space-xs">
                       <span class="material-symbols-outlined text-[18px] text-primary">storefront</span>
@@ -168,12 +191,13 @@
                     <span class="font-label-xs text-label-xs text-secondary font-bold">{{ activeSample.aiPrediction.venueMatch.score }}% khớp vị trí</span>
                   </div>
                   <span class="font-body-sm text-body-sm text-on-surface-variant">{{ activeSample.aiPrediction.venueMatch.address }}</span>
+                  }
                 </div>
               </div>
 
               <div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-xs text-label-xs">
                 <span>Đề xuất thứ 2: {{ activeSample.aiPrediction.altSuggestion }}</span>
-                <button class="text-primary hover:underline font-semibold" type="button">Xem chi tiết phân rã</button>
+                <button (click)="openLabelEditor()" class="text-primary hover:underline font-semibold" type="button">Sửa nhãn</button>
               </div>
             </div>
           </div>
@@ -185,16 +209,16 @@
               <span class="font-label-md text-label-md text-on-surface font-bold">Quyết định kiểm duyệt:</span>
             </div>
             <div class="flex flex-wrap items-center gap-space-xs">
-              <button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-error hover:bg-error-container hover:text-on-error-container font-label-md text-label-md transition-colors" type="button">
+              <button (click)="decideSample('rejected')" [disabled]="queueExhausted" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-error hover:bg-error-container hover:text-on-error-container font-label-md text-label-md transition-colors disabled:opacity-40" type="button">
                 <span class="material-symbols-outlined text-[18px]">delete_forever</span> Từ chối ảnh rác / Spam
               </button>
-              <button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
+              <button (click)="openLabelEditor()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
                 <span class="material-symbols-outlined text-[18px]">edit_note</span> Sửa nhãn món
               </button>
-              <button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
+              <button (click)="openVenueEditor()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
                 <span class="material-symbols-outlined text-[18px]">add_location_alt</span> Gán vào quán cụ thể
               </button>
-              <button class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container font-label-lg text-label-lg shadow-md transition-all active:scale-95" type="button">
+              <button (click)="decideSample('approved')" [disabled]="queueExhausted" class="inline-flex items-center gap-space-lg px-space-lg py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container font-label-lg text-label-lg shadow-md transition-all active:scale-95 disabled:opacity-40" type="button">
                 <span class="material-symbols-outlined text-[18px]">check_circle</span> Xác nhận đúng nhãn
               </button>
             </div>
@@ -212,8 +236,8 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-            @for (item of upcomingSamples; track item.title) {
-              <div class="p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col gap-space-xs cursor-pointer group">
+            @for (item of visibleUpcomingSamples; track item.id) {
+              <button type="button" (click)="selectSample(item)" class="p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col gap-space-xs cursor-pointer group text-left">
                 <div class="relative w-full h-32 rounded-lg overflow-hidden bg-surface-container">
                   <img [src]="item.image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt=""/>
                   <span [class]="item.scoreBg" class="absolute top-2 right-2 px-2 py-0.5 rounded-full font-label-xs text-label-xs font-bold">{{ item.score }}%</span>
@@ -225,7 +249,12 @@
                   </div>
                   <span [class]="item.statusClass" class="font-label-xs text-label-xs px-1.5 py-0.5 rounded">{{ item.status }}</span>
                 </div>
-              </div>
+              </button>
+            }
+            @if (visibleUpcomingSamples.length === 0) {
+              <p class="col-span-full rounded-xl bg-surface-container-low p-5 text-center text-sm text-on-surface-variant">
+                Không có mẫu tiếp theo đạt ngưỡng {{ confidenceThreshold }}%.
+              </p>
             }
           </div>
         </div>

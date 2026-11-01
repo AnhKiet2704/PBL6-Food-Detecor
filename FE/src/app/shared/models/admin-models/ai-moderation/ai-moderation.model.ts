@@ -21,6 +21,7 @@ export interface AiIngredient {
 }
 
 export interface UpcomingSample {
+  id?: number;
   title: string;
   subtitle: string;
   image: string;

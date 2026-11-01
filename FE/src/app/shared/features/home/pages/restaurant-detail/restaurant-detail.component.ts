@@ -1,12 +1,74 @@
-import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../../../../../core/auth/auth.service';
 
-export interface GalleryImage {
+interface ApiMenuItem {
+  food_id: number;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  price: number | null;
+  category: string | null;
+}
+
+interface ApiReview {
+  id: number;
+  author: string;
+  rating: number;
+  comment: string;
+  food_name: string;
+  created_at: string | null;
+}
+
+interface ApiRestaurant {
+  id: number;
+  name: string;
+  slug: string;
+  address: string;
+  district: string | null;
+  phone: string | null;
+  opening_hours: string | null;
+  description: string | null;
+  image_url: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  verified: boolean;
+  verified_at: string | null;
+  price_min: number | null;
+  price_max: number | null;
+  average_rating: number;
+  review_count: number;
+  gallery: string[];
+  menu: ApiMenuItem[];
+  reviews: {
+    items: ApiReview[];
+    total: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+  };
+  similar_restaurants: Array<{
+    id: number;
+    name: string;
+    image_url: string | null;
+    average_rating: number;
+    distance_km: number | null;
+    min_price: number | null;
+  }>;
+}
+
+interface GalleryImage {
   src: string;
   alt: string;
 }
 
-export interface MenuItem {
+interface MenuItem {
   id: number;
   name: string;
   description: string;
@@ -16,7 +78,7 @@ export interface MenuItem {
   badgeBgClass?: string;
 }
 
-export interface ReviewItem {
+interface ReviewItem {
   id: number;
   author: string;
   authorInitial: string;
@@ -25,33 +87,12 @@ export interface ReviewItem {
   authorInfo: string;
   rating: number;
   content: string;
-  image?: string;
   helpfulCount: number;
+  foodName: string;
+  createdAt: string | null;
 }
 
-export interface AspectRating {
-  label: string;
-  score: number; // Max 5.0
-  percentage: number; // Score / 5 * 100
-}
-
-export interface ItineraryStop {
-  time: string;
-  title: string;
-  note?: string;
-  isActive?: boolean;
-}
-
-export interface SimilarRestaurant {
-  id: number;
-  name: string;
-  image: string;
-  rating: number;
-  distance: string;
-  priceRange: string;
-}
-
-export interface RestaurantDetailData {
+interface RestaurantDetailData {
   id: number;
   name: string;
   district: string;
@@ -59,180 +100,299 @@ export interface RestaurantDetailData {
   rating: number;
   reviewCount: number;
   priceRange: string;
-  isOpen: boolean;
   openingHoursText: string;
   verifiedDate: string;
   address: string;
-  isBookmarked: boolean;
+  phone: string;
+  latitude: number | null;
+  longitude: number | null;
+  description: string;
   gallery: {
     mainImage: GalleryImage;
     subImages: GalleryImage[];
     totalPhotosCount: number;
   };
   weeklySchedule: { day: string; hours: string; isToday?: boolean }[];
-  amenities: { iconClass: string; label: string; wrapperClass?: string }[];
+  amenities: { iconClass: string; label: string }[];
   featuredMenu: MenuItem[];
-  aspectRatings: AspectRating[];
+  aspectRatings: { label: string; score: number; percentage: number }[];
   insiderTip: string;
-  itinerary: ItineraryStop[];
-  similarRestaurants: SimilarRestaurant[];
+  itinerary: { time: string; title: string; note?: string; isActive?: boolean }[];
+  similarRestaurants: {
+    id: number;
+    name: string;
+    image: string;
+    rating: number;
+    distance: string;
+    priceRange: string;
+  }[];
   reviews: ReviewItem[];
 }
 
 @Component({
   selector: 'app-restaurant-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './restaurant-detail.component.html',
 })
 export class RestaurantDetailComponent implements OnInit {
-  // Cho phép truyền dữ liệu quán từ bên ngoài vào để TÁI SỬ DỤNG
-  @Input() restaurant!: RestaurantDetailData;
+  private readonly http = inject(HttpClient);
+  private readonly route = inject(ActivatedRoute);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+  private readonly apiUrl = 'http://localhost:8000/api/restaurants';
+  private restaurantId = 0;
+  private requestId = 0;
 
-  activeReviewFilter: string = 'all';
+  restaurant: RestaurantDetailData | null = null;
+  isLoading = true;
+  errorMessage = '';
+  reviewNotice = '';
+  saveNotice = '';
+  isSavingRestaurant = false;
+  showReviewForm = false;
+  isSubmittingReview = false;
+  reviewPage = 1;
+  reviewTotalPages = 0;
+  readonly reviewPageSize = 6;
+  reviewForm = { foodId: 0, rating: 5, comment: '' };
+  readonly ratings = [5, 4, 3, 2, 1];
 
   ngOnInit(): void {
-    // Nếu không nhận input từ bên ngoài, khởi tạo dữ liệu mặc định
-    if (!this.restaurant) {
-      this.restaurant = this.getDefaultRestaurantData();
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const id = Number(params.get('id'));
+      this.restaurantId = Number.isSafeInteger(id) && id > 0 ? id : 0;
+      this.reviewPage = 1;
+      this.restaurant = null;
+      void this.loadRestaurant();
+    });
+  }
+
+  async loadRestaurant(page = this.reviewPage): Promise<void> {
+    if (!this.restaurantId) {
+      this.isLoading = false;
+      this.errorMessage = 'Đường dẫn quán ăn không hợp lệ.';
+      return;
+    }
+    const requestId = ++this.requestId;
+    this.isLoading = true;
+    this.errorMessage = '';
+    const params = new HttpParams()
+      .set('page', page)
+      .set('page_size', this.reviewPageSize);
+    try {
+      const data = await firstValueFrom(
+        this.http.get<ApiRestaurant>(`${this.apiUrl}/${this.restaurantId}`, { params }),
+      );
+      if (requestId !== this.requestId) return;
+      this.restaurant = this.mapRestaurant(data);
+      this.reviewPage = data.reviews.page;
+      this.reviewTotalPages = data.reviews.total_pages;
+      if (!this.reviewForm.foodId && data.menu.length > 0) {
+        this.reviewForm.foodId = data.menu[0].food_id;
+      }
+    } catch (error: unknown) {
+      if (requestId !== this.requestId) return;
+      this.restaurant = null;
+      this.errorMessage = error instanceof Error
+        ? error.message
+        : 'Không thể tải thông tin quán ăn. Vui lòng thử lại.';
+    } finally {
+      if (requestId === this.requestId) this.isLoading = false;
     }
   }
 
-  toggleBookmark(): void {
-    this.restaurant.isBookmarked = !this.restaurant.isBookmarked;
+  setReviewPage(page: number): void {
+    if (page < 1 || page > this.reviewTotalPages || page === this.reviewPage) return;
+    this.reviewPage = page;
+    void this.loadRestaurant(page);
+    document.getElementById('restaurant-reviews')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  setReviewFilter(filterType: string): void {
-    this.activeReviewFilter = filterType;
+  async submitReview(): Promise<void> {
+    if (!this.restaurant || !this.reviewForm.foodId || !this.reviewForm.comment.trim()) {
+      this.reviewNotice = 'Vui lòng chọn món và nhập nội dung đánh giá.';
+      return;
+    }
+    const token = localStorage.getItem('access_token') ?? sessionStorage.getItem('access_token');
+    if (!token) {
+      this.reviewNotice = 'Vui lòng đăng nhập để gửi đánh giá.';
+      return;
+    }
+
+    this.isSubmittingReview = true;
+    this.reviewNotice = '';
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.apiUrl}/${this.restaurant.id}/reviews`, {
+          food_id: this.reviewForm.foodId,
+          rating: this.reviewForm.rating,
+          comment: this.reviewForm.comment.trim(),
+        }),
+      );
+      this.reviewForm.comment = '';
+      this.reviewForm.rating = 5;
+      this.showReviewForm = false;
+      this.reviewPage = 1;
+      this.reviewNotice = 'Cảm ơn bạn đã chia sẻ trải nghiệm!';
+      await this.loadRestaurant(1);
+    } catch (error: unknown) {
+      this.reviewNotice = error instanceof Error
+        ? error.message
+        : 'Không thể gửi đánh giá. Vui lòng thử lại.';
+    } finally {
+      this.isSubmittingReview = false;
+    }
   }
 
-  // Tách riêng dữ liệu giả lập (Mock Data)
-  private getDefaultRestaurantData(): RestaurantDetailData {
+  async shareRestaurant(): Promise<void> {
+    const url = window.location.href;
+    try {
+      if (navigator.share && this.restaurant) {
+        await navigator.share({ title: this.restaurant.name, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        this.reviewNotice = 'Đã sao chép liên kết quán ăn.';
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        this.reviewNotice = 'Không thể chia sẻ liên kết trên thiết bị này.';
+      }
+    }
+  }
+
+  async saveRestaurant(): Promise<void> {
+    if (!this.restaurant || this.isSavingRestaurant) return;
+    if (!this.authService.isLoggedIn()) {
+      this.saveNotice = 'Vui lòng đăng nhập để lưu quán.';
+      return;
+    }
+
+    this.isSavingRestaurant = true;
+    this.saveNotice = '';
+    try {
+      await firstValueFrom(
+        this.http.put<{ saved: boolean }>(
+          `${this.apiUrl}/${this.restaurant.id}/favorite`,
+          null,
+        ),
+      );
+      this.saveNotice = 'Đã lưu quán vào danh sách của bạn.';
+    } catch (error: unknown) {
+      if (error instanceof HttpErrorResponse && typeof error.error?.detail === 'string') {
+        this.saveNotice = error.error.detail;
+      } else {
+        this.saveNotice = 'Không thể lưu quán. Vui lòng thử lại.';
+      }
+    } finally {
+      this.isSavingRestaurant = false;
+    }
+  }
+
+  directionsUrl(): string {
+    if (!this.restaurant) return 'https://www.google.com/maps';
+    const query = this.restaurant.latitude !== null && this.restaurant.longitude !== null
+      ? `${this.restaurant.latitude},${this.restaurant.longitude}`
+      : this.restaurant.address;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }
+
+  mapEmbedUrl(): SafeResourceUrl | null {
+    if (
+      !this.restaurant ||
+      this.restaurant.latitude === null ||
+      this.restaurant.longitude === null
+    ) {
+      return null;
+    }
+    const latitude = this.restaurant.latitude;
+    const longitude = this.restaurant.longitude;
+    const bbox = [
+      longitude - 0.008,
+      latitude - 0.005,
+      longitude + 0.008,
+      latitude + 0.005,
+    ].join('%2C');
+    const marker = `${latitude}%2C${longitude}`;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${marker}`,
+    );
+  }
+
+  formatPrice(price: number | null): string {
+    if (price === null) return 'Chưa cập nhật giá';
+    return `${new Intl.NumberFormat('vi-VN').format(price)}đ`;
+  }
+
+  private mapRestaurant(data: ApiRestaurant): RestaurantDetailData {
+    const images = data.gallery.length > 0
+      ? data.gallery
+      : [''];
+    const mainImage = images[0];
     return {
-      id: 1,
-      name: 'Mì Quảng Bà Tư (ví dụ)',
-      district: 'Hải Châu',
+      id: data.id,
+      name: data.name,
+      district: data.district || 'Đà Nẵng',
       city: 'Đà Nẵng',
-      rating: 4.8,
-      reviewCount: 326,
-      priceRange: '35.000đ – 65.000đ',
-      isOpen: true,
-      openingHoursText: '07:00 – 14:00',
-      verifiedDate: '18/09/2024',
-      address: '42 Trưng Nữ Vương, Quận Hải Châu, TP. Đà Nẵng',
-      isBookmarked: false,
+      rating: data.average_rating,
+      reviewCount: data.review_count,
+      priceRange: data.price_min !== null && data.price_max !== null
+        ? `${this.formatPrice(data.price_min)} – ${this.formatPrice(data.price_max)}`
+        : 'Chưa cập nhật giá',
+      openingHoursText: data.opening_hours || 'Chưa cập nhật',
+      verifiedDate: data.verified_at
+        ? new Intl.DateTimeFormat('vi-VN').format(new Date(data.verified_at))
+        : 'Đã xác minh',
+      address: data.address,
+      phone: data.phone || '',
+      latitude: data.latitude,
+      longitude: data.longitude,
+      description: data.description || 'Quán ăn địa phương tại Đà Nẵng.',
       gallery: {
-        mainImage: {
-          src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnu5K41-8sJTUCq4-n7R48YgscZF6-WQCeO5ZRwtckR19-4xP3tEX-xs8yJCANDLuhfo6MM_en3zDXRI-auA-KEFe1DmHwaMBWR6FB0775wNmnucR1_qOUOEflJ38EPdbE0zR-j9rzYzFlSuNePpk_yay21K29pjQH10iiELQ_I9ycbq0ypkH_ihSLhu2QEr_0WgMFbltuvxKX2buyy9f60v-63-fJeW90ZCTL0hJugBS9XzM93ui2vQ',
-          alt: 'Tô Mì Quảng Gà Đặc Biệt'
-        },
-        subImages: [
-          { src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCGbi_ZYLtyUS45AuRbiBuA2aRbMCOXEmfXf6NUxpQnEMAQTp4HCqGcG07qMOOvfEyZSylZ6NHffLFKKcPjX4DYhgz4I-V41KcA244f3jdxuoV_hMNRK44l6gFjig_xtXSXHumltFnIbQa0N9eL2Q8ErKgIOyC9WKAa7FhzX1yTH5ZFZeAyd2HJDHp9VSVxmnYm2c1_BHDNx1JV3YVQf54HHAUYXsrVxGgH97nJuxv1vrOwm8l8t7jfuA', alt: 'Đĩa rau sống kèm bánh tráng' },
-          { src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDIG-TnViGibvMMcw_Eqq8MwilQofTXIJSNBeucYSEadec84Vp6nYPkBKCSatAFbKwptgUXEBaD5p4DwvG2Afues0WH2MdS8kqlFTTOFKadwulNgxODMiDUsLPLtaU_zyROJJhnOUcMx3avmz6qfG_T8GFM6t3pwVgv2vwqy4N1u6cP2e4A6J8NBh_6K3SCsqhEGWSBJIpyNCCATvjFxE_vOBBnt8LP88dPRsxH7XXTduh__xDb6wOlWg', alt: 'Bánh bèo tôm thịt nướng' },
-          { src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD1YWj9872qxOpeeRgzGIZ9tIl1RTpYWGvyWGaCAFHo48wI5vBSlJ9ID8ZttWXBlEEeKDhAke4Pt_eXbbu93bXqreVvich_tswXc4KOJBtbt3Po3Nx-c-EeagV9gFk7GJ5F91eqPfEPnMP3Vln1VhgnukTORiKvICzdWhlq_tWupDwDAzSQp-hZaeWZqMRFqeTH1fZPha5hW24JPi2ovdGVYq3uwtkPHJU_3M6LVGSdvMSD4oSno9Cw6w', alt: 'Món nướng than hoa' },
-          { src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAtkjtoEknuxoCTT3dvcOXaqnPOue6P1L6ot4GRLrmAADHzg5H6NL9oNBLBChbI-90NQ7YbBlP7ZC0GozDbhHCRFVeoGaGQ7xjJ8hYl3WNR0pyoI9tyS_CjmKzfk8Eu3SXazeirJelIpQ7sJ9HPySd5jruJeugF_yg2Idfew7m03EKgp44_cESu3JXA57SIIS450FNRoYlIKwTdlvixUSl1p22cF1z-tWtATBXyZznFdpI55W7vsR4eTQ', alt: 'Tô bún và nước dùng gia truyền' }
-        ],
-        totalPhotosCount: 28
+        mainImage: { src: mainImage, alt: data.name },
+        subImages: images.slice(1, 5).map((src, index) => ({
+          src,
+          alt: `Ảnh ${index + 2} của ${data.name}`,
+        })),
+        totalPhotosCount: images.length,
       },
-      weeklySchedule: [
-        { day: 'Thứ hai', hours: '07:00 – 14:00' },
-        { day: 'Thứ ba (Hôm nay)', hours: '07:00 – 14:00', isToday: true },
-        { day: 'Thứ tư', hours: '07:00 – 14:00' },
-        { day: 'Thứ năm', hours: '07:00 – 14:00' },
-        { day: 'Thứ sáu', hours: '07:00 – 14:00' },
-        { day: 'Thứ bảy', hours: '07:00 – 14:00' },
-        { day: 'Chủ nhật', hours: '07:00 – 14:00' }
-      ],
-      amenities: [
-        { iconClass: 'fa-solid fa-snowflake text-sky-500', label: 'Điều hòa mát lạnh' },
-        { iconClass: 'fa-solid fa-qrcode text-[#EE5A36]', label: 'Thanh toán QR Momo/VietQR' },
-        { iconClass: 'fa-solid fa-language text-purple-600', label: 'Hỗ trợ tiếng Anh' },
-        { iconClass: 'fa-solid fa-credit-card text-emerald-600', label: 'Thanh toán thẻ Visa/Master' },
-        { iconClass: 'fa-solid fa-square-parking text-blue-600', label: 'Chỗ đỗ xe máy & ô tô gần quán' }
-      ],
-      featuredMenu: [
-        {
-          id: 1,
-          name: 'Mì Quảng gà ta rút xương',
-          description: 'Gà ta thả vườn ươm nghệ vàng óng, đậu phộng rang giòn.',
-          priceRange: '35.000đ – 55.000đ',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBizVpbrGMj51sk5qexmG3DdoN_bNiJOjpwvUmasIMXnaWThWE5WmFpQJeIr_h4OG73_tIUhGx7TReYHWPlf62HoB_38frHg015RTwRaSJlPXvcpti54V5mBYKFLYgtvRjoJmU6SRjSSm6VbIlERfEgMJwy8p_8D5-eblSvdgb3F5xSLCt9OJ9RNsEnJk7zlJFn623s_8h6kXxEhcFhR9fNwOCKFFhCoW35R5AK3IgDppu1a7LVmrCztg',
-          badge: 'Bán chạy #1',
-          badgeBgClass: 'bg-[#EE5A36]'
-        },
-        {
-          id: 2,
-          name: 'Bánh xèo tôm nhảy giòn rụm',
-          description: 'Vỏ bánh giòn vàng, tôm đất tươi ngọt, ăn kèm rau rừng.',
-          priceRange: '45.000đ – 65.000đ',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDMdN6XZT_jkYKCwxTw1g-v-vlAZv69qqt-9ByYLrWfw84Bqqx3JPNCadsd5FpO_XLn4S5eJOsfKsP_AGYfxf3NmII2IJyks28y9x0LKIVPsH96QebZawbQLQpw2CxTo1hFcDioxKy1ESY4EFsniE6l4ZBYFgVZs3kwXdlYnp1n_iCHHdXIPqGfUzBDIr7qxE5tx7KvbCJpft-rmKvkcoYnRwLNGbVwp-RunJm7XxmwN0TYwVYkKQVEiw',
-          badge: 'Món yêu thích',
-          badgeBgClass: 'bg-amber-500'
-        },
-        {
-          id: 3,
-          name: 'Bún chả cá sông Hàn',
-          description: 'Chả cá thu quết dai tự nhiên, nước lèo bí đỏ ngọt thanh.',
-          priceRange: '35.000đ – 50.000đ',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDOmMgt03cKR4_t72rTDLyjb9Y4CgTkxcW8KKccMFvLqMjF4yYb-xcgbQduWw-dazkfzlGMIOrybOhiuAUAfJWDlCUHn3zIr3gs4ZH_D5NGohbu6wb7MBWAT5AlvFIYALClFFqdFHHpuaNh4dY4EoOkzgHlr2xdaFEpMNlDaFI1lQZXtL_xJzJr0Teo7zWp3120YacCk_sKmeeIrFWhsFtPctzmcAjZgsn0EYnoCT3Z97exoFbcU0_xaw'
-        }
-      ],
-      aspectRatings: [
-        { label: 'Hương vị món ăn', score: 4.7, percentage: 94 },
-        { label: 'Mức giá hợp lý', score: 4.8, percentage: 96 },
-        { label: 'Thái độ phục vụ', score: 4.5, percentage: 90 },
-        { label: 'Không gian & vệ sinh', score: 4.6, percentage: 92 }
-      ],
-      insiderTip: 'Du khách thường khen món nước dùng đậm ngọt thanh từ gà ta, rau ăn kèm tươi ngon. Thỉnh thoảng quán hơi đông vào giờ cao điểm sáng <strong class="text-[#1A1817]">(07:30 – 08:30)</strong>, bạn nên ghé sớm để có chỗ ngồi thư thả nhất.',
-      itinerary: [
-        { time: '07:30 Sáng', title: 'Ăn sáng đậm vị tại Mì Quảng Bà Tư', isActive: true },
-        { time: '09:00 Sáng', title: 'Tham quan Bảo tàng Điêu khắc Chăm', note: '(Cách quán chỉ 600m đi bộ)', isActive: false },
-        { time: '10:30 Trưa', title: 'Thưởng thức Cà phê ngắm sông Hàn', isActive: false }
-      ],
-      similarRestaurants: [
-        {
-          id: 101,
-          name: 'Bếp Nhà Mận (Đặc sản Đà Nẵng)',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC9QQ5g2XpbwBES0eqhHc_5kXZ6TASESobfnCDZK88LagYfTe7Lg4HT5QDAoeWhpk-gTDzqIctMZaTC6xrNrYXRHoYJQLbfDARm8GTHezQtFWpGorYmRne-YRKJLKKzQxG3CR7MmsMde-kglPsYiBsUfGhqIRx27FaTO6kFqWhgoVrsi49XhffkGOi5jfbGRjXXyxtidXBP1DuaWyrOexeOIeAZ3xUefeguhEloseKaaVbkOreFgnNXDQ',
-          rating: 4.7,
-          distance: '1.2 km',
-          priceRange: '40.000đ – 75.000đ'
-        },
-        {
-          id: 102,
-          name: 'Bún Cá Cô Năm (Gia truyền)',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB-BcJo1T42sNaupLoGDpDa94hHSTW9ehHftbA25QqEgl_e6xychH3upojfha3jtHoFRwTd3MMbOHYdVBMFzqcXHflzvzGqi4ObaLwePD7VeE9R-oON4YZo1GHuDszGqF4RPXQPVz8mWehKQnhEB6o6bO-J26qPxd8gLRMo5SXSFGhy915fKKq24qqZqRzuXQFBsqram8A3anPlvKgVYwq-Qe4nhVvlrHBxntXNH65CeP2TqQjdkOee1A',
-          rating: 4.6,
-          distance: '2.1 km',
-          priceRange: '30.000đ – 50.000đ'
-        }
-      ],
-      reviews: [
-        {
-          id: 1,
-          author: 'Mặt Loz',
-          authorInitial: 'ML',
-          avatarBgClass: 'bg-orange-100',
-          avatarTextClass: 'text-[#EE5A36]',
-          authorInfo: 'Du khách từ Pháp • Đã dùng bữa tháng 09/2024',
-          rating: 5.0,
-          content: 'Món ăn đậm vị, nước lèo chan xăm xắp rất đúng điệu xứ Quảng. Bác chủ quán tuy lớn tuổi nhưng rất xởi lởi và hướng dẫn tỉ mỉ cách vắt chanh, bẻ bánh tráng nướng ăn kèm rau ghém xanh mướt!',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOszAF-osfHgSs0Ty4LhvrM3YAAg_Od9my5jNttjIxpYCHcQC3drVlO0tRLfAgrUaS2XiW6SogA--cMQGZkOTWmUOTFkMe7soedd0nbATB3TrF3DjN5vfOG84uynP2xc7GdKEK0RSYHVr-9KVTM7DX_51dHtLFw0HmgO0IHBSR8y0k2seT2u8l8gDCBsu2c0XtxHasky0ASfQvgkfKLEE3TP96YqREVul0HM2A-VpGGD5ZpZTXRB2-EQ',
-          helpfulCount: 18
-        },
-        {
-          id: 2,
-          author: 'Cac',
-          authorInitial: 'JK',
-          avatarBgClass: 'bg-sky-100',
-          avatarTextClass: 'text-sky-700',
-          authorInfo: 'Du khách từ Úc • Đã dùng bữa tuần trước',
-          rating: 4.8,
-          content: 'Quán rất dễ tìm ngay trục đường Trưng Nữ Vương, phần ăn đầy đặn với gà ta chắc ngọt. Sáng sớm khoảng 8h hơi đông khách một chút nhưng đồ ăn lên rất nhanh và nóng hổi.',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAm3l5OQOi5RT0CjctNdUIf8Zm5siI-1wz5m7tR6MXVHHvbi7KdIuVCGTXKXHcyfni86eBQS9y37pD4ytEe01bscqdPMNqgecSjr7xDfxTGgpgIKjDjFP8jrv9Z4NviUreDoJ2nGDnm1t5_iwsKrpyecRF4HS2uJ58tgAdGD1__UtlDhR6POnnEaIlxfOWfIsQ4vP6kKHNgdXC9KmNsIcHlxEu36ZCw5vCvIcxfqxZAdyVxNBMnT5etGw',
-          helpfulCount: 12
-        }
-      ]
+      weeklySchedule: data.opening_hours
+        ? [{ day: 'Giờ hoạt động', hours: data.opening_hours }]
+        : [],
+      amenities: [],
+      featuredMenu: data.menu.map((item, index) => ({
+        id: item.food_id,
+        name: item.name,
+        description: item.description || 'Món ăn đang được phục vụ tại quán.',
+        priceRange: this.formatPrice(item.price),
+        image: item.image_url || '',
+        badge: index === 0 ? 'Món trong menu' : undefined,
+      })),
+      aspectRatings: [],
+      insiderTip: data.description || 'Thông tin do quán cung cấp.',
+      itinerary: [],
+      similarRestaurants: data.similar_restaurants.map((item) => ({
+        id: item.id,
+        name: item.name,
+        image: item.image_url || '',
+        rating: item.average_rating,
+        distance: item.distance_km === null ? 'cùng khu vực' : `${item.distance_km} km`,
+        priceRange: this.formatPrice(item.min_price),
+      })),
+      reviews: data.reviews.items.map((item) => ({
+        id: item.id,
+        author: item.author,
+        authorInitial: item.author.trim().slice(0, 2).toLocaleUpperCase('vi') || 'TK',
+        avatarBgClass: 'bg-orange-100',
+        avatarTextClass: 'text-[#EE5A36]',
+        authorInfo: `${item.food_name}${item.created_at ? ` · ${new Intl.DateTimeFormat('vi-VN').format(new Date(item.created_at))}` : ''}`,
+        rating: item.rating,
+        content: item.comment,
+        helpfulCount: 0,
+        foodName: item.food_name,
+        createdAt: item.created_at,
+      })),
     };
   }
 }

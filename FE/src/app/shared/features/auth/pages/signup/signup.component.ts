@@ -1,41 +1,27 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-export interface Benefit {
-  icon: string;
-  iconBgClass: string;
-  iconColorClass: string;
-  title: string;
-  description: string;
-}
-
-export interface TastePreference {
-  emoji: string;
-  label: string;
-  selected: boolean;
-}
-
-export interface EditorialPerk {
-  icon: string;
-  iconBgClass: string;
-  iconColorClass: string;
-  title: string;
-  description: string;
-}
+import {RouterLink} from '@angular/router';
+import {Benefit, EditorialPerk, TastePreference} from '../../../../models/auth-models/signup.models';
+import {UserRegister, UserService} from '../../../../../core/services/user.service';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './signup.component.html',
 })
 export class SignupComponent {
   // --- 1. DỮ LIỆU RENDER (TÁI SỬ DỤNG) ---
 
+  constructor(
+    private userService: UserService
+  ) {}
+
   brandName = 'DaNang';
   brandSlogan = 'Bắt đầu hành trình khám phá ẩm thực Đà Nẵng đích thực';
   brandDesc = 'Vượt qua những quán bẫy du khách. Kết nối trực tiếp với vị giác xứ Quảng từ các hàng quán gia truyền, ngõ hẻm và chợ đêm bản địa.';
+
 
   benefits: Benefit[] = [
     {
@@ -94,7 +80,7 @@ export class SignupComponent {
 
   // --- 2. STATE LOGIC FORM ---
 
-  formData = {
+  formData:UserRegister = {
     fullname: '',
     email: '',
     phone: '',
@@ -111,8 +97,12 @@ export class SignupComponent {
 
   submitState: 'idle' | 'loading' | 'success' = 'idle';
   errorMessage = '';
+  loading = false;
+  successMessage = '';
 
   // --- 3. METHODS LOGIC ---
+
+
 
   toggleTaste(taste: TastePreference): void {
     taste.selected = !taste.selected;
@@ -168,17 +158,41 @@ export class SignupComponent {
 
   onSubmit(): void {
     if (this.formData.password !== this.formData.confirmPassword) {
+      this.submitState = 'idle';
       this.errorMessage = 'Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.';
       return;
     }
 
+    if (!this.formData.acceptTerms) {
+      this.submitState = 'idle';
+      this.errorMessage = 'Bạn cần đồng ý với điều khoản để đăng ký.';
+      return;
+    }
+
     this.errorMessage = '';
+    this.successMessage = '';
     this.submitState = 'loading';
 
-    // Giả lập call API 1 giây
-    setTimeout(() => {
-      this.submitState = 'success';
-      console.log('Form Submitted Data:', this.formData, 'Tastes:', this.tastePreferences.filter(t => t.selected));
-    }, 1000);
+    this.userService.register(this.formData).subscribe({
+      next: (user) => {
+        this.successMessage = `Đăng ký thành công! Xin chào ${user.full_name ?? ''}.`;
+        this.submitState = 'success';
+
+        this.formData = {
+          fullname: '',
+          email: '',
+          phone: '',
+          password: '',
+          confirmPassword: '',
+          acceptTerms: false,
+        };
+      },
+      error: (error) => {
+        this.errorMessage =
+          error.error?.detail ?? 'Đăng ký thất bại. Vui lòng thử lại.';
+        this.submitState = 'idle';
+      },
+    });
   }
+
 }
