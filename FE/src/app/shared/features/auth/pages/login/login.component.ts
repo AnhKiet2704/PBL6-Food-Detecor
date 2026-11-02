@@ -48,7 +48,11 @@ export class LoginComponent {
         next: () => {
           this.isLoading = false;
           this.loginSuccess = true;
-          void this.router.navigate(['/home']);
+          void this.router.navigate(
+            this.authService.hasAdminRole()
+              ? ['/admin/dashboard']
+              : ['/home'],
+          );
         },
         error: (error: unknown) => {
           this.isLoading = false;

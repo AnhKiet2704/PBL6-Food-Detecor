@@ -6,18 +6,18 @@
       <div class="flex flex-col gap-space-xs">
         <div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
           <span>Cổng Quản Trị</span>
-          <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+          <i class="fa-solid fa-chevron-right text-[12px]"></i>
           <span class="text-primary font-semibold">AI Vision Moderation</span>
           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-xs text-label-xs ml-space-xs font-semibold">
             <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> Mô hình V3.2 Real-time
           </span>
         </div>
         <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Trung tâm kiểm duyệt dữ liệu ẩm thực &amp; Huấn luyện AI</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant">Hệ thống thị giác máy tính nhận diện đặc sản miền Trung, phân tích thành phần dĩa ăn và thẩm định nguồn gốc bởi chuyên gia bản địa.</p>
+        <p class="font-body-md text-body-md text-on-surface-variant">Hệ thống thị giác máy tính nhận diện đặc sản miền Trung, phân tích thành phần dĩa ăn và thẩm định nguồn gốc (Bảng Food & Restaurants).</p>
       </div>
       <div class="flex items-center gap-space-sm self-start lg:self-auto shrink-0">
         <label class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-on-surface font-label-lg text-label-lg shadow-sm">
-          <span class="material-symbols-outlined text-[18px]">tune</span>
+          <i class="fa-solid fa-sliders text-[16px]"></i>
           <span>Ngưỡng tin cậy</span>
           <select [(ngModel)]="confidenceThreshold" class="rounded-full bg-transparent py-1 text-sm font-bold focus:outline-none" aria-label="Ngưỡng độ tin cậy">
             <option [ngValue]="70">≥70%</option>
@@ -27,14 +27,16 @@
           </select>
         </label>
         <button (click)="downloadSampleDataset()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-all shadow-md" type="button">
-          <span class="material-symbols-outlined text-[18px]">publish</span>
+          <i class="fa-solid fa-file-export text-[16px]"></i>
           <span>Tải bộ dữ liệu mẫu</span>
         </button>
       </div>
     </div>
 
     @if (notice) {
-      <p class="mb-space-md rounded-xl border border-secondary/30 bg-secondary-container/30 p-space-sm text-sm text-on-surface" role="status">{{ notice }}</p>
+      <p class="mb-space-md rounded-xl border border-secondary/30 bg-secondary-container/30 p-space-sm text-sm text-on-surface font-semibold" role="status">
+        <i class="fa-solid fa-circle-info mr-2 text-secondary"></i> {{ notice }}
+      </p>
     }
 
     <!-- Performance Metric Cards -->
@@ -42,6 +44,7 @@
       @for (metric of metrics; track metric.title) {
         <div [ngClass]="metric.isAlert ? 'border-l-4 border-primary bg-surface-container-low' : 'bg-surface-container-lowest'"
              class="rounded-xl p-space-md shadow-sm relative overflow-hidden flex flex-col justify-between">
+
           @if (!metric.isAlert) {
             <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary-container/30 rounded-full blur-xl pointer-events-none"></div>
           }
@@ -49,17 +52,19 @@
           <div class="flex items-start justify-between mb-space-sm">
             <span [ngClass]="metric.isAlert ? 'text-primary font-bold' : 'text-on-surface-variant'" class="font-label-md text-label-md">{{ metric.title }}</span>
             <div [class]="metric.iconBg + ' ' + metric.iconColor" class="w-8 h-8 rounded-full flex items-center justify-center">
-              <span class="material-symbols-outlined text-[18px]">{{ metric.icon }}</span>
+              <i class="{{ metric.icon }} text-[16px]"></i>
             </div>
           </div>
 
           <div class="flex items-baseline gap-space-xs">
             <span [ngClass]="metric.isAlert ? 'text-primary' : 'text-on-surface'" class="font-headline-lg text-headline-lg font-extrabold tracking-tight">{{ metric.value }}</span>
+
             @if (metric.trendText) {
-              <span class="inline-flex items-center text-secondary font-label-xs text-label-xs font-bold">
-                <span class="material-symbols-outlined text-[14px]">{{ metric.trendIcon }}</span> {{ metric.trendText }}
+              <span class="inline-flex items-center gap-1 text-secondary font-label-xs text-label-xs font-bold">
+                <i class="{{ metric.trendIcon }} text-[12px]"></i> {{ metric.trendText }}
               </span>
             }
+
             @if (metric.unit) {
               <span [ngClass]="metric.isAlert ? 'text-on-surface' : 'text-on-surface-variant'" class="font-label-sm font-medium text-label-xs">{{ metric.unit }}</span>
             }
@@ -103,134 +108,156 @@
 
         <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
           <div class="flex items-center gap-space-sm">
-            <div class="p-2 rounded-lg bg-primary-fixed text-on-primary-fixed">
-              <span class="material-symbols-outlined text-[20px]">queue</span>
+            <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary-fixed text-on-primary-fixed">
+              <i class="fa-solid fa-layer-group text-[18px]"></i>
             </div>
             <div>
-              <h2 class="font-headline-sm text-headline-sm text-on-surface">Hàng đợi xét duyệt hình ảnh du khách</h2>
-              <p class="font-body-sm text-body-sm text-on-surface-variant">Mẫu đang xem: <strong>{{ activeSample.id }}</strong> (Tải lên {{ activeSample.timeUpload }})</p>
+              <h2 class="font-headline-sm text-headline-sm text-on-surface">Hàng đợi xét duyệt hình ảnh </h2>
+              @if (activeSample) {
+                <p class="font-body-sm text-body-sm text-on-surface-variant">Mẫu đang xem: <strong>{{ activeSample.id }}</strong> (Tải lên {{ activeSample.timeUpload }})</p>
+              }
             </div>
           </div>
           <div class="flex items-center gap-space-xs">
-            <button (click)="showPreviousSample()" [disabled]="sampleHistory.length === 0" aria-label="Mẫu trước" class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors disabled:opacity-40" type="button"><span class="material-symbols-outlined text-[18px]">arrow_back</span></button>
+            <button (click)="showPreviousSample()" [disabled]="sampleHistory.length === 0" aria-label="Mẫu trước" class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors disabled:opacity-40" type="button">
+              <i class="fa-solid fa-arrow-left text-[16px]"></i>
+            </button>
             <span class="font-label-md text-label-md text-on-surface-variant px-space-xs">{{ queuePosition }} / {{ queueTotal }}</span>
-            <button (click)="showNextSample()" [disabled]="apiQueue.length === 0" aria-label="Mẫu tiếp theo" class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors disabled:opacity-40" type="button"><span class="material-symbols-outlined text-[18px]">arrow_forward</span></button>
+            <button (click)="showNextSample()" [disabled]="apiQueue.length === 0" aria-label="Mẫu tiếp theo" class="p-2 rounded-full bg-surface-container hover:bg-surface-variant text-on-surface transition-colors disabled:opacity-40" type="button">
+              <i class="fa-solid fa-arrow-right text-[16px]"></i>
+            </button>
           </div>
         </div>
 
-        <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-lg">
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-space-md">
-            <!-- Image Viewport -->
-            <div class="md:col-span-7 flex flex-col gap-space-sm">
-              <div class="relative w-full h-80 rounded-xl overflow-hidden bg-surface-container group shadow-inner">
-                <img [src]="activeSample.image" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Ảnh mẫu"/>
-                <div class="absolute top-space-sm left-space-sm flex flex-wrap gap-1">
-                  <span class="bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-xs text-label-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
-                    <span class="material-symbols-outlined text-[13px] text-secondary-fixed">photo_camera</span> {{ activeSample.device }}
-                  </span>
-                  <span class="bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-xs text-label-xs px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
-                    <span class="material-symbols-outlined text-[13px] text-tertiary-fixed">location_on</span> {{ activeSample.location }}
-                  </span>
-                </div>
-                <div class="absolute bottom-space-sm right-space-sm p-space-xs bg-surface/90 backdrop-blur-md rounded-lg shadow-md flex items-center gap-space-xs">
-                  <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                  <span class="font-label-xs text-label-xs text-on-surface font-semibold">Phát hiện: {{ activeSample.detectionCount }} nhóm vật thể ẩm thực</span>
-                </div>
-              </div>
-              <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm px-1">
-                <span>Độ phân giải: <strong>{{ activeSample.resolution }}</strong></span>
-                <span>Metadata GPS: <strong>{{ activeSample.gps }}</strong></span>
-              </div>
-            </div>
+        @if (activeSample) {
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-lg">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-space-md">
 
-            <!-- AI Model Prediction Report -->
-            <div class="md:col-span-5 flex flex-col justify-between bg-surface-container-low rounded-xl p-space-md">
-              <div class="flex flex-col gap-space-sm">
-                <div class="flex items-center justify-between">
-                  <span class="font-label-xs text-label-xs uppercase tracking-wider text-on-surface-variant font-bold">Dự đoán hàng đầu</span>
-                  <span class="px-2 py-0.5 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs font-bold flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[12px]">auto_awesome</span> {{ activeSample.aiPrediction.matchScore }}% Khớp
-                  </span>
+              <!-- Image Viewport -->
+              <div class="md:col-span-7 flex flex-col gap-space-sm">
+                <div class="relative w-full h-80 rounded-xl overflow-hidden bg-surface-container group shadow-inner">
+                  <img [src]="activeSample.image" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Ảnh mẫu"/>
+                  <div class="absolute top-space-sm left-space-sm flex flex-wrap gap-2">
+                    <span class="bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-xs text-label-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow">
+                      <i class="fa-solid fa-camera text-secondary-fixed"></i> {{ activeSample.device }}
+                    </span>
+                    <span class="bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-xs text-label-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow">
+                      <i class="fa-solid fa-location-dot text-tertiary-fixed"></i> {{ activeSample.location }}
+                    </span>
+                  </div>
+                  <div class="absolute bottom-space-sm right-space-sm p-space-xs bg-surface/90 backdrop-blur-md rounded-lg shadow-md flex items-center gap-space-xs">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                    <span class="font-label-xs text-label-xs text-on-surface font-semibold">Phát hiện: {{ activeSample.detectionCount }} nhóm vật thể ẩm thực</span>
+                  </div>
                 </div>
-                <div>
-                  @if (isEditingLabel) {
-                    <div class="flex gap-2">
-                      <input [(ngModel)]="editedLabel" aria-label="Nhãn món ăn" class="min-w-0 flex-1 rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-1 font-bold text-primary"/>
-                      <button type="button" (click)="saveLabel()" class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-on-primary">Lưu</button>
+                <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm px-1">
+                  <span>Độ phân giải: <strong>{{ activeSample.resolution }}</strong></span>
+                  <span>Metadata GPS: <strong>{{ activeSample.gps }}</strong></span>
+                </div>
+              </div>
+
+              <!-- AI Model Prediction Report -->
+              <div class="md:col-span-5 flex flex-col justify-between bg-surface-container-low rounded-xl p-space-md">
+                <div class="flex flex-col gap-space-sm">
+                  <div class="flex items-center justify-between">
+                    <span class="font-label-xs text-label-xs uppercase tracking-wider text-on-surface-variant font-bold">Dự đoán hàng đầu</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs font-bold flex items-center gap-1.5">
+                      <i class="fa-solid fa-wand-magic-sparkles text-[12px]"></i> {{ activeSample.aiPrediction.matchScore }}% Khớp
+                    </span>
+                  </div>
+
+                  <div>
+                    @if (isEditingLabel) {
+                      <div class="flex gap-2">
+                        <input [(ngModel)]="editedLabel" aria-label="Nhãn món ăn" class="min-w-0 flex-1 rounded-lg border border-outline-variant bg-surface-container-lowest px-2 py-1 font-bold text-primary"/>
+                        <button type="button" (click)="saveLabel()" class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-on-primary">Lưu</button>
+                      </div>
+                    } @else {
+                      <h3 class="font-headline-md text-headline-md text-primary font-extrabold leading-snug">{{ activeSample.aiPrediction.title }}</h3>
+                      <p class="font-label-xs text-label-xs text-on-surface-variant mt-0.5">Liên kết Food ID: #{{ activeSample.aiPrediction.food_id }}</p>
+                    }
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-2">{{ activeSample.aiPrediction.desc }}</p>
+                  </div>
+
+                  <div class="mt-space-xs flex flex-col gap-1.5">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant uppercase font-semibold">Thành phần AI tách lớp:</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      @for (ing of ingredients; track ing.name) {
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-xs text-label-xs shadow-xs border border-outline-variant/30">
+                          <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> {{ ing.name }} ({{ ing.percent }}%)
+                        </span>
+                      }
                     </div>
-                  } @else {
-                    <h3 class="font-headline-md text-headline-md text-primary font-extrabold leading-snug">{{ activeSample.aiPrediction.title }}</h3>
-                  }
-                  <p class="font-body-sm text-body-sm text-on-surface-variant">{{ activeSample.aiPrediction.desc }}</p>
-                </div>
+                  </div>
 
-                <div class="mt-space-xs flex flex-col gap-1.5">
-                  <span class="font-label-xs text-label-xs text-on-surface-variant uppercase font-semibold">Thành phần AI tách lớp:</span>
-                  <div class="flex flex-wrap gap-1.5">
-                    @for (ing of ingredients; track ing.name) {
-                      <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-lowest text-on-surface font-label-xs text-label-xs shadow-xs">
-                        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> {{ ing.name }} ({{ ing.percent }}%)
-                      </span>
+                  <div class="mt-space-sm p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-xs border border-outline-variant/30">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant font-semibold">Gợi ý địa chỉ khớp toạ độ &amp; hình ảnh:</span>
+                    @if (isAssigningVenue) {
+                      <div class="flex gap-2">
+                        <input [(ngModel)]="editedVenue" aria-label="Tên quán phục vụ" class="min-w-0 flex-1 rounded-lg border border-outline-variant px-2 py-1 text-sm"/>
+                        <button type="button" (click)="assignVenue()" class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-on-primary">Gán</button>
+                      </div>
+                    } @else {
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <i class="fa-solid fa-store text-[16px] text-primary"></i>
+                          <span class="font-label-md text-label-md text-on-surface font-bold">{{ activeSample.aiPrediction.venueMatch.name }}</span>
+                        </div>
+                        <span class="font-label-xs text-label-xs text-secondary font-bold">{{ activeSample.aiPrediction.venueMatch.score }}% khớp vị trí</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">ID: #{{ activeSample.aiPrediction.venueMatch.restaurant_id }} - {{ activeSample.aiPrediction.venueMatch.address }}</span>
                     }
                   </div>
                 </div>
 
-                <div class="mt-space-sm p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-xs">
-                  <span class="font-label-xs text-label-xs text-on-surface-variant font-semibold">Gợi ý địa chỉ khớp toạ độ &amp; hình ảnh:</span>
-                  @if (isAssigningVenue) {
-                    <div class="flex gap-2">
-                      <input [(ngModel)]="editedVenue" aria-label="Tên quán phục vụ" class="min-w-0 flex-1 rounded-lg border border-outline-variant px-2 py-1 text-sm"/>
-                      <button type="button" (click)="assignVenue()" class="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-on-primary">Gán</button>
-                    </div>
-                  } @else {
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-space-xs">
-                      <span class="material-symbols-outlined text-[18px] text-primary">storefront</span>
-                      <span class="font-label-md text-label-md text-on-surface font-bold">{{ activeSample.aiPrediction.venueMatch.name }}</span>
-                    </div>
-                    <span class="font-label-xs text-label-xs text-secondary font-bold">{{ activeSample.aiPrediction.venueMatch.score }}% khớp vị trí</span>
-                  </div>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ activeSample.aiPrediction.venueMatch.address }}</span>
-                  }
+                <div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-xs text-label-xs">
+                  <span>Đề xuất thứ 2: {{ activeSample.aiPrediction.altSuggestion }}</span>
+                  <button (click)="openLabelEditor()" class="text-primary hover:underline font-semibold" type="button">Sửa nhãn</button>
                 </div>
               </div>
+            </div>
 
-              <div class="mt-space-sm pt-space-xs flex items-center justify-between text-on-surface-variant font-label-xs text-label-xs">
-                <span>Đề xuất thứ 2: {{ activeSample.aiPrediction.altSuggestion }}</span>
-                <button (click)="openLabelEditor()" class="text-primary hover:underline font-semibold" type="button">Sửa nhãn</button>
+            <!-- Action Control Center -->
+            <div class="pt-space-md flex flex-wrap items-center justify-between gap-space-sm bg-surface-container-low/50 p-space-md rounded-xl border border-outline-variant/20">
+              <div class="flex items-center gap-space-xs">
+                <i class="fa-solid fa-gavel text-primary text-[20px]"></i>
+                <span class="font-label-md text-label-md text-on-surface font-bold">Quyết định kiểm duyệt:</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-space-xs">
+                <button (click)="decideSample('rejected')" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-error hover:bg-error-container hover:text-on-error-container font-label-md text-label-md transition-colors" type="button">
+                  <i class="fa-solid fa-trash-can text-[16px]"></i> Bỏ qua / Xoá
+                </button>
+                <button (click)="openLabelEditor()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
+                  <i class="fa-solid fa-pen-to-square text-[16px]"></i> Sửa Nhãn
+                </button>
+                <button (click)="openVenueEditor()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
+                  <i class="fa-solid fa-map-location-dot text-[16px]"></i> Đổi Quán
+                </button>
+                <button (click)="decideSample('approved')" class="inline-flex items-center gap-space-lg px-space-lg py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container font-label-lg text-label-lg shadow-md transition-all active:scale-95" type="button">
+                  <i class="fa-solid fa-circle-check text-[18px]"></i> Chấp nhận & Lưu DB
+                </button>
               </div>
             </div>
           </div>
-
-          <!-- Action Control Center -->
-          <div class="pt-space-md flex flex-wrap items-center justify-between gap-space-sm bg-surface-container-low/50 p-space-md rounded-xl">
-            <div class="flex items-center gap-space-xs">
-              <span class="material-symbols-outlined text-primary text-[20px]">gavel</span>
-              <span class="font-label-md text-label-md text-on-surface font-bold">Quyết định kiểm duyệt:</span>
+        } @else {
+          <!-- Empty Queue State -->
+          <div class="bg-surface-container-lowest rounded-xl p-16 shadow-sm flex flex-col items-center justify-center text-center gap-4 border-2 border-dashed border-outline-variant/30">
+            <div class="w-16 h-16 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+              <i class="fa-solid fa-check text-2xl"></i>
             </div>
-            <div class="flex flex-wrap items-center gap-space-xs">
-              <button (click)="decideSample('rejected')" [disabled]="queueExhausted" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-high text-error hover:bg-error-container hover:text-on-error-container font-label-md text-label-md transition-colors disabled:opacity-40" type="button">
-                <span class="material-symbols-outlined text-[18px]">delete_forever</span> Từ chối ảnh rác / Spam
-              </button>
-              <button (click)="openLabelEditor()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
-                <span class="material-symbols-outlined text-[18px]">edit_note</span> Sửa nhãn món
-              </button>
-              <button (click)="openVenueEditor()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-variant font-label-md text-label-md transition-colors" type="button">
-                <span class="material-symbols-outlined text-[18px]">add_location_alt</span> Gán vào quán cụ thể
-              </button>
-              <button (click)="decideSample('approved')" [disabled]="queueExhausted" class="inline-flex items-center gap-space-lg px-space-lg py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container font-label-lg text-label-lg shadow-md transition-all active:scale-95 disabled:opacity-40" type="button">
-                <span class="material-symbols-outlined text-[18px]">check_circle</span> Xác nhận đúng nhãn
-              </button>
+            <div>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Hàng đợi đã hoàn thành!</h3>
+              <p class="font-body-md text-body-md text-on-surface-variant mt-2 max-w-md">Bạn đã duyệt xong tất cả các hình ảnh tải lên có độ tin cậy đạt ngưỡng {{ confidenceThreshold }}%.</p>
             </div>
           </div>
-        </div>
+        }
 
         <!-- Quick Inspection Queue Grid -->
-        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md border border-outline-variant/10">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-space-xs">
-              <span class="material-symbols-outlined text-secondary text-[20px]">auto_read_play</span>
-              <h3 class="font-headline-sm text-headline-sm text-on-surface">Mẫu chờ tiếp theo trong hàng đợi</h3>
+              <i class="fa-solid fa-robot text-secondary text-[20px]"></i>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Mẫu chờ tiếp theo trong hàng đợi</h3>
             </div>
             <span class="font-label-md text-label-md text-on-surface-variant">Tự động nạp tiếp theo khi duyệt xong</span>
           </div>
@@ -251,7 +278,7 @@
                 </div>
               </button>
             }
-            @if (visibleUpcomingSamples.length === 0) {
+            @if (visibleUpcomingSamples.length === 0 && activeSample) {
               <p class="col-span-full rounded-xl bg-surface-container-low p-5 text-center text-sm text-on-surface-variant">
                 Không có mẫu tiếp theo đạt ngưỡng {{ confidenceThreshold }}%.
               </p>
@@ -268,26 +295,27 @@
           <div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
           <div class="flex items-center gap-space-sm">
             <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary shadow-xs">
-              <span class="material-symbols-outlined text-[26px]">verified_user</span>
+              <i class="fa-solid fa-shield-halved text-[22px]"></i>
             </div>
             <div>
               <h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold leading-tight">Kiểm chứng 100%</h2>
-              <span class="font-label-xs text-label-xs text-primary font-bold uppercase tracking-wide">Bởi Chuyên Gia Bản Địa Đà Nẵng</span>
+              <span class="font-label-xs text-label-xs text-primary font-bold uppercase tracking-wide">Bởi Chuyên Gia Bản Địa</span>
             </div>
           </div>
-          <p class="font-body-sm text-body-sm text-on-surface-variant">Bộ tiêu chuẩn chất lượng nghiêm ngặt đảm bảo ẩm thực giới thiệu trên nền tảng gìn giữ trọn vẹn văn hoá vị giác xứ Quảng và sự an tâm tuyệt đối cho du khách.</p>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">Bộ tiêu chuẩn nghiêm ngặt đảm bảo dữ liệu đưa vào bảng <code class="bg-surface-container px-1 rounded text-primary">foods</code> & <code class="bg-surface-container px-1 rounded text-primary">restaurants</code> gìn giữ trọn vẹn văn hoá vị giác.</p>
+
           <div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
             <div class="flex flex-col">
               <span class="font-label-xs text-label-xs text-on-surface-variant">Tỷ lệ cơ sở đạt chuẩn tuần:</span>
               <span class="font-headline-sm text-headline-sm text-secondary font-bold">89.2% (148/166 quán)</span>
             </div>
-            <span class="material-symbols-outlined text-secondary text-[24px]">workspace_premium</span>
+            <i class="fa-solid fa-award text-secondary text-[28px]"></i>
           </div>
         </div>
 
         <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
           <div class="flex items-center justify-between">
-            <h3 class="font-title-md text-title-md text-on-surface">4 Trụ Cột Thẩm Định Vàng</h3>
+            <h3 class="font-title-md text-title-md text-on-surface font-bold">4 Trụ Cột Thẩm Định Vàng</h3>
             <span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-bold">v2025</span>
           </div>
 
@@ -295,17 +323,17 @@
             <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-space-xs transition-colors hover:bg-surface-container">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-space-xs">
-                  <span [class]="pillar.iconBg + ' ' + pillar.iconColor" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-label-xs">{{ pillar.id }}</span>
+                  <span [class]="pillar.iconBg + ' ' + pillar.iconColor" class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-label-xs">{{ pillar.icon }}</span>
                   <span class="font-label-lg text-label-lg text-on-surface font-bold">{{ pillar.title }}</span>
                 </div>
-                <span class="font-label-xs text-label-xs text-secondary font-bold flex items-center gap-0.5">
-                  <span class="material-symbols-outlined text-[14px]">check</span> Trọng số {{ pillar.weight }}
+                <span class="font-label-xs text-label-xs text-secondary font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-check text-[12px]"></i> Trọng số {{ pillar.weight }}
                 </span>
               </div>
-              <p class="font-body-sm text-body-sm text-on-surface-variant pl-7">{{ pillar.description }}</p>
-              <div class="pl-7 mt-1 flex items-center gap-2">
+              <p class="font-body-sm text-body-sm text-on-surface-variant pl-8">{{ pillar.description }}</p>
+              <div class="pl-8 mt-1 flex items-center gap-2">
                 @for (tag of pillar.tags; track tag) {
-                  <span class="font-label-xs text-label-xs bg-surface-container-lowest px-2 py-0.5 rounded text-on-surface-variant">{{ tag }}</span>
+                  <span class="font-label-xs text-label-xs bg-surface-container-lowest px-2 py-0.5 rounded border border-outline-variant/30 text-on-surface-variant">{{ tag }}</span>
                 }
               </div>
             </div>
@@ -314,7 +342,7 @@
 
         <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
           <div class="flex items-center justify-between">
-            <span class="font-label-md text-label-md text-on-surface font-bold">Hội Đồng Thẩm Định Bản Địa</span>
+            <span class="font-label-md text-label-md text-on-surface font-bold">Hội Đồng Thẩm Định</span>
             <span class="font-label-xs text-label-xs text-primary font-semibold">24 Giám định viên</span>
           </div>
           <div class="flex items-center gap-space-xs py-1">
@@ -326,8 +354,8 @@
             </div>
             <span class="font-body-sm text-body-sm text-on-surface-variant ml-2">Gồm nghệ nhân ẩm thực &amp; food blogger uy tín</span>
           </div>
-          <button class="w-full mt-space-xs py-2 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md flex items-center justify-center gap-space-xs" type="button">
-            <span class="material-symbols-outlined text-[16px]">history_edu</span>
+          <button class="w-full mt-space-xs py-2 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md flex items-center justify-center gap-2" type="button">
+            <i class="fa-solid fa-clock-rotate-left text-[14px]"></i>
             <span>Xem nhật ký chấm điểm gần đây</span>
           </button>
         </div>

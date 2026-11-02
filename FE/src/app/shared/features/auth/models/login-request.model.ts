@@ -8,6 +8,7 @@ export interface LoginUser {
   full_name: string | null;
   email: string;
   phone: string | null;
+  roles: string[];
 }
 
 export interface LoginResponse {

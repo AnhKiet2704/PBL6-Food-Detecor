@@ -1,17 +1,53 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import {
-  AiIngredient,
-  PerformanceMetric, QualityPillar,
-  UpcomingSample
-} from '../../../../models/admin-models/ai-moderation/ai-moderation.model';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
-interface ModerationSample {
-  recordId: number | null;
-  id: string;
+// ==========================================
+// 1. ĐỊNH NGHĨA MODEL TƯƠNG THÍCH VỚI SQL DB
+// ==========================================
+
+export interface AiMetric {
+  title: string;
+  icon: string; // Đã đổi sang Font Awesome class
+  iconColor: string;
+  iconBg: string;
+  value: string;
+  unit?: string;
+  trendText?: string;
+  trendIcon?: string; // Font Awesome
+  progressValue?: number;
+  hasSparkline?: boolean;
+  isAlert?: boolean;
+  subtitle: string;
+  subtitleIcon?: string; // Font Awesome
+  progressBg?: string;
+}
+
+export interface FoodIngredient {
+  name: string;
+  percent: number;
+}
+
+export interface VenueMatch {
+  restaurant_id: number; // Khớp với bảng restaurants
+  name: string;
+  address: string;
+  score: number;
+}
+
+export interface AiPrediction {
+  food_id: number; // Khớp với bảng foods
+  title: string;
+  desc: string;
+  matchScore: number;
+  venueMatch: VenueMatch;
+  altSuggestion: string;
+}
+
+export interface AiSample {
+  id: string; // Hoặc ID tạm thời của ảnh upload
   timeUpload: string;
   image: string;
   device: string;
@@ -19,449 +55,307 @@ interface ModerationSample {
   resolution: string;
   gps: string;
   detectionCount: number;
-  aiPrediction: {
-    matchScore: number;
-    title: string;
-    desc: string;
-    venueMatch: { name: string; score: number; address: string };
-    altSuggestion: string;
-  };
+  aiPrediction: AiPrediction;
+  ingredients: FoodIngredient[];
+  // Cho phần list hàng đợi
+  score: number;
+  title: string;
+  subtitle: string;
+  scoreBg?: string;
+  statusClass?: string;
+  status?: string;
 }
 
-interface ModerationApiSample {
-  id: number;
-  image_url: string;
-  predicted_label: string;
-  corrected_label: string | null;
-  confidence: number;
-  location: string | null;
-  device: string | null;
-  resolution: string | null;
-  gps: string | null;
-  venue_name: string | null;
-  venue_address: string | null;
-  status: string;
+export interface Pillar {
+  id: string;
+  title: string;
+  icon: string; // Dùng làm text hoặc Font Awesome
+  iconColor: string;
+  iconBg: string;
+  weight: string;
+  description: string;
+  tags: string[];
 }
 
-interface ModerationSamplePage {
-  items: ModerationApiSample[];
-  total: number;
+export interface DashboardData {
+  metrics: AiMetric[];
+  queue: AiSample[];
+  pillars: Pillar[];
 }
 
-interface AdminOverviewResponse {
-  kpis: Array<{ key: string; value: number | string; detail: string }>;
+// ==========================================
+// 2. MOCK API SERVICE (Sẵn sàng nối Backend)
+// ==========================================
+export class AiModerationService {
+  // Thay thế hàm này bằng HttpClient khi có API thật.
+  // Ví dụ: return this.http.get<DashboardData>('/api/admin/vision-queue');
+  getModerationData(): Observable<DashboardData> {
+    return of({
+      metrics: [
+        {
+          title: 'Tổng ảnh chờ duyệt', icon: 'fa-solid fa-images', iconColor: 'text-primary', iconBg: 'bg-primary-container/30',
+          value: '1,248', trendText: '+12% tuần này', trendIcon: 'fa-solid fa-arrow-trend-up',
+          hasSparkline: true, isAlert: false, subtitle: 'Cập nhật realtime từ người dùng'
+        },
+        {
+          title: 'Độ chính xác AI (Top-1)', icon: 'fa-solid fa-bullseye', iconColor: 'text-secondary', iconBg: 'bg-secondary-container/30',
+          value: '94.5', unit: '%', progressValue: 94.5, progressBg: 'bg-secondary',
+          isAlert: false, subtitle: 'Tăng 2.1% so với Model V3.1'
+        },
+        {
+          title: 'Tỷ lệ gán quán (Venue)', icon: 'fa-solid fa-store', iconColor: 'text-tertiary', iconBg: 'bg-tertiary-container/30',
+          value: '82.0', unit: '%', progressValue: 82.0, progressBg: 'bg-tertiary',
+          isAlert: false, subtitle: 'Nhận diện trùng khớp GPS'
+        },
+        {
+          title: 'Cảnh báo rác / Spam', icon: 'fa-solid fa-triangle-exclamation', iconColor: 'text-error', iconBg: 'bg-error-container/30',
+          value: '86', trendText: 'Cần chú ý', trendIcon: 'fa-solid fa-circle-exclamation',
+          isAlert: true, subtitle: 'Phát hiện ảnh không phải thức ăn', subtitleIcon: 'Cảnh báo tự động'
+        }
+      ],
+      queue: [
+        {
+          id: 'IMG_8832_RAW', timeUpload: '2 phút trước',
+          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4ngjPYrf0hYdGAsKzE9NXUPbTur3jmrjXUZ5JLY5FnS-rjqixhyC2QJgAZjSC8fr-GES9Ew4BrH4Gb2_Tlg9Zdk3BcDRazjB7rmAgP7EjVQIeRjAkxJOUSJUNbB5chjxWesDf5pn22-Yar_h24bKBIzNWQptWt6p9-yIN1_GkLMLQuAj-WbTveLtOeEu58NIJCtN4yC6PFD01lJ2P94gHxw5n9GZAM3uQKM0pWn0',
+          device: 'iPhone 14 Pro', location: 'Đà Nẵng', resolution: '4032 x 3024', gps: '16.0597° N, 108.2155° E', detectionCount: 5,
+          ingredients: [
+            { name: 'Sợi mì nghệ', percent: 45 }, { name: 'Tôm đất', percent: 20 },
+            { name: 'Thịt xíu', percent: 15 }, { name: 'Bánh tráng nướng', percent: 10 }, { name: 'Rau sống', percent: 10 }
+          ],
+          aiPrediction: {
+            food_id: 1, // Khớp với ID trong bảng `foods`
+            title: 'Mì Quảng Tôm Thịt',
+            desc: 'Nhận diện sợi mì vàng đặc trưng, nước lèo xâm xấp và bánh tráng nướng. Đạt chuẩn món ăn bản địa.',
+            matchScore: 98, altSuggestion: 'Mì Quảng Gà (82%)',
+            venueMatch: { restaurant_id: 10, name: 'Mì Quảng Bà Vị', address: '166 Lê Đình Dương, Hải Châu', score: 96 } // Bảng `restaurants`
+          },
+          score: 98, scoreBg: 'bg-primary text-on-primary', title: 'Mì Quảng Tôm Thịt', subtitle: 'Tự tin cao', status: 'Chờ duyệt', statusClass: 'bg-surface-container-high text-on-surface-variant'
+        },
+        {
+          id: 'IMG_0921_HDR', timeUpload: '5 phút trước',
+          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCeRt3zm0FAQUM-k3v6H-4jydHYLxRdtTbvLHNe_ocIocur45Pn8YrEX9zAWR5LWM1TvycmzACMsvRLCyTlesdmfTQH7Zt4_7aegxiCMixfb3EYirfCwYQaXV8aBO3VubDZvqgj-X9WembVSpxe2npdFOvETD7_5qsRJnOCRkLtn68jpqGgYwJ1mrGNjEvcA9VaIRd6DMB0ykMoMRSgMt_1Iu1nFZCt0lReb0Tu0Zo',
+          device: 'Samsung S23', location: 'Hải Châu, ĐN', resolution: '3000 x 4000', gps: '16.0682° N, 108.2213° E', detectionCount: 3,
+          ingredients: [
+            { name: 'Thịt heo luộc', percent: 50 }, { name: 'Mắm nêm', percent: 20 }, { name: 'Rau sống', percent: 30 }
+          ],
+          aiPrediction: {
+            food_id: 2, title: 'Bánh Tráng Cuốn Thịt Heo',
+            desc: 'Thịt heo hai đầu da luộc, chén mắm nêm nguyên chất và mâm rau rừng.',
+            matchScore: 95, altSuggestion: 'Bún Mắm Nêm (70%)',
+            venueMatch: { restaurant_id: 15, name: 'Quán Trần', address: '4 Lê Duẩn, Hải Châu', score: 92 }
+          },
+          score: 95, scoreBg: 'bg-secondary text-on-secondary', title: 'Bánh Tráng Cuốn Thịt Heo', subtitle: 'Hợp lệ', status: 'Chờ duyệt', statusClass: 'bg-surface-container-high text-on-surface-variant'
+        },
+        {
+          id: 'IMG_4410_JPG', timeUpload: '10 phút trước',
+          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAor80OigOeRCn7G8Hjn4vn-DVlAdVTCOUXY2qNyxvuCjKaLSvqfGBV1xOhbewUUhEQ9hNxzSRqpgFtA6xJUu7Vr4wlTh4tNsWS6Z8FclYMP8pAr5027_dumLYEtFFA87D_17rwG7mHmB0qiti2rX1soYmfRv9G5oBcWcl0-3BrQqnu_VknsqsHPYQVWBMDYGbG4T_9y7KWT3DVeHqVbIvx-evBOX1zF44UfR1LJY',
+          device: 'Nikon Zfc', location: 'Sơn Trà, ĐN', resolution: '6000 x 4000', gps: '16.0711° N, 108.2322° E', detectionCount: 4,
+          ingredients: [
+            { name: 'Nước cốt dừa', percent: 40 }, { name: 'Sầu riêng', percent: 30 }, { name: 'Thạch', percent: 20 }, { name: 'Mít', percent: 10 }
+          ],
+          aiPrediction: {
+            food_id: 3, title: 'Chè Sầu Liên',
+            desc: 'Món tráng miệng có sầu riêng xay nhuyễn, nước cốt dừa và thạch.',
+            matchScore: 91, altSuggestion: 'Chè Thái (85%)',
+            venueMatch: { restaurant_id: 21, name: 'Chè Liên', address: '189 Hoàng Diệu, Hải Châu', score: 88 }
+          },
+          score: 91, scoreBg: 'bg-secondary text-on-secondary', title: 'Chè Sầu Liên', subtitle: 'Cần check', status: 'Chờ duyệt', statusClass: 'bg-surface-container-high text-on-surface-variant'
+        }
+      ],
+      pillars: [
+        { id: '1', title: 'Hương Vị Nguyên Bản', icon: '1', iconBg: 'bg-primary-container', iconColor: 'text-on-primary-container', weight: '40%', description: 'Nước dùng, nguyên liệu và cách tẩm ướp phải giữ được đặc trưng truyền thống của người bản địa.', tags: ['Mắm nêm', 'Ớt sừng', 'Gia vị địa phương'] },
+        { id: '2', title: 'Nguồn Gốc Nguyên Liệu', icon: '2', iconBg: 'bg-secondary-container', iconColor: 'text-on-secondary-container', weight: '25%', description: 'Sử dụng rau sống Trà Quế, cá tươi sông Hàn, hải sản đánh bắt trong ngày tại cảng Thọ Quang.', tags: ['Tươi sống', 'Truy xuất nguồn gốc'] },
+        { id: '3', title: 'Vệ Sinh An Toàn', icon: '3', iconBg: 'bg-tertiary-container', iconColor: 'text-on-tertiary-container', weight: '20%', description: 'Khu vực bếp mở, dụng cụ chế biến sạch sẽ, không dùng chất bảo quản công nghiệp.', tags: ['Bếp sạch', 'An toàn thực phẩm'] },
+        { id: '4', title: 'Giá Trị Lịch Sử', icon: '4', iconBg: 'bg-surface-variant', iconColor: 'text-on-surface-variant', weight: '15%', description: 'Ưu tiên các quán gia truyền từ 2 đời trở lên hoặc lưu giữ công thức cổ truyền xứ Quảng.', tags: ['Gia truyền', 'Văn hoá'] }
+      ]
+    }).pipe(delay(500));
+  }
+
+  // Hàm gọi API thực tế để lưu dữ liệu đã duyệt vào Database
+  approveImageToDatabase(sample: AiSample): Observable<any> {
+    // API thực tế sẽ insert vào bảng `food_images`
+    // payload: { food_id: sample.aiPrediction.food_id, image_url: sample.image, restaurant_id: sample.aiPrediction.venueMatch.restaurant_id }
+    return of({ success: true }).pipe(delay(300));
+  }
 }
 
+// ==========================================
+// 3. COMPONENT CHÍNH
+// ==========================================
 @Component({
   selector: 'app-ai-moderation',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  providers: [AiModerationService],
   templateUrl: './ai-moderation.component.html'
 })
 export class AiModerationComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8000/api/admin';
-  @Input() searchQuery: string = '';
-  confidenceThreshold = 85;
-  reviewedCount = 0;
+  confidenceThreshold = 80;
   notice = '';
+
+  metrics: AiMetric[] = [];
+  pillars: Pillar[] = [];
+  apiQueue: AiSample[] = [];
+
+  activeSample: AiSample | null = null;
+  sampleHistory: AiSample[] = [];
+
+  queuePosition = 0;
+  queueTotal = 0;
+  isLoading = false;
+  isSaving = false;
+
   isEditingLabel = false;
-  isAssigningVenue = false;
   editedLabel = '';
+  isAssigningVenue = false;
   editedVenue = '';
-  queueExhausted = false;
-  isLoadingQueue = true;
-  totalQueueCount = 0;
-  private activeApiSample: ModerationApiSample | null = null;
-  apiQueue: ModerationApiSample[] = [];
-  sampleHistory: ModerationSample[] = [];
 
-  // --- 1. SỐ LIỆU TỔNG QUAN (METRICS) ---
-  metrics: PerformanceMetric[] = [
-    {
-      title: 'Độ chính xác mô hình', icon: 'verified', iconBg: 'bg-secondary-container/40', iconColor: 'text-secondary',
-      value: '98.4%', trendIcon: 'trending_up', trendText: '+0.8%',
-      progressValue: 98.4, progressBg: 'bg-secondary',
-      subtitle: 'Dữ liệu kiểm thử F1-Score trên 42 món'
-    },
-    {
-      title: 'Ảnh phân tích tuần này', icon: 'photo_camera', iconBg: 'bg-primary-fixed', iconColor: 'text-primary',
-      value: '12.840', unit: 'ảnh',
-      hasSparkline: true,
-      subtitle: 'Tăng 22.4% so với tuần trước'
-    },
-    {
-      title: 'Khớp đặc sản Đà Nẵng', icon: 'ramen_dining', iconBg: 'bg-tertiary-fixed', iconColor: 'text-tertiary',
-      value: '96.2%', unit: '/ tổng danh mục',
-      progressValue: 96.2, progressBg: 'bg-tertiary-container',
-      subtitle: 'Mì Quảng, Bánh tráng thịt heo, Gỏi cá Nam Ô'
-    },
-    {
-      title: 'Cần người thật can thiệp', icon: 'pan_tool', iconBg: 'bg-primary/10', iconColor: 'text-primary',
-      value: '14', unit: 'mẫu chờ duyệt',
-      isAlert: true,
-      subtitle: 'Thời gian phản hồi trung bình: 4.2 phút',
-      subtitleIcon: '4 ảnh thiếu góc chụp, 10 ảnh sai tag'
-    }
-  ];
-
-  // --- 2. CHI TIẾT MẪU ĐANG DUYỆT (ACTIVE SAMPLE) ---
-  activeSample: ModerationSample = {
-    recordId: null,
-    id: '—',
-    timeUpload: '—',
-    image: '',
-    device: '—',
-    location: '—',
-    resolution: '—',
-    gps: '—',
-    detectionCount: 0,
-    aiPrediction: {
-      matchScore: 0,
-      title: 'Chưa có mẫu',
-      desc: 'Hàng đợi chưa có dữ liệu kiểm duyệt.',
-      venueMatch: { name: 'Chưa gán quán', score: 0, address: '—' },
-      altSuggestion: '—'
-    }
-  };
-
-  ingredients: AiIngredient[] = [
-    { name: 'Sợi mì vàng nghệ', percent: 98 },
-    { name: 'Đậu phụng rang', percent: 96 },
-    { name: 'Bánh tráng mè nướng', percent: 93 },
-    { name: 'Rau cải con & bắp chuối', percent: 91 },
-    { name: 'Thố ếch om sả ớt', percent: 89 }
-  ];
-
-  // --- 3. HÀNG ĐỢI TIẾP THEO (UPCOMING) ---
-  upcomingSamples: UpcomingSample[] = [
-    { title: 'Bánh Xèo Tôm Nhảy', subtitle: 'Bánh Xèo Bà Dưỡng', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBjSAWMbpUEu8XihUt1P_vohUgD5Ta9tej3UebXkyIW9TWSJe4_Sb753CEpm8n3h1h9I5wA94Uq2TwTqWrti8EA8qFyBpLg4IDReQVgUI3dLqi8QPANyDipOHdNkkuqduQB3Gx_BdpWr9KOQp5-5I5tEvInzrFId62P3BIia8hd9sPIfBNSSVXBVRv5A8BLW50oF4F7hlEMmt9y6FFFq5QKKC2QsjovpD8mamWAGWzArJ3V4NGJoMxJ', score: 98.1, scoreBg: 'bg-secondary text-on-secondary', status: 'Sẵn sàng', statusClass: 'text-secondary-container bg-secondary' },
-    { title: 'Gỏi Cá Nam Ô (Ướt)', subtitle: 'Gỏi Cá Thanh Hương', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5KYT4hegcV6QWI3ZnD69BcbsawWayy0VfD-l-KoG_3vjs5Z0gwoPpaUawMZ0NUXqPDKnxv1SelwTaO5HnZZILFAihF3foZqRClECGPuVaC9ZnsQEuf8HlIrS961gsLew8qK1pEokhTsXY6cf9qa1BdnQEwaF8ikuqS1KVnRfz1kOPDH_dOsh6ZG2vQOIwkVN_oKnVZOB58BDIY9vOHmTLF6qVTc8PXYkd7wkpAHmNoRgXzvIgHvgz', score: 87.5, scoreBg: 'bg-tertiary-container text-on-tertiary-container', status: 'Cần xem', statusClass: 'bg-tertiary-fixed text-on-tertiary-fixed' },
-    { title: 'Bánh Tráng Cuốn Thịt Heo', subtitle: 'Quán Mậu - Đỗ Thúc Tịnh', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxZtBRxoA6ayXoVsHIMcYxc2yfY_O0tZ0gQDIEmScxVjm-BgGmDcP0kfvLKh73CHcluq3ULIrO9QzkCVoRLz4QXixzHLorwOADzfUFtBv37_s8TzX6lE6YDCemsRM7rQMArQInl6f1muaNW4NPUDiBcicHexGEEnSShR4XdVhFsb2Mlmze_LKj84-HrNcfim93BPdwgsVv_JNiJ0U0y_uUHte6g1xmSsENQPyDvbet0mr2gSyAZb1c', score: 95.9, scoreBg: 'bg-secondary text-on-secondary', status: 'Sẵn sàng', statusClass: 'text-secondary-container bg-secondary' }
-  ];
-
-  // --- 4. TIÊU CHUẨN KIỂM ĐỊNH (PILLARS) ---
-  pillars: QualityPillar[] = [
-    { id: 1, title: 'Vị Nước Dùng Bản Sắc', weight: '35%', description: 'Nước nhưn (nước lèo) mì Quảng phải sắc nét, sánh vừa, đậm vị tôm thịt hoặc cá tràu, ngọt từ xương tự nhiên, không lạm dụng bột ngọt hóa chất.', tags: ['Thử mẫu mù (Blind-test)', 'Độ mặn/ngọt chuẩn'], iconBg: 'bg-primary/10', iconColor: 'text-primary' },
-    { id: 2, title: 'Nguyên Liệu Miền Trung', weight: '25%', description: 'Rau sống phải có cải con cay nồng, bắp chuối sứ, húng lủi Trà Quế; mắm nêm cá cơm ủ thủ công từ làng chài truyền thống Nam Ô hoặc Cửa Đại.', tags: ['Có nguồn gốc rau', 'Mắm nêm ủ > 6 tháng'], iconBg: 'bg-tertiary/10', iconColor: 'text-tertiary' },
-    { id: 3, title: 'Vệ Sinh & An Toàn (VSATTP)', weight: '20%', description: 'Khu vực chế biến ngăn nắp, tủ kính đậy kín món nấu, đũa muỗng tiệt trùng, nguồn nước sạch đạt chuẩn kiểm nghiệm y tế TP Đà Nẵng định kỳ.', tags: ['Giấy phép VSATTP', 'Găng tay chế biến'], iconBg: 'bg-secondary/10', iconColor: 'text-secondary' },
-    { id: 4, title: 'Giá Niêm Yết Minh Bạch', weight: '20%', description: 'Tuyệt đối không có hành vi "chặt chém" du khách. Menu in rõ ràng, đồng giá cho khách địa phương và du khách quốc tế, quét mã thanh toán minh bạch.', tags: ['Bảng giá cố định', 'Hỗ trợ QR / VietQR'], iconBg: 'bg-primary-container/20', iconColor: 'text-primary-container' }
-  ];
-
-  constructor() {
-    this.editedLabel = this.activeSample.aiPrediction.title;
-    this.editedVenue = this.activeSample.aiPrediction.venueMatch.name;
-  }
+  constructor(private aiService: AiModerationService) {}
 
   ngOnInit(): void {
-    void this.loadQueue();
-    void this.loadMetrics();
+    this.fetchData();
   }
 
-  get visibleUpcomingSamples(): UpcomingSample[] {
+  fetchData(): void {
+    this.isLoading = true;
+    this.aiService.getModerationData().subscribe({
+      next: res => {
+        this.metrics = res.metrics;
+        this.pillars = res.pillars;
+        this.apiQueue = [...res.queue];
+        this.queueTotal = res.queue.length;
+        this.sampleHistory = [];
+        this.queuePosition = this.apiQueue.length > 0 ? 1 : 0;
+        this.activeSample = this.apiQueue.shift() ?? null;
+        this.isLoading = false;
+      },
+      error: err => {
+        console.error('Không thể tải dữ liệu kiểm duyệt:', err);
+        this.showToast('Không thể tải dữ liệu kiểm duyệt. Vui lòng thử lại.');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  get ingredients(): FoodIngredient[] {
+    return this.activeSample?.ingredients ?? [];
+  }
+
+  get visibleUpcomingSamples(): AiSample[] {
     return this.apiQueue
-      .filter((sample) => sample.confidence >= this.confidenceThreshold)
-      .map((sample) => ({
-        id: sample.id,
-        title: sample.corrected_label || sample.predicted_label,
-        subtitle: sample.venue_name || sample.location || 'Chưa gán quán',
-        image: sample.image_url,
-        score: sample.confidence,
-        scoreBg: sample.confidence >= 90 ? 'bg-secondary text-on-secondary' : 'bg-tertiary-container text-on-tertiary-container',
-        status: 'Chờ duyệt',
-        statusClass: 'bg-tertiary-fixed text-on-tertiary-fixed',
-      }));
+      .filter(sample => sample.score >= this.confidenceThreshold)
+      .slice(0, 3);
   }
 
-  get queuePosition(): number {
-    return this.reviewedCount + this.sampleHistory.length + (this.activeApiSample ? 1 : 0);
+  get queueExhausted(): boolean {
+    return this.activeSample === null;
   }
 
-  get queueTotal(): number {
-    return this.reviewedCount + this.totalQueueCount;
+  decideSample(action: 'approved' | 'rejected'): void {
+    const sample = this.activeSample;
+    if (!sample || this.isSaving) return;
+
+    if (action === 'approved') {
+      this.isSaving = true;
+      this.aiService.approveImageToDatabase(sample).subscribe({
+        next: () => {
+          this.showToast(`Đã lưu ảnh vào CSDL (Food ID: ${sample.aiPrediction.food_id})`);
+          this.isSaving = false;
+          this.moveToNext();
+        },
+        error: err => {
+          console.error('Không thể duyệt ảnh:', err);
+          this.showToast('Lưu ảnh thất bại. Vui lòng thử lại.');
+          this.isSaving = false;
+        }
+      });
+    } else {
+      this.showToast(`Đã từ chối mẫu ${sample.id}`);
+      this.moveToNext();
+    }
+  }
+
+  moveToNext(): void {
+    if (!this.activeSample) return;
+
+    this.sampleHistory.push(this.activeSample);
+    this.activeSample = this.apiQueue.shift() ?? null;
+    this.queuePosition = this.activeSample
+      ? this.sampleHistory.length + 1
+      : this.queueTotal;
+    this.resetEditors();
+  }
+
+  showNextSample(): void {
+    if (this.apiQueue.length > 0) this.moveToNext();
   }
 
   showPreviousSample(): void {
     if (this.sampleHistory.length === 0) return;
-    if (this.activeApiSample) this.apiQueue.unshift(this.activeApiSample);
-    this.activeSample = this.sampleHistory.pop()!;
-    this.activeApiSample = this.apiQueue.find((sample) => sample.id === this.activeSample.recordId) ?? null;
-    if (this.activeApiSample) {
-      this.apiQueue = this.apiQueue.filter((sample) => sample.id !== this.activeApiSample?.id);
+
+    if (this.activeSample) {
+      this.apiQueue.unshift(this.activeSample);
     }
-    this.queueExhausted = false;
-    this.notice = '';
+
+    this.activeSample = this.sampleHistory.pop() ?? null;
+    this.queuePosition = Math.max(1, this.queuePosition - 1);
+    this.resetEditors();
   }
 
-  showNextSample(): void {
-    const next = this.apiQueue[0];
-    if (!next) return;
-    this.selectSample(this.toQueueItem(this.fromApiSample(next)));
-  }
+  selectSample(item: AiSample): void {
+    if (!this.activeSample || item.id === this.activeSample.id) return;
 
-  selectSample(sample: UpcomingSample): void {
-    if (sample.id === undefined) return;
-    const next = this.apiQueue.find((item) => item.id === sample.id);
-    if (!next) return;
-    if (this.activeApiSample) this.apiQueue.push(this.activeApiSample);
-    this.apiQueue = this.apiQueue.filter((item) => item.id !== next.id);
+    const index = this.apiQueue.findIndex(sample => sample.id === item.id);
+    if (index === -1) return;
+
     this.sampleHistory.push(this.activeSample);
-    this.activeApiSample = next;
-    this.activeSample = this.fromApiSample(next);
-    this.queueExhausted = false;
-    this.editedLabel = this.activeSample.aiPrediction.title;
-    this.editedVenue = this.activeSample.aiPrediction.venueMatch.name;
-    this.notice = '';
-  }
-
-  async decideSample(decision: 'approved' | 'rejected'): Promise<void> {
-    if (!this.activeApiSample) {
-      this.notice = 'Không có mẫu đã lưu trên máy chủ để cập nhật.';
-      return;
-    }
-    const name = this.activeSample.aiPrediction.title;
-    try {
-      await firstValueFrom(
-        this.http.patch(
-          `${this.apiUrl}/moderation/samples/${this.activeApiSample.id}`,
-          {
-            decision,
-            corrected_label: this.activeSample.aiPrediction.title,
-            venue_name: this.activeSample.aiPrediction.venueMatch.name,
-          },
-        ),
-      );
-    } catch (error: unknown) {
-      this.notice = error instanceof Error ? error.message : 'Không thể lưu quyết định kiểm duyệt.';
-      return;
-    }
-    this.reviewedCount++;
-    this.totalQueueCount = Math.max(0, this.totalQueueCount - 1);
-    const decisionMessage = decision === 'approved'
-      ? `Đã xác nhận nhãn "${name}" và đưa mẫu vào tập dữ liệu đã kiểm duyệt.`
-      : `Đã từ chối mẫu "${name}" khỏi tập dữ liệu huấn luyện.`;
-    this.sampleHistory = [];
-    const next = this.visibleUpcomingSamples[0];
-    this.activeApiSample = null;
-    if (next) {
-      const sample = this.apiQueue.find((item) => item.id === next.id);
-      this.apiQueue = this.apiQueue.filter((item) => item.id !== sample?.id);
-      if (sample) {
-        this.activeApiSample = sample;
-        this.activeSample = this.fromApiSample(sample);
-        this.editedLabel = this.activeSample.aiPrediction.title;
-        this.editedVenue = this.activeSample.aiPrediction.venueMatch.name;
-      }
-    }
-    this.queueExhausted = !this.activeApiSample;
-    this.notice = this.activeApiSample
-      ? `${decisionMessage} Đang chuyển sang mẫu tiếp theo.`
-      : `${decisionMessage} Hàng đợi đã hết mẫu.`;
-    void this.loadMetrics();
+    this.apiQueue.splice(index, 1);
+    this.activeSample = item;
+    this.queuePosition = this.sampleHistory.length + 1;
+    this.resetEditors();
   }
 
   openLabelEditor(): void {
-    this.editedLabel = this.activeSample.aiPrediction.title;
+    if (!this.activeSample) return;
     this.isEditingLabel = true;
+    this.editedLabel = this.activeSample.aiPrediction.title;
   }
 
   saveLabel(): void {
-    const label = this.editedLabel.trim();
-    if (!label) {
-      this.notice = 'Tên nhãn không được để trống.';
-      return;
-    }
-    void this.saveSampleChanges({ corrected_label: label }, () => {
-      this.activeSample.aiPrediction.title = label;
-      this.isEditingLabel = false;
-      this.notice = `Đã cập nhật nhãn thành "${label}".`;
-    });
+    if (!this.activeSample || !this.editedLabel.trim()) return;
+    this.activeSample.aiPrediction.title = this.editedLabel.trim();
+    this.isEditingLabel = false;
+    this.showToast('Đã cập nhật nhãn trong giao diện.');
   }
 
   openVenueEditor(): void {
-    this.editedVenue = this.activeSample.aiPrediction.venueMatch.name;
+    if (!this.activeSample) return;
     this.isAssigningVenue = true;
+    this.editedVenue = this.activeSample.aiPrediction.venueMatch.name;
   }
 
   assignVenue(): void {
-    const venue = this.editedVenue.trim();
-    if (!venue) {
-      this.notice = 'Tên quán không được để trống.';
-      return;
-    }
-    void this.saveSampleChanges({ venue_name: venue }, () => {
-      this.activeSample.aiPrediction.venueMatch.name = venue;
-      this.isAssigningVenue = false;
-      this.notice = `Đã gán mẫu cho ${venue}.`;
-    });
+    if (!this.activeSample || !this.editedVenue.trim()) return;
+    this.activeSample.aiPrediction.venueMatch.name = this.editedVenue.trim();
+    this.isAssigningVenue = false;
+    this.showToast('Đã cập nhật tên quán trong giao diện.');
   }
 
   downloadSampleDataset(): void {
-    const samples = [
-      ...this.sampleHistory.map((sample) => ({
-        id: sample.id,
-        label: sample.aiPrediction.title,
-        confidence: sample.aiPrediction.matchScore,
-        location: sample.location,
-        image: sample.image,
-      })),
-      {
-        id: this.activeSample.id,
-        label: this.activeSample.aiPrediction.title,
-        confidence: this.activeSample.aiPrediction.matchScore,
-        location: this.activeSample.location,
-        image: this.activeSample.image,
-      },
-      ...this.apiQueue.map((sample) => ({
-        id: sample.id,
-        label: sample.corrected_label || sample.predicted_label,
-        confidence: sample.confidence,
-        location: sample.location,
-        image: sample.image_url,
-      })),
-    ];
-    const blob = new Blob([JSON.stringify(samples, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'food-moderation-samples.json';
-    link.click();
-    URL.revokeObjectURL(url);
-    this.notice = `Đã tải ${samples.length} mẫu dữ liệu JSON.`;
+    this.showToast('Chức năng tải bộ dữ liệu mẫu chưa được kết nối API.');
   }
 
-  private toQueueItem(sample: ModerationSample): UpcomingSample {
-    return {
-      id: sample.recordId ?? undefined,
-      title: sample.aiPrediction.title,
-      subtitle: sample.aiPrediction.venueMatch.name,
-      image: sample.image,
-      score: sample.aiPrediction.matchScore,
-      scoreBg: 'bg-secondary text-on-secondary',
-      status: 'Trong hàng đợi',
-      statusClass: 'bg-secondary-container text-on-secondary-container',
-    };
+  showToast(msg: string): void {
+    this.notice = msg;
+    setTimeout(() => {
+      if (this.notice === msg) this.notice = '';
+    }, 3500);
   }
 
-  private fromQueueItem(sample: UpcomingSample): ModerationSample {
-    return {
-      recordId: sample.id ?? null,
-      id: `#IMG-${String(85000 + this.reviewedCount + this.sampleHistory.length).padStart(5, '0')}`,
-      timeUpload: 'Vừa nhận',
-      image: sample.image,
-      device: 'Thiết bị chưa xác định',
-      location: 'Đà Nẵng',
-      resolution: 'Đang cập nhật',
-      gps: 'Chưa có dữ liệu GPS',
-      detectionCount: 1,
-      aiPrediction: {
-        matchScore: sample.score,
-        title: sample.title,
-        desc: 'Mẫu ảnh món ăn đang chờ chuyên gia kiểm duyệt.',
-        venueMatch: { name: sample.subtitle, score: sample.score, address: 'Đang cập nhật địa chỉ' },
-        altSuggestion: 'Chưa có gợi ý thay thế',
-      },
-    };
-  }
-
-  private async loadQueue(): Promise<void> {
-    this.isLoadingQueue = true;
-    const params = new HttpParams().set('status', 'pending').set('page', 1).set('page_size', 50);
-    try {
-      const page = await firstValueFrom(
-        this.http.get<ModerationSamplePage>(`${this.apiUrl}/moderation/samples`, { params }),
-      );
-      this.totalQueueCount = page.total;
-      this.apiQueue = page.items;
-      const firstSample = this.apiQueue.shift();
-      if (firstSample) {
-        this.activeApiSample = firstSample;
-        this.activeSample = this.fromApiSample(firstSample);
-        this.editedLabel = this.activeSample.aiPrediction.title;
-        this.editedVenue = this.activeSample.aiPrediction.venueMatch.name;
-        this.queueExhausted = false;
-      } else {
-        this.activeApiSample = null;
-        this.queueExhausted = true;
-        this.notice = 'Hàng đợi kiểm duyệt hiện chưa có mẫu.';
-      }
-    } catch (error: unknown) {
-      this.queueExhausted = true;
-      this.totalQueueCount = 0;
-      this.notice = error instanceof Error
-        ? error.message
-        : 'Không thể tải hàng đợi kiểm duyệt từ máy chủ.';
-    } finally {
-      this.isLoadingQueue = false;
-    }
-  }
-
-  private async loadMetrics(): Promise<void> {
-    try {
-      const overview = await firstValueFrom(
-        this.http.get<AdminOverviewResponse>(`${this.apiUrl}/overview`),
-      );
-      const moderation = overview.kpis.find((item) => item.key === 'moderation');
-      if (moderation) {
-        const metric = this.metrics.find((item) => item.isAlert);
-        if (metric) metric.value = String(moderation.value);
-      }
-    } catch (error: unknown) {
-      this.notice = error instanceof Error
-        ? error.message
-        : 'Không thể tải số liệu kiểm duyệt từ máy chủ.';
-    }
-  }
-
-  private fromApiSample(sample: ModerationApiSample): ModerationSample {
-    return {
-      recordId: sample.id,
-      id: `#IMG-${sample.id}`,
-      timeUpload: 'Trong hàng đợi',
-      image: sample.image_url,
-      device: sample.device ?? 'Thiết bị chưa xác định',
-      location: sample.location ?? 'Chưa có vị trí',
-      resolution: sample.resolution ?? 'Chưa có thông tin',
-      gps: sample.gps ?? 'Chưa có dữ liệu GPS',
-      detectionCount: 1,
-      aiPrediction: {
-        matchScore: sample.confidence,
-        title: sample.corrected_label || sample.predicted_label,
-        desc: 'Mẫu ảnh đang chờ chuyên gia kiểm duyệt.',
-        venueMatch: {
-          name: sample.venue_name ?? 'Chưa gán quán',
-          score: sample.confidence,
-          address: sample.venue_address ?? 'Chưa có địa chỉ',
-        },
-        altSuggestion: 'Chưa có gợi ý thay thế',
-      },
-    };
-  }
-
-  private async saveSampleChanges(
-    payload: { corrected_label?: string; venue_name?: string },
-    onSuccess: () => void,
-  ): Promise<void> {
-    if (!this.activeApiSample) {
-      this.notice = 'Mẫu hiện tại chưa được lưu trên máy chủ.';
-      return;
-    }
-    try {
-      const updated = await firstValueFrom(
-        this.http.patch<ModerationApiSample>(`${this.apiUrl}/moderation/samples/${this.activeApiSample.id}`, {
-          decision: 'pending',
-          ...payload,
-        }),
-      );
-      this.activeApiSample = updated;
-      this.activeSample = this.fromApiSample(updated);
-      this.editedLabel = updated.corrected_label || updated.predicted_label;
-      this.editedVenue = updated.venue_name ?? '';
-      onSuccess();
-    } catch (error: unknown) {
-      this.notice = error instanceof Error ? error.message : 'Không thể lưu thông tin mẫu.';
-    }
+  private resetEditors(): void {
+    this.isEditingLabel = false;
+    this.isAssigningVenue = false;
+    this.editedLabel = '';
+    this.editedVenue = '';
   }
 }

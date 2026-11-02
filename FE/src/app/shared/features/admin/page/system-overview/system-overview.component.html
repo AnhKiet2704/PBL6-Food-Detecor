@@ -1,293 +1,308 @@
 <main class="relative pt-16 w-full min-h-screen bg-surface px-gutter py-space-lg">
-<div class="flex flex-col w-full gap-space-lg pb-space-xxl">
+  <div class="flex flex-col w-full gap-space-lg pb-space-xxl">
 
-  <!-- Header Banner & Action Bar -->
-  <div class="w-full flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-low p-space-lg rounded-xl shadow-sm">
-    <div class="flex flex-col gap-1">
-      <div class="flex items-center gap-space-xs">
-        <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"></span>
-        <span class="font-label-xs text-label-xs uppercase tracking-wider text-secondary font-bold">
-          {{ isLoading ? 'Đang tải dữ liệu quản trị...' : 'Dữ liệu quản trị từ máy chủ' }}
-        </span>
-      </div>
-      <h1 class="font-headline-lg text-headline-lg text-on-surface">Chào mừng trở lại, Quản trị viên Lê Hoàng Nam</h1>
-      <p class="font-body-md text-body-md text-on-surface-variant">Có {{ allTaskCount }} tác vụ đang chờ xử lý trên hệ thống.</p>
-    </div>
-    <div class="flex items-center gap-space-sm flex-wrap">
-      <button (click)="exportReport()" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg shadow-sm" type="button">
-        <span class="material-symbols-outlined text-[18px] text-on-surface-variant">download</span>
-        <span>Xuất báo cáo CSV</span>
-      </button>
-      <button (click)="openRestaurantManagement()" class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-all font-label-lg text-label-lg shadow-md active:scale-95" type="button">
-        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">add_business</span>
-        <span>Thêm quán ăn mới</span>
-      </button>
-    </div>
-  </div>
-
-  @if (notice) {
-    <p class="rounded-xl border border-secondary/30 bg-secondary-container/30 p-space-sm text-sm text-on-surface" role="status">{{ notice }}</p>
-  }
-
-  <!-- 4 KPI Summary Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
-    @for (kpi of kpis; track kpi.title) {
-      <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-        <div class="flex items-start justify-between">
-          <div class="flex flex-col">
-            <span class="font-label-md text-label-md text-on-surface-variant uppercase">{{ kpi.title }}</span>
-            <span class="font-display-hero text-display-hero text-on-surface leading-none mt-2">{{ kpi.value }}</span>
-          </div>
-          <div [class]="kpi.iconBgClass + ' ' + kpi.iconColorClass" class="w-12 h-12 rounded-xl flex items-center justify-center">
-            <span class="material-symbols-outlined text-[26px]">{{ kpi.icon }}</span>
-          </div>
+    <!-- Header Banner & Action Bar -->
+    <div class="w-full flex flex-col lg:flex-row lg:items-center justify-between gap-space-md bg-surface-container-low p-space-lg rounded-xl shadow-sm">
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-space-xs">
+          <span class="w-2.5 h-2.5 rounded-full" [ngClass]="isLoading ? 'bg-tertiary animate-pulse' : isApiConnected ? 'bg-secondary' : 'bg-error'"></span>
+          <span class="font-label-xs text-label-xs uppercase tracking-wider font-bold" [ngClass]="isApiConnected ? 'text-secondary' : 'text-error'">
+            {{ isLoading ? 'Đang tải dữ liệu quản trị...' : isApiConnected ? 'Đã kết nối dữ liệu máy chủ' : 'Không thể kết nối máy chủ' }}
+          </span>
         </div>
-        <div class="mt-space-md pt-space-sm flex flex-col gap-1.5">
-
-          @if (kpi.subTextIcon) {
-            <div class="flex items-center gap-1.5 text-on-surface font-semibold">
-              <span class="material-symbols-outlined text-[16px] text-tertiary">{{ kpi.subTextIcon }}</span>
-              <span class="font-label-sm text-label-xs">{{ kpi.trendText }}</span>
-            </div>
-          } @else {
-            <div [class]="kpi.iconColorClass" class="flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">{{ kpi.trendIcon }}</span>
-              <span class="font-label-sm font-bold text-label-xs">{{ kpi.trendText }}</span>
-            </div>
-          }
-
-          <div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
-            <div [class]="kpi.progressBgClass" class="h-full rounded-full" [style.width.%]="kpi.progressValue"></div>
-          </div>
-          <span class="font-label-xs text-label-xs text-on-surface-variant">{{ kpi.subText }}</span>
-        </div>
+        <h1 class="font-headline-lg text-headline-lg text-on-surface">{{ currentAdminGreeting }}</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant">Có {{ allTaskCount }} tác vụ đang chờ xử lý trên hệ thống.</p>
       </div>
-    }
-  </div>
-
-  <!-- Trends & Geographic Distribution Row -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
-
-    <!-- Culinary Search Trends Chart (7 Cols) -->
-    <div class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
-      <div class="flex items-center justify-between mb-space-md">
-        <div class="flex flex-col">
-          <h2 class="font-headline-md text-headline-md text-on-surface">Xu hướng truy vấn ẩm thực</h2>
-          <span class="font-body-sm text-body-sm text-on-surface-variant">{{ trendDescription }}</span>
-        </div>
-        <div class="flex items-center gap-space-xs bg-surface-container-low p-1 rounded-full text-on-surface-variant">
-          <button (click)="selectTrendPeriod('7 ngày')" [class.bg-surface-container-lowest]="trendPeriod === '7 ngày'" [class.text-primary]="trendPeriod === '7 ngày'" class="px-space-sm py-1 rounded-full font-label-xs text-label-xs shadow-sm font-bold">7 ngày</button>
-          <button (click)="selectTrendPeriod('30 ngày')" [class.bg-surface-container-lowest]="trendPeriod === '30 ngày'" [class.text-primary]="trendPeriod === '30 ngày'" class="px-space-sm py-1 rounded-full font-label-xs text-label-xs hover:text-on-surface transition-colors">30 ngày</button>
-          <button (click)="selectTrendPeriod('Quý này')" [class.bg-surface-container-lowest]="trendPeriod === 'Quý này'" [class.text-primary]="trendPeriod === 'Quý này'" class="px-space-sm py-1 rounded-full font-label-xs text-label-xs hover:text-on-surface transition-colors">Quý này</button>
-        </div>
-      </div>
-
-      <!-- Trend Badges Legend -->
-      <div class="flex items-center gap-space-md flex-wrap mb-space-sm">
-        @for (legend of trendLegends; track legend.label) {
-          <div class="flex items-center gap-1.5">
-            <span [class]="legend.colorClass" class="w-3 h-3 rounded-full"></span>
-            <span class="font-label-xs text-label-xs text-on-surface">{{ legend.label }}</span>
-          </div>
-        }
-      </div>
-
-      <!-- Vector Sparkline Area Chart (SVG tĩnh) -->
-      <div class="w-full h-64 relative flex items-end">
-        <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 700 240">
-          <defs>
-            <linearGradient id="primaryGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ad2c0a" stop-opacity="0.35"></stop><stop offset="100%" stop-color="#ad2c0a" stop-opacity="0.0"></stop></linearGradient>
-            <linearGradient id="secGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#1a6b4f" stop-opacity="0.25"></stop><stop offset="100%" stop-color="#1a6b4f" stop-opacity="0.0"></stop></linearGradient>
-          </defs>
-          <!-- Grid Lines -->
-          <line stroke="#f0dfdb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="40" y2="40"></line>
-          <line stroke="#f0dfdb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="100" y2="100"></line>
-          <line stroke="#f0dfdb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="160" y2="160"></line>
-          <line stroke="#f0dfdb" stroke-width="1.5" x1="0" x2="700" y1="220" y2="220"></line>
-          <!-- Areas -->
-          <path [attr.d]="trendPaths[trendPeriod].primaryArea" fill="url(#primaryGrad)"></path>
-          <path [attr.d]="trendPaths[trendPeriod].primaryLine" fill="none" stroke="#ad2c0a" stroke-linecap="round" stroke-width="3.5"></path>
-          <path [attr.d]="trendPaths[trendPeriod].secondaryArea" fill="url(#secGrad)"></path>
-          <path [attr.d]="trendPaths[trendPeriod].secondaryLine" fill="none" stroke="#1a6b4f" stroke-linecap="round" stroke-width="2.5"></path>
-          <path [attr.d]="trendPaths[trendPeriod].tertiaryLine" fill="none" stroke="#8b4c11" stroke-dasharray="6 4" stroke-width="2"></path>
-        </svg>
-      </div>
-      <div class="flex justify-between items-center text-on-surface-variant font-label-xs text-label-xs pt-2">
-        @for (label of trendLabels; track label) {
-          <span [class.font-bold]="label === 'Hôm nay (CN)'" [class.text-primary]="label === 'Hôm nay (CN)'">{{ label }}</span>
-        }
-      </div>
-    </div>
-
-    <!-- Culinary Heatmap & Area Split (5 Cols) -->
-    <div class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="font-headline-md text-headline-md text-on-surface">Phân bổ vùng ẩm thực</h2>
-          <span class="font-body-sm text-body-sm text-on-surface-variant">Tỷ trọng quán &amp; mật độ thực khách</span>
-        </div>
-        <span class="material-symbols-outlined text-primary text-[24px]">explore</span>
-      </div>
-
-      <div class="relative rounded-xl overflow-hidden my-space-md bg-surface-container h-44 shadow-inner flex items-center justify-center">
-        <div class="w-full h-full bg-cover bg-center"></div>
-        <div class="absolute inset-0 bg-inverse-surface/20 backdrop-blur-[1px]"></div>
-        <div class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-space-sm py-1 rounded-full flex items-center gap-1 shadow-sm">
-          <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-          <span class="font-label-xs text-label-xs font-bold text-on-surface">Vùng sôi động nhất: Q. Hải Châu</span>
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-space-sm">
-        @for (dist of districts; track dist.name) {
-          <div>
-            <div class="flex justify-between font-label-md text-label-md mb-1">
-              <span class="text-on-surface font-semibold">{{ dist.name }}</span>
-              <span [class]="dist.colorClass" class="font-bold">{{ dist.percent }}% ({{ dist.count }} quán)</span>
-            </div>
-            <div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
-              <div [class]="dist.barClass" class="h-full rounded-full" [style.width.%]="dist.percent"></div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Operational Queues -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
-
-    <!-- Urgent Queue Table (8 Cols) -->
-    <div class="lg:col-span-8 flex flex-col gap-space-md">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
-        <div class="flex items-center gap-space-sm">
-          <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-label-lg">{{ allTaskCount }}</div>
-          <div>
-            <h2 class="font-headline-md text-headline-md text-on-surface">Tác vụ cần xử lý gấp (Urgent Queue)</h2>
-            <p class="font-body-sm text-body-sm text-on-surface-variant">Ưu tiên xử lý đơn đăng ký thẩm định và cảnh báo lệch thông tin</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-full">
-          <button (click)="setTaskFilter('review')" [class.bg-surface-container-lowest]="activeTaskFilter === 'review'" [class.text-primary]="activeTaskFilter === 'review'" class="px-space-md py-1.5 rounded-full text-on-surface-variant font-label-md text-label-md font-bold shadow-sm">Chờ thẩm định ({{ reviewTaskCount }})</button>
-          <button (click)="setTaskFilter('price')" [class.bg-surface-container-lowest]="activeTaskFilter === 'price'" [class.text-primary]="activeTaskFilter === 'price'" class="px-space-md py-1.5 rounded-full text-on-surface-variant font-label-md text-label-md hover:text-on-surface">Cập nhật giá ({{ priceTaskCount }})</button>
-          <button (click)="setTaskFilter('ai')" [class.bg-surface-container-lowest]="activeTaskFilter === 'ai'" class="px-space-md py-1.5 rounded-full text-error font-label-md text-label-md hover:bg-error-container/30">Cảnh báo AI ({{ aiTaskCount }})</button>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-between gap-3">
-        <p class="text-sm text-on-surface-variant">Các tác vụ cần được quản trị viên xử lý.</p>
-        <input [(ngModel)]="searchQuery" type="search" placeholder="Tìm trong tác vụ..." aria-label="Tìm tác vụ" class="w-full max-w-xs rounded-full bg-surface-container px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
-      </div>
-
-      @if (isLoading) {
-        <p class="rounded-xl bg-surface-container-low p-3 text-sm text-on-surface-variant" role="status">Đang tải tác vụ từ máy chủ...</p>
-      }
-
-      <div class="flex flex-col gap-space-sm">
-        @for (task of filteredTasks; track task.id) {
-          <div [class]="task.containerClass" class="p-space-md rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md transition-shadow">
-            <div class="flex items-center gap-space-md">
-              @if (task.image) {
-                <img [src]="task.image" class="w-16 h-16 rounded-xl object-cover" alt=""/>
-              }
-              @if (task.icon) {
-                <div [class]="task.iconBgClass" class="w-16 h-16 rounded-xl flex flex-col items-center justify-center">
-                  <span class="material-symbols-outlined text-[28px]">{{ task.icon }}</span>
-                </div>
-              }
-              <div class="flex flex-col">
-                <div class="flex items-center gap-2">
-                  <span [class]="task.titleColorClass" class="font-title-md text-title-md font-bold">{{ task.title }}</span>
-                  <span [class]="task.badgeClass" class="px-2 py-0.5 rounded-full font-label-xs text-label-xs font-semibold">{{ task.badge }}</span>
-                </div>
-                <span class="font-body-sm text-body-sm text-on-surface-variant">{{ task.description }}</span>
-
-                <div class="flex flex-col sm:flex-row sm:items-center gap-space-sm mt-1">
-                  @if (task.meta1) {
-                    <span [class]="task.meta1.colorClass || 'text-on-surface-variant'" class="font-label-xs text-label-xs flex items-center gap-1">
-                      @if (task.meta1.icon) { <span class="material-symbols-outlined text-[14px]">{{ task.meta1.icon }}</span> }
-                      <span [innerHTML]="task.meta1.html"></span>
-                    </span>
-                  }
-                  @if (task.meta2) {
-                    <span [class]="task.meta2.colorClass || 'text-on-surface-variant'" class="font-label-xs text-label-xs flex items-center gap-1">
-                      @if (task.meta2.icon) { <span class="material-symbols-outlined text-[14px]">{{ task.meta2.icon }}</span> }
-                      <span [innerHTML]="task.meta2.html"></span>
-                    </span>
-                  }
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-space-xs self-end md:self-center">
-              <button type="button" (click)="inspectTask(task)" [class]="task.secondaryBtn.class" class="px-space-md py-2 rounded-full font-label-md text-label-md transition-colors">{{ task.secondaryBtn.label }}</button>
-              <button type="button" (click)="completeTask(task)" [class]="task.primaryBtn.class" class="px-space-md py-2 rounded-full font-label-md text-label-md shadow-sm transition-colors">{{ task.primaryBtn.label }}</button>
-            </div>
-          </div>
-        }
-        @if (filteredTasks.length === 0) {
-          <div class="rounded-xl border border-dashed border-outline-variant bg-surface-container-lowest p-space-lg text-center text-sm text-on-surface-variant">
-            Không có tác vụ phù hợp với bộ lọc hiện tại.
-          </div>
-        }
-      </div>
-    </div>
-
-    <!-- Right Sidebar (4 Cols) -->
-    <div class="lg:col-span-4 flex flex-col gap-space-md">
-
-      <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col">
-        <div class="flex items-center justify-between mb-space-md">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary text-[22px]">verified_user</span>
-            <h3 class="font-headline-sm text-headline-sm text-on-surface">Kiểm định viên bản địa</h3>
-          </div>
-          <span class="font-label-xs text-label-xs text-secondary font-bold bg-secondary-container px-2 py-0.5 rounded-full">Trực tiếp</span>
-        </div>
-        <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">Hoạt động thẩm định hương vị, vệ sinh và nguyên liệu trực tiếp tại quán:</p>
-
-        <div class="flex flex-col gap-space-md">
-          @for (auditor of auditors; track auditor.id) {
-            <div class="flex items-start gap-space-sm">
-              <div [class]="auditor.avatarBgClass + ' ' + auditor.avatarColorClass" class="w-10 h-10 rounded-full flex items-center justify-center font-bold shrink-0">
-                {{ auditor.initials }}
-              </div>
-              <div class="flex flex-col">
-                <div class="flex items-center justify-between">
-                  <span class="font-label-md text-label-md text-on-surface font-bold">{{ auditor.name }}</span>
-                  <span class="font-label-xs text-label-xs text-on-surface-variant">{{ auditor.time }}</span>
-                </div>
-                <p class="font-body-sm text-body-sm text-on-surface-variant" [innerHTML]="auditor.contentHtml"></p>
-              </div>
-            </div>
-          }
-        </div>
-        <button class="mt-space-lg w-full py-2.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-1">
-          <span>Xem tất cả 24 kiểm định viên</span>
-          <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+      <div class="flex items-center gap-space-sm flex-wrap">
+        <button (click)="exportReport()" [disabled]="isLoading || !isApiConnected" class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-colors font-label-lg text-label-lg shadow-sm disabled:cursor-not-allowed disabled:opacity-50" type="button">
+          <i class="fa-solid fa-download text-[16px] text-on-surface-variant"></i>
+          <span>Xuất báo cáo CSV</span>
+        </button>
+        <button (click)="openRestaurantManagement()" class="inline-flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-container transition-all font-label-lg text-label-lg shadow-md active:scale-95" type="button">
+          <i class="fa-solid fa-store text-[16px]"></i>
+          <span>Quản lý quán ăn</span>
         </button>
       </div>
+    </div>
 
-      <!-- System Health -->
-      <div class="bg-surface-container-high p-space-lg rounded-xl flex flex-col gap-space-sm">
-        <div class="flex items-center justify-between">
-          <span class="font-label-md text-label-md text-on-surface-variant font-bold uppercase tracking-wider">Hiệu năng máy chủ</span>
-          <span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-secondary text-on-secondary font-bold">99.98% Uptime</span>
+    @if (notice) {
+      <p class="rounded-xl border border-secondary/30 bg-secondary-container/30 p-space-sm text-sm text-on-surface font-semibold flex items-center gap-1.5" role="status">
+        <i class="fa-solid fa-circle-info text-secondary"></i> {{ notice }}
+      </p>
+    }
+    @if (loadError) {
+      <div class="rounded-xl border border-error/30 bg-error-container/30 p-space-md text-sm text-error" role="alert">
+        <i class="fa-solid fa-circle-exclamation mr-1.5"></i>{{ loadError }}
+        <button type="button" (click)="refreshOverview()" class="ml-2 font-bold underline">Thử tải lại</button>
+      </div>
+    }
+
+    <!-- 4 KPI Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+      @for (kpi of kpis; track kpi.title) {
+        <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow border border-outline-variant/10">
+          <div class="flex items-start justify-between">
+            <div class="flex flex-col">
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase">{{ kpi.title }}</span>
+              <span class="font-display-hero text-display-hero text-on-surface leading-none mt-2">{{ kpi.value }}</span>
+            </div>
+            <div [class]="kpi.iconBgClass + ' ' + kpi.iconColorClass" class="w-12 h-12 rounded-xl flex items-center justify-center">
+              <i class="{{ kpi.icon }} text-[22px]"></i>
+            </div>
+          </div>
+          <div class="mt-space-md pt-space-sm flex flex-col gap-1.5">
+
+            @if (kpi.subTextIcon) {
+              <div class="flex items-center gap-1.5 text-on-surface font-semibold">
+                <i class="{{ kpi.subTextIcon }} text-[14px] text-tertiary"></i>
+                <span class="font-label-sm text-label-xs">{{ kpi.trendText }}</span>
+              </div>
+            } @else {
+              <div [class]="kpi.iconColorClass" class="flex items-center gap-1.5">
+                <i class="{{ kpi.trendIcon }} text-[14px]"></i>
+                <span class="font-label-sm font-bold text-label-xs">{{ kpi.trendText }}</span>
+              </div>
+            }
+            @if (isLoading && kpis.length === 0) {
+              <p class="sm:col-span-2 lg:col-span-4 rounded-xl bg-surface-container-low p-6 text-center text-sm text-on-surface-variant" role="status">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải số liệu tổng quan...
+              </p>
+            } @else if (!isLoading && kpis.length === 0 && !loadError) {
+              <p class="sm:col-span-2 lg:col-span-4 rounded-xl bg-surface-container-low p-6 text-center text-sm text-on-surface-variant">
+                Chưa có số liệu để hiển thị.
+              </p>
+            }
+
+            <div class="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+              <div [class]="kpi.progressBgClass" class="h-full rounded-full" [style.width.%]="kpi.progressValue"></div>
+            </div>
+            <span class="font-label-xs text-label-xs text-on-surface-variant">{{ kpi.subText }}</span>
+          </div>
         </div>
-        <div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface">
-          <span>Bộ nhớ AI Cache:</span>
-          <span class="font-bold">4.2 GB / 8 GB</span>
+      }
+    </div>
+
+    <!-- Trends & Geographic Distribution Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+
+      <!-- System data trend chart -->
+      <div class="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between border border-outline-variant/10">
+        <div class="flex items-center justify-between mb-space-md">
+          <div class="flex flex-col">
+            <h2 class="font-headline-md text-headline-md text-on-surface">Tăng trưởng dữ liệu hệ thống</h2>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">{{ trendDescription }}</span>
+          </div>
+          <div class="flex items-center gap-space-xs bg-surface-container-low p-1 rounded-full text-on-surface-variant">
+            <button type="button" (click)="selectTrendPeriod('7 ngày')" [disabled]="isLoading" [class.bg-surface-container-lowest]="trendPeriod === '7 ngày'" [class.text-primary]="trendPeriod === '7 ngày'" class="px-space-sm py-1 rounded-full font-label-xs text-label-xs shadow-sm font-bold disabled:opacity-50">7 ngày</button>
+            <button type="button" (click)="selectTrendPeriod('30 ngày')" [disabled]="isLoading" [class.bg-surface-container-lowest]="trendPeriod === '30 ngày'" [class.text-primary]="trendPeriod === '30 ngày'" class="px-space-sm py-1 rounded-full font-label-xs text-label-xs hover:text-on-surface transition-colors disabled:opacity-50">30 ngày</button>
+            <button type="button" (click)="selectTrendPeriod('Quý này')" [disabled]="isLoading" [class.bg-surface-container-lowest]="trendPeriod === 'Quý này'" [class.text-primary]="trendPeriod === 'Quý này'" class="px-space-sm py-1 rounded-full font-label-xs text-label-xs hover:text-on-surface transition-colors disabled:opacity-50">Quý này</button>
+          </div>
         </div>
-        <div class="w-full bg-surface-container-lowest rounded-full h-1.5 overflow-hidden">
-          <div class="bg-secondary h-full rounded-full" style="width: 52%"></div>
+
+        <!-- Trend Badges Legend -->
+        <div class="flex items-center gap-space-md flex-wrap mb-space-sm">
+          @for (legend of trendLegends; track legend.label) {
+            <div class="flex items-center gap-1.5">
+              <span [class]="legend.colorClass" class="w-3 h-3 rounded-full"></span>
+              <span class="font-label-xs text-label-xs text-on-surface">{{ legend.label }}</span>
+            </div>
+          }
         </div>
-        <div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface mt-1">
-          <span>Tốc độ phản hồi trung bình:</span>
-          <span class="font-bold text-secondary">84 ms</span>
+
+        <!-- Vector Sparkline Area Chart (SVG tĩnh) -->
+        <div class="w-full h-64 relative flex items-end" role="img" [attr.aria-label]="'Biểu đồ dữ liệu mới: ' + trendDescription">
+          <svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 700 240" aria-hidden="true">
+            <defs>
+              <linearGradient id="primaryGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#ad2c0a" stop-opacity="0.35"></stop><stop offset="100%" stop-color="#ad2c0a" stop-opacity="0.0"></stop></linearGradient>
+              <linearGradient id="secGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#1a6b4f" stop-opacity="0.25"></stop><stop offset="100%" stop-color="#1a6b4f" stop-opacity="0.0"></stop></linearGradient>
+            </defs>
+            <line stroke="#f0dfdb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="40" y2="40"></line>
+            <line stroke="#f0dfdb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="100" y2="100"></line>
+            <line stroke="#f0dfdb" stroke-dasharray="4 4" stroke-width="1" x1="0" x2="700" y1="160" y2="160"></line>
+            <line stroke="#f0dfdb" stroke-width="1.5" x1="0" x2="700" y1="220" y2="220"></line>
+
+            <path [attr.d]="trendPaths[trendPeriod].primaryArea" fill="url(#primaryGrad)"></path>
+            <path [attr.d]="trendPaths[trendPeriod].primaryLine" fill="none" stroke="#ad2c0a" stroke-linecap="round" stroke-width="3.5"></path>
+            <path [attr.d]="trendPaths[trendPeriod].secondaryArea" fill="url(#secGrad)"></path>
+            <path [attr.d]="trendPaths[trendPeriod].secondaryLine" fill="none" stroke="#1a6b4f" stroke-linecap="round" stroke-width="2.5"></path>
+            <path [attr.d]="trendPaths[trendPeriod].tertiaryLine" fill="none" stroke="#8b4c11" stroke-dasharray="6 4" stroke-width="2"></path>
+          </svg>
+        </div>
+        <div class="flex justify-between items-center gap-1 text-on-surface-variant font-label-xs text-label-xs pt-2">
+          @for (label of trendLabels; track label) {
+            <span class="text-center">{{ label }}</span>
+          }
         </div>
       </div>
 
+      <!-- Culinary Heatmap & Area Split (5 Cols) -->
+      <div class="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between border border-outline-variant/10">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-headline-md text-headline-md text-on-surface">Phân bổ vùng ẩm thực</h2>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">Tỷ trọng quán theo quận/huyện</span>
+          </div>
+          <i class="fa-solid fa-map-location-dot text-primary text-[24px]"></i>
+        </div>
+
+        <div class="relative rounded-xl overflow-hidden my-space-md bg-surface-container h-44 shadow-inner flex items-center justify-center">
+          <div class="w-full h-full bg-cover bg-center"></div>
+          <div class="absolute inset-0 bg-inverse-surface/10 backdrop-blur-[1px]"></div>
+          <div class="absolute top-3 left-3 bg-surface-container-lowest/90 backdrop-blur-md px-space-sm py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+            @if (districts.length > 0) {
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <span class="font-label-xs text-label-xs font-bold text-on-surface">Nhiều quán nhất: {{ busiestDistrict }}</span>
+            } @else {
+              <span class="font-label-xs text-label-xs text-on-surface">Chưa có dữ liệu khu vực</span>
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-space-sm">
+          @for (dist of districts; track dist.name) {
+            <div>
+              <div class="flex justify-between font-label-md text-label-md mb-1">
+                <span class="text-on-surface font-semibold">{{ dist.name }}</span>
+                <span [class]="dist.colorClass" class="font-bold">{{ dist.percent }}% ({{ dist.count }} quán)</span>
+              </div>
+              <div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+                <div [class]="dist.barClass" class="h-full rounded-full" [style.width.%]="dist.percent"></div>
+              </div>
+            </div>
+          }
+          @if (!districts.length && !isLoading) {
+            <p class="py-4 text-center text-sm text-on-surface-variant">Chưa có dữ liệu quận/huyện.</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Operational Queues -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+
+      <!-- Urgent Queue Table (8 Cols) -->
+      <div class="lg:col-span-8 flex flex-col gap-space-md">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+          <div class="flex items-center gap-space-sm">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-label-lg shadow-sm">{{ allTaskCount }}</div>
+            <div>
+              <h2 class="font-headline-md text-headline-md text-on-surface">Tác vụ cần xử lý gấp (Urgent Queue)</h2>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Ưu tiên xử lý đơn đăng ký thẩm định và cảnh báo lệch thông tin</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-full">
+            <button (click)="setTaskFilter('review')" [class.bg-surface-container-lowest]="activeTaskFilter === 'review'" [class.text-primary]="activeTaskFilter === 'review'" class="px-space-md py-1.5 rounded-full text-on-surface-variant font-label-md text-label-md font-bold shadow-sm">Chờ thẩm định ({{ reviewTaskCount }})</button>
+            <button (click)="setTaskFilter('price')" [class.bg-surface-container-lowest]="activeTaskFilter === 'price'" [class.text-primary]="activeTaskFilter === 'price'" class="px-space-md py-1.5 rounded-full text-on-surface-variant font-label-md text-label-md hover:text-on-surface transition-colors">Cập nhật giá ({{ priceTaskCount }})</button>
+            <button (click)="setTaskFilter('ai')" [class.bg-surface-container-lowest]="activeTaskFilter === 'ai'" class="px-space-md py-1.5 rounded-full text-error font-label-md text-label-md hover:bg-error-container/30 transition-colors">Cảnh báo AI ({{ aiTaskCount }})</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm text-on-surface-variant">Các tác vụ cần được quản trị viên xử lý.</p>
+          <div class="relative w-full max-w-xs">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[14px]"></i>
+            <input [(ngModel)]="searchQuery" type="search" placeholder="Tìm trong tác vụ..." aria-label="Tìm tác vụ" class="w-full rounded-full bg-surface-container pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"/>
+          </div>
+        </div>
+
+        @if (isLoading) {
+          <p class="rounded-xl bg-surface-container-low p-3 text-sm text-on-surface-variant text-center" role="status">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải tác vụ từ máy chủ...
+          </p>
+        }
+
+        <div class="flex flex-col gap-space-sm">
+          @for (task of filteredTasks; track task.id) {
+            <div [class]="task.containerClass" class="p-space-md rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md transition-shadow border border-outline-variant/10">
+              <div class="flex items-center gap-space-md">
+                @if (task.image) {
+                  <img [src]="task.image" class="w-16 h-16 rounded-xl object-cover shadow-sm" alt=""/>
+                }
+                @if (task.icon) {
+                  <div [class]="task.iconBgClass" class="w-16 h-16 rounded-xl flex flex-col items-center justify-center shadow-sm">
+                    <i class="{{ task.icon }} text-[24px]"></i>
+                  </div>
+                }
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span [class]="task.titleColorClass" class="font-title-md text-title-md font-bold">{{ task.title }}</span>
+                    <span [class]="task.badgeClass" class="px-2 py-0.5 rounded-full font-label-xs text-label-xs font-semibold">{{ task.badge }}</span>
+                  </div>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">{{ task.description }}</span>
+
+                  <div class="flex flex-col sm:flex-row sm:items-center gap-space-sm mt-1.5">
+                    @if (task.meta1) {
+                      <span [class]="task.meta1.colorClass || 'text-on-surface-variant'" class="font-label-xs text-label-xs flex items-center gap-1.5">
+                      @if (task.meta1.icon) { <i class="{{ task.meta1.icon }} text-[12px]"></i> }
+                        <span [innerHTML]="task.meta1.html"></span>
+                    </span>
+                    }
+                    @if (task.meta2) {
+                      <span [class]="task.meta2.colorClass || 'text-on-surface-variant'" class="font-label-xs text-label-xs flex items-center gap-1.5">
+                      @if (task.meta2.icon) { <i class="{{ task.meta2.icon }} text-[12px]"></i> }
+                        <span [innerHTML]="task.meta2.html"></span>
+                    </span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-space-xs self-end md:self-center">
+                <button type="button" (click)="inspectTask(task)" [disabled]="isLoading" [class]="task.secondaryBtn.class" class="px-space-md py-2 rounded-full font-label-md text-label-md transition-colors disabled:opacity-50">{{ task.secondaryBtn.label }}</button>
+                <button type="button" (click)="completeTask(task)" [disabled]="isLoading || resolvingTaskId !== null" [class]="task.primaryBtn.class" class="px-space-md py-2 rounded-full font-label-md text-label-md shadow-sm transition-colors disabled:cursor-wait disabled:opacity-50">
+                  {{ resolvingTaskId === task.apiTaskId ? 'Đang xử lý...' : task.primaryBtn.label }}
+                </button>
+              </div>
+            </div>
+          }
+          @if (filteredTasks.length === 0 && !isLoading && !loadError) {
+            <div class="rounded-xl border border-dashed border-outline-variant bg-surface-container-lowest p-space-lg text-center text-sm text-on-surface-variant">
+              Không có tác vụ phù hợp với bộ lọc hiện tại.
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right Sidebar (4 Cols) -->
+      <div class="lg:col-span-4 flex flex-col gap-space-md">
+
+        <div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col border border-outline-variant/10">
+          <div class="flex items-center justify-between mb-space-md">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-user-shield text-secondary text-[20px]"></i>
+              <h3 class="font-headline-sm text-headline-sm text-on-surface">Hoạt động kiểm định</h3>
+            </div>
+            <span class="font-label-xs text-label-xs font-bold px-2.5 py-0.5 rounded-full"
+                  [ngClass]="isApiConnected ? 'text-secondary bg-secondary-container' : 'text-error bg-error-container'">
+              {{ isApiConnected ? 'API hoạt động' : 'API chưa kết nối' }}
+            </span>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">
+            Danh sách hoạt động kiểm định viên chưa được ghi nhận trong cơ sở dữ liệu. Các hồ sơ chờ duyệt được tổng hợp ở hàng đợi bên trái.
+          </p>
+          <button type="button" (click)="setTaskFilter('review')" class="mt-space-lg w-full py-2.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-1.5">
+            <span>Xem hồ sơ chờ thẩm định ({{ reviewTaskCount }})</span>
+            <i class="fa-solid fa-arrow-right text-[14px]"></i>
+          </button>
+        </div>
+
+        <!-- System status -->
+        <div class="bg-surface-container-high p-space-lg rounded-xl flex flex-col gap-space-sm border border-outline-variant/10">
+          <div class="flex items-center justify-between">
+            <span class="font-label-md text-label-md text-on-surface-variant font-bold uppercase tracking-wider">Trạng thái dịch vụ</span>
+            <span class="font-label-xs text-label-xs px-2.5 py-0.5 rounded-full font-bold shadow-sm"
+                  [ngClass]="isApiConnected ? 'bg-secondary text-on-secondary' : 'bg-error text-on-error'">
+              {{ isApiConnected ? 'Đang phản hồi' : 'Không khả dụng' }}
+            </span>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface mt-1">
+            {{ isApiConnected
+              ? 'API tổng quan đã trả dữ liệu. Thời gian hoạt động, bộ nhớ và độ trễ chưa được thu thập.'
+              : 'Không nhận được phản hồi từ API quản trị.' }}
+          </p>
+        </div>
+
+      </div>
     </div>
   </div>
-</div>
 </main>

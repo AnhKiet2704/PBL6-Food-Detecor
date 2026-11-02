@@ -18,7 +18,10 @@ function isLoginUser(value: unknown): value is LoginUser {
     'full_name' in value &&
     (typeof value.full_name === 'string' || value.full_name === null) &&
     'phone' in value &&
-    (typeof value.phone === 'string' || value.phone === null)
+    (typeof value.phone === 'string' || value.phone === null) &&
+    'roles' in value &&
+    Array.isArray(value.roles) &&
+    value.roles.every((role) => typeof role === 'string')
   );
 }
 
@@ -65,6 +68,14 @@ export class AuthService {
     return !!(
       localStorage.getItem('access_token') ||
       sessionStorage.getItem('access_token')
+    );
+  }
+
+  hasAdminRole(): boolean {
+    const roles = this.currentUserSubject.value?.roles ?? [];
+    return roles.some((role) =>
+      ['admin', 'administrator', 'super_admin', 'quản trị viên', 'quản trị viên trưởng']
+        .includes(role.trim().toLocaleLowerCase()),
     );
   }
 

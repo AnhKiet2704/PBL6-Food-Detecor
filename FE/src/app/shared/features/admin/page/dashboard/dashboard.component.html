@@ -1,4 +1,3 @@
-<!-- Toàn bộ phần ruột của trang Dashboard được bao bọc ở đây -->
 <main class="relative pt-16 w-full min-h-screen bg-surface px-gutter py-space-lg">
   <div class="flex flex-col w-full gap-space-lg pb-space-xxl">
 
@@ -12,17 +11,22 @@
               {{ stat.value }}
               @if (stat.subValue) { <span class="text-sm font-normal text-outline">{{ stat.subValue }}</span> }
             </span>
-            <span [class]="'font-label-md text-label-md flex items-center gap-1 mt-1 ' + (stat.trendIcon ? stat.iconColorClass : 'text-on-surface-variant')">
-              @if (stat.trendIcon) { <span class="material-symbols-outlined text-[16px]">{{ stat.trendIcon }}</span> }
+            <span [class]="'font-label-md text-label-md flex items-center gap-1.5 mt-1 ' + (stat.trendIcon ? stat.iconColorClass : 'text-on-surface-variant')">
+              @if (stat.trendIcon) { <i [class]="stat.trendIcon + ' text-[12px]'"></i> }
               {{ stat.trendText }}
             </span>
           </div>
           <div [class]="'w-12 h-12 rounded-full flex items-center justify-center ' + stat.iconBgClass + ' ' + stat.iconColorClass">
-            <span class="material-symbols-outlined text-[24px]" [style.font-variation-settings]="stat.iconFill ? '\'FILL\' 1' : ''">{{ stat.icon }}</span>
+            <i [class]="stat.icon + ' text-[20px]'"></i>
           </div>
         </div>
       }
     </div>
+    @if (statsError) {
+      <p class="rounded-xl border border-error/20 bg-error-container/30 p-3 text-sm text-error" role="alert">
+        <i class="fa-solid fa-circle-exclamation mr-1.5"></i>{{ statsError }}
+      </p>
+    }
 
     <!-- Operational Filter Hub -->
     <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
@@ -30,8 +34,8 @@
         <div class="flex-1 flex flex-wrap items-center gap-space-sm">
           <!-- Search -->
           <div class="relative min-w-[280px] flex-1 max-w-md">
-            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-            <input [(ngModel)]="searchQuery" (ngModelChange)="onFiltersChanged()" type="search" class="w-full pl-11 pr-4 py-2.5 bg-surface-container rounded-full text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest transition-all" placeholder="Tìm tên quán, số nhà, ngõ ngách..." aria-label="Tìm quán ăn"/>
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]"></i>
+            <input [(ngModel)]="searchQuery" (ngModelChange)="onFiltersChanged()" type="search" class="w-full pl-11 pr-4 py-2.5 bg-surface-container rounded-full text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Tìm tên quán, địa chỉ..." aria-label="Tìm quán ăn"/>
           </div>
 
           <!-- District Select -->
@@ -41,7 +45,7 @@
                 <option [value]="district">{{ district }}</option>
               }
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[14px]"></i>
           </div>
 
           <!-- Status Select -->
@@ -51,17 +55,17 @@
                 <option [value]="status">{{ status }}</option>
               }
             </select>
-            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[14px]"></i>
           </div>
         </div>
 
         <!-- Actions -->
         <div class="flex items-center gap-space-sm self-end xl:self-auto">
           <button type="button" (click)="exportRestaurants()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
-            <span class="material-symbols-outlined text-[18px]">ios_share</span> Xuất báo cáo CSV
+            <i class="fa-solid fa-file-export text-[16px]"></i> Xuất báo cáo CSV
           </button>
           <button type="button" (click)="showAddRestaurantForm = true; notice = ''" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:brightness-105 active:scale-95 transition-all">
-            <span class="material-symbols-outlined text-[20px]">add</span> Thêm quán mới
+            <i class="fa-solid fa-plus text-[16px]"></i> Thêm quán mới
           </button>
         </div>
       </div>
@@ -93,7 +97,10 @@
             </div>
             <div class="flex items-center gap-2 text-on-surface-variant font-label-xs text-label-xs">
               <span>Sắp xếp:</span>
-              <button type="button" (click)="toggleSort()" class="font-bold text-primary flex items-center gap-0.5">Đánh giá {{ sortByRatingDescending ? 'cao nhất' : 'thấp nhất' }} <span class="material-symbols-outlined text-[16px]">{{ sortByRatingDescending ? 'arrow_downward' : 'arrow_upward' }}</span></button>
+              <button type="button" (click)="toggleSort()" class="font-bold text-primary flex items-center gap-1">
+                Đánh giá {{ sortByRatingDescending ? 'cao nhất' : 'thấp nhất' }}
+                <i class="fa-solid {{ sortByRatingDescending ? 'fa-arrow-down' : 'fa-arrow-up' }} text-[12px]"></i>
+              </button>
             </div>
           </div>
 
@@ -113,7 +120,7 @@
                 @for (item of pagedRestaurants; track item.id) {
                   <tr (click)="selectSpot(item)"
                       [ngClass]="selectedRestaurant?.id === item.id ? 'bg-surface-container-lowest' : (item.status === 'pending' ? 'bg-tertiary-fixed/10' : 'bg-surface-container-lowest/60')"
-                      class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+                      class="hover:bg-surface-container-low transition-colors group cursor-pointer border-b border-outline-variant/20 last:border-0">
 
                     <td class="py-4 px-4 text-center" (click)="$event.stopPropagation()">
                       <input type="checkbox" [checked]="selectedRestaurantIds.has(item.id)" (change)="onRestaurantSelectionChange(item.id, $event)" [attr.aria-label]="'Chọn ' + item.name" class="rounded accent-primary w-4 h-4 cursor-pointer"/>
@@ -124,22 +131,26 @@
                         @if (item.image) {
                           <img [src]="item.image" class="w-12 h-12 rounded-xl object-cover shadow-xs shrink-0" alt="Restaurant cover"/>
                         } @else {
-                          <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined">storefront</span></div>
+                          <div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0">
+                            <i class="fa-solid fa-store"></i>
+                          </div>
                         }
                         <div class="flex flex-col min-w-0">
                           <div class="flex items-center gap-1.5">
                             <span class="font-title-md text-title-md font-bold text-on-surface group-hover:text-primary transition-colors">{{ item.name }}</span>
                             @if (item.status === 'verified') {
-                              <span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                              <i class="fa-solid fa-circle-check text-secondary text-[14px]"></i>
                             } @else if (item.status === 'pending') {
-                              <span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+                              <i class="fa-solid fa-clock text-tertiary text-[14px]"></i>
+                            } @else if (item.status === 'closed') {
+                              <i class="fa-solid fa-store-slash text-error text-[14px]"></i>
                             } @else {
-                              <span class="material-symbols-outlined text-error text-[16px]">{{ item.status === 'closed' ? 'store' : 'cancel' }}</span>
+                              <i class="fa-solid fa-ban text-error text-[14px]"></i>
                             }
                           </div>
                           <span class="text-on-surface-variant font-body-sm text-body-sm truncate max-w-[210px]">{{ item.address }}</span>
                           <div class="flex items-center gap-1 mt-0.5">
-                            <span class="material-symbols-outlined text-[#F4A261] text-[15px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <i class="fa-solid fa-star text-[#F4A261] text-[12px]"></i>
                             <span class="font-bold text-on-surface text-[12px]">{{ item.rating }}</span>
                             <span class="text-outline text-[11px]">({{ item.reviewCount }} {{ item.reviewLabel }})</span>
                           </div>
@@ -169,11 +180,11 @@
                         </span>
                       } @else if (item.status === 'pending') {
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed/40 text-tertiary font-label-xs text-label-xs font-bold">
-                          <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span> Chờ duyệt menu
+                          <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span> Chờ duyệt
                         </span>
                       } @else {
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container/40 text-error font-label-xs text-label-xs font-bold">
-                          {{ item.status === 'closed' ? 'Tạm đóng cửa' : 'Cần tái thẩm định' }}
+                          {{ item.status === 'closed' ? 'Tạm đóng cửa' : 'Tái thẩm định' }}
                         </span>
                       }
                     </td>
@@ -181,21 +192,28 @@
                     <td class="py-4 px-4 text-right" (click)="$event.stopPropagation()">
                       <div class="flex items-center justify-end gap-1">
                         @if (item.status === 'verified') {
-                          <button type="button" (click)="selectSpot(item); openEditRestaurantForm()" [attr.aria-label]="'Sửa hồ sơ ' + item.name" class="p-1.5 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                          <button type="button" class="p-1.5 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]">restaurant_menu</span></button>
+                          <button type="button" (click)="selectSpot(item); openEditRestaurantForm()" [attr.aria-label]="'Sửa hồ sơ ' + item.name" class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><i class="fa-solid fa-pen-to-square text-[14px]"></i></button>
+                          <button type="button" class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container"><i class="fa-solid fa-utensils text-[14px]"></i></button>
                         } @else if (item.status === 'pending') {
-                          <button type="button" (click)="reviewRestaurant(item, true)" class="px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Duyệt ngay</button>
-                          <button type="button" (click)="reviewRestaurant(item, false)" class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-xs text-label-xs hover:bg-error-container/80">Từ chối</button>
+                          <button type="button" (click)="reviewRestaurant(item, true)" class="px-2.5 py-1.5 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Duyệt ngay</button>
+                          <button type="button" (click)="reviewRestaurant(item, false)" class="px-2.5 py-1.5 rounded-full bg-error-container text-on-error-container font-label-xs text-label-xs hover:bg-error-container/80">Từ chối</button>
                         } @else {
-                          <button type="button" (click)="reviewRestaurant(item, true)" class="px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Xác minh lại</button>
+                          <button type="button" (click)="reviewRestaurant(item, true)" class="px-2.5 py-1.5 rounded-full bg-secondary text-on-secondary font-label-xs text-label-xs hover:brightness-110 shadow-xs">Xác minh lại</button>
                         }
                       </div>
                     </td>
                   </tr>
                 }
-                @if (pagedRestaurants.length === 0) {
+                @if (isLoadingRestaurants) {
                   <tr>
-                    <td colspan="6" class="px-4 py-12 text-center text-sm text-on-surface-variant">
+                    <td colspan="6" class="px-4 py-16 text-center text-sm text-on-surface-variant">
+                      <i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tải danh sách quán ăn...
+                    </td>
+                  </tr>
+                } @else if (pagedRestaurants.length === 0) {
+                  <tr>
+                    <td colspan="6" class="px-4 py-16 text-center text-sm text-on-surface-variant">
+                      <i class="fa-solid fa-magnifying-glass text-3xl text-outline-variant mb-3 block"></i>
                       Không tìm thấy quán phù hợp với bộ lọc hiện tại.
                     </td>
                   </tr>
@@ -205,23 +223,25 @@
           </div>
 
           <!-- Pagination -->
-          <div class="p-space-md bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-space-md border-t-0">
+          <div class="p-space-md bg-surface-container-lowest flex flex-col sm:flex-row items-center justify-between gap-space-md border-t border-outline-variant/20">
             <div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
               <span>Hiển thị <strong class="text-on-surface">{{ pageStart }} - {{ pageEnd }}</strong> trong tổng số <strong class="text-on-surface">{{ filteredRestaurants.length }}</strong> quán ăn</span>
             </div>
             <div class="flex items-center gap-1.5">
-              <button type="button" (click)="changePage(currentPage - 1)" [disabled]="currentPage <= 1" aria-label="Trang trước" class="p-2 rounded-lg bg-surface-container text-on-surface-variant disabled:opacity-40"><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+              <button type="button" (click)="changePage(currentPage - 1)" [disabled]="currentPage <= 1" aria-label="Trang trước" class="p-2 rounded-lg bg-surface-container text-on-surface-variant disabled:opacity-40"><i class="fa-solid fa-chevron-left text-[14px]"></i></button>
               @for (pageNumber of pageNumbers; track pageNumber) {
                 <button type="button" (click)="changePage(pageNumber)" [class.bg-primary]="currentPage === pageNumber" [class.text-on-primary]="currentPage === pageNumber" class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high font-label-md">{{ pageNumber }}</button>
               }
-              <button type="button" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages" aria-label="Trang tiếp" class="p-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high disabled:opacity-40"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+              <button type="button" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages" aria-label="Trang tiếp" class="p-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high disabled:opacity-40"><i class="fa-solid fa-chevron-right text-[14px]"></i></button>
             </div>
           </div>
         </div>
       </div>
 
       @if (notice) {
-        <p class="rounded-xl border border-secondary/20 bg-secondary-container/30 p-3 text-sm text-on-surface" role="status">{{ notice }}</p>
+        <p class="rounded-xl border border-secondary/20 bg-secondary-container/30 p-3 text-sm text-on-surface" role="status">
+          <i class="fa-solid fa-circle-info text-secondary mr-1.5"></i> {{ notice }}
+        </p>
       }
 
       <!-- RIGHT: Quick Inspector (Requires a selected restaurant) -->
@@ -238,7 +258,7 @@
               </div>
               @if (selectedRestaurant.status === 'verified') {
                 <span class="px-2.5 py-1 rounded-full bg-secondary-fixed/60 text-on-secondary-fixed font-label-xs text-label-xs font-bold flex items-center gap-1">
-                  <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span> 100% Bản địa
+                  <i class="fa-solid fa-circle-check text-[12px]"></i> 100% Bản địa
                 </span>
               }
             </div>
@@ -248,10 +268,10 @@
               @if (selectedRestaurant.image) {
                 <img [src]="selectedRestaurant.image" class="w-full h-full object-cover" alt="Restaurant"/>
               }
-              <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent flex items-end p-space-sm">
+              <div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-transparent flex items-end p-space-sm">
                 <div class="flex items-center justify-between w-full text-surface-bright">
                   <span class="font-label-md text-label-md flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[#F4A261] text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> {{ selectedRestaurant.rating }} / 5.0
+                    <i class="fa-solid fa-star text-[#F4A261] text-[14px]"></i> {{ selectedRestaurant.rating }} / 5.0
                   </span>
                   <span class="font-label-xs text-label-xs bg-surface-container-lowest/30 backdrop-blur-md px-2 py-0.5 rounded">Mở cửa: {{ selectedRestaurant.openHours }}</span>
                 </div>
@@ -265,15 +285,15 @@
                 <span class="font-label-xs text-label-xs text-primary font-bold">{{ selectedRestaurant.gps }}</span>
               </div>
               <div class="w-full h-32 rounded-xl bg-surface-container relative overflow-hidden shadow-xs bg-cover bg-center" [style.backgroundImage]="'url(' + (selectedRestaurant.mapImage || selectedRestaurant.image) + ')'">
-                <div class="absolute bottom-2 left-2 bg-surface/90 backdrop-blur-sm px-2 py-1 rounded font-label-xs text-label-xs text-on-surface flex items-center gap-1">
-                  <span class="material-symbols-outlined text-primary text-[14px]">pin_drop</span>
+                <div class="absolute bottom-2 left-2 bg-surface/90 backdrop-blur-sm px-2 py-1 rounded font-label-xs text-label-xs text-on-surface flex items-center gap-1.5">
+                  <i class="fa-solid fa-location-dot text-primary text-[12px]"></i>
                   <span>{{ selectedRestaurant.address }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Owner -->
-            <div class="bg-surface-container-low rounded-xl p-space-sm flex flex-col gap-space-xs">
+            <div class="bg-surface-container-low rounded-xl p-space-sm flex flex-col gap-space-xs border border-outline-variant/30">
               <div class="flex items-center justify-between">
                 <span class="font-label-xs text-label-xs uppercase tracking-wider text-outline">Chủ quán đại diện</span>
                 <span class="font-label-xs text-label-xs text-secondary font-bold">Đã xác minh danh tính</span>
@@ -286,7 +306,7 @@
                     <span class="font-label-xs text-label-xs text-on-surface-variant">{{ selectedRestaurant.ownerPhone }}</span>
                   </div>
                 </div>
-                <a [href]="'tel:' + selectedRestaurant.ownerPhone" aria-label="Gọi chủ quán" class="p-2 rounded-full bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary transition-colors"><span class="material-symbols-outlined text-[16px]">call</span></a>
+                <a [href]="'tel:' + selectedRestaurant.ownerPhone" aria-label="Gọi chủ quán" class="p-2.5 rounded-full bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary transition-colors shadow-sm"><i class="fa-solid fa-phone text-[14px]"></i></a>
               </div>
             </div>
 
@@ -297,7 +317,7 @@
                 <div class="space-y-2 mt-1">
                   @for (audit of selectedRestaurant.audits; track audit.title) {
                     <div class="flex items-start gap-2 text-on-surface-variant font-body-sm text-body-sm">
-                      <span class="material-symbols-outlined text-secondary text-[16px] shrink-0 mt-0.5">check_circle</span>
+                      <i class="fa-solid fa-circle-check text-secondary text-[14px] shrink-0 mt-0.5"></i>
                       <div class="flex flex-col">
                         <span class="text-on-surface font-semibold text-[13px]">{{ audit.title }} ({{ audit.date }})</span>
                         <span class="text-[12px] text-outline">{{ audit.description }}</span>
@@ -327,15 +347,17 @@
             <!-- Actions -->
             <div class="flex items-center gap-space-xs pt-2">
               <button type="button" (click)="openEditRestaurantForm()" class="flex-1 py-2.5 rounded-full bg-primary text-on-primary font-label-md hover:brightness-105 transition-all text-center">Cập nhật hồ sơ</button>
-              <button type="button" (click)="notice = 'Hồ sơ ' + selectedRestaurant.name + ' đang được hiển thị công khai.'" aria-label="Xem trang quán" class="p-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
-              <button type="button" (click)="toggleRestaurantStatus()" [attr.aria-label]="selectedRestaurant.status === 'verified' ? 'Chuyển về chờ thẩm định' : 'Xác minh quán'" class="p-2.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high"><span class="material-symbols-outlined text-[18px]">{{ selectedRestaurant.status === 'verified' ? 'lock_open' : 'verified' }}</span></button>
+              <button type="button" (click)="notice = 'Hồ sơ ' + selectedRestaurant.name + ' đang được hiển thị công khai.'" aria-label="Xem trang quán" class="p-3 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors"><i class="fa-solid fa-eye text-[16px]"></i></button>
+              <button type="button" (click)="toggleRestaurantStatus()" [attr.aria-label]="selectedRestaurant.status === 'verified' ? 'Chuyển về chờ thẩm định' : 'Xác minh quán'" class="p-3 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors">
+                <i class="fa-solid {{ selectedRestaurant.status === 'verified' ? 'fa-lock-open' : 'fa-certificate' }} text-[16px]"></i>
+              </button>
             </div>
 
           </div>
         }
 
         <div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center gap-space-sm mt-auto">
-          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0"><span class="material-symbols-outlined text-[20px]">lightbulb</span></div>
+          <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary shrink-0"><i class="fa-solid fa-lightbulb text-[18px]"></i></div>
           <div class="flex flex-col">
             <span class="font-label-md text-label-md font-bold text-on-surface">Tiêu chí xác minh 100% bản địa</span>
             <span class="font-body-sm text-body-sm text-on-surface-variant">Phải đạt tối thiểu 70% khách là người địa phương và hoạt động trên 3 năm.</span>
@@ -346,49 +368,55 @@
     </div>
   </div>
 
+  <!-- Form: Add -->
   @if (showAddRestaurantForm) {
-    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-inverse-surface/50 p-4" role="presentation" (click)="showAddRestaurantForm = false">
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-inverse-surface/50 p-4 backdrop-blur-sm" role="presentation" (click)="showAddRestaurantForm = false">
       <form class="w-full max-w-lg rounded-2xl bg-surface-container-lowest p-space-lg shadow-xl" (submit)="$event.preventDefault(); addRestaurant()" (click)="$event.stopPropagation()">
         <div class="mb-5 flex items-center justify-between">
           <h2 class="font-headline-md text-headline-md text-on-surface">Thêm hồ sơ quán ăn</h2>
-          <button type="button" (click)="showAddRestaurantForm = false" aria-label="Đóng" class="rounded-full p-2 hover:bg-surface-container"><span class="material-symbols-outlined">close</span></button>
+          <button type="button" (click)="showAddRestaurantForm = false" aria-label="Đóng" class="rounded-full w-8 h-8 flex items-center justify-center hover:bg-surface-container text-on-surface-variant"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="space-y-3">
-          <input [(ngModel)]="newRestaurant.name" name="name" required placeholder="Tên quán" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
-          <input [(ngModel)]="newRestaurant.address" name="address" required placeholder="Địa chỉ" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
-          <input [(ngModel)]="newRestaurant.category" name="category" required placeholder="Món đặc sản" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
-          <input [(ngModel)]="newRestaurant.priceRange" name="priceRange" placeholder="Khoảng giá (không bắt buộc)" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="newRestaurant.name" name="name" required placeholder="Tên quán" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
+          <input [(ngModel)]="newRestaurant.address" name="address" required placeholder="Địa chỉ" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
+          <input [(ngModel)]="newRestaurant.category" name="category" required placeholder="Món đặc sản" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
+          <input [(ngModel)]="newRestaurant.priceRange" name="priceRange" placeholder="Khoảng giá (không bắt buộc)" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
         @if (notice) {
-          <p class="mt-3 text-sm text-error" role="alert">{{ notice }}</p>
+          <p class="mt-3 text-sm text-error font-semibold flex items-center gap-1" role="alert"><i class="fa-solid fa-circle-exclamation"></i> {{ notice }}</p>
         }
-        <div class="mt-5 flex justify-end gap-2">
-          <button type="button" (click)="showAddRestaurantForm = false" class="rounded-full bg-surface-container px-5 py-2.5 font-semibold">Hủy</button>
-          <button type="submit" class="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary">Thêm vào danh sách</button>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" (click)="showAddRestaurantForm = false" class="rounded-full bg-surface-container hover:bg-surface-container-high px-5 py-2.5 font-semibold transition-colors">Hủy</button>
+          <button type="submit" [disabled]="isSaving" class="rounded-full bg-primary hover:bg-primary-container px-5 py-2.5 font-semibold text-on-primary shadow-sm transition-colors disabled:cursor-wait disabled:opacity-60">
+            {{ isSaving ? 'Đang lưu...' : 'Thêm vào danh sách' }}
+          </button>
         </div>
       </form>
     </div>
   }
 
+  <!-- Form: Edit -->
   @if (showEditRestaurantForm && selectedRestaurant) {
-    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-inverse-surface/50 p-4" role="presentation" (click)="showEditRestaurantForm = false">
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-inverse-surface/50 p-4 backdrop-blur-sm" role="presentation" (click)="showEditRestaurantForm = false">
       <form class="w-full max-w-lg rounded-2xl bg-surface-container-lowest p-space-lg shadow-xl" (submit)="$event.preventDefault(); saveRestaurantChanges()" (click)="$event.stopPropagation()">
         <div class="mb-5 flex items-center justify-between">
           <h2 class="font-headline-md text-headline-md text-on-surface">Cập nhật hồ sơ quán</h2>
-          <button type="button" (click)="showEditRestaurantForm = false" aria-label="Đóng" class="rounded-full p-2 hover:bg-surface-container"><span class="material-symbols-outlined">close</span></button>
+          <button type="button" (click)="showEditRestaurantForm = false" aria-label="Đóng" class="rounded-full w-8 h-8 flex items-center justify-center hover:bg-surface-container text-on-surface-variant"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="space-y-3">
-          <input [(ngModel)]="editRestaurantForm.name" name="editName" required placeholder="Tên quán" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
-          <input [(ngModel)]="editRestaurantForm.address" name="editAddress" required placeholder="Địa chỉ" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
-          <input [(ngModel)]="editRestaurantForm.category" name="editCategory" required placeholder="Món đặc sản" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
-          <input [(ngModel)]="editRestaurantForm.priceRange" name="editPriceRange" placeholder="Khoảng giá" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm"/>
+          <input [(ngModel)]="editRestaurantForm.name" name="editName" required placeholder="Tên quán" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
+          <input [(ngModel)]="editRestaurantForm.address" name="editAddress" required placeholder="Địa chỉ" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
+          <input [(ngModel)]="editRestaurantForm.category" name="editCategory" required placeholder="Món đặc sản" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
+          <input [(ngModel)]="editRestaurantForm.priceRange" name="editPriceRange" placeholder="Khoảng giá" class="w-full rounded-xl border border-outline-variant px-4 py-3 text-sm focus:outline-none focus:border-primary"/>
         </div>
         @if (notice) {
-          <p class="mt-3 text-sm text-error" role="alert">{{ notice }}</p>
+          <p class="mt-3 text-sm text-error font-semibold flex items-center gap-1" role="alert"><i class="fa-solid fa-circle-exclamation"></i> {{ notice }}</p>
         }
-        <div class="mt-5 flex justify-end gap-2">
-          <button type="button" (click)="showEditRestaurantForm = false" class="rounded-full bg-surface-container px-5 py-2.5 font-semibold">Hủy</button>
-          <button type="submit" class="rounded-full bg-primary px-5 py-2.5 font-semibold text-on-primary">Lưu thay đổi</button>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" (click)="showEditRestaurantForm = false" class="rounded-full bg-surface-container hover:bg-surface-container-high px-5 py-2.5 font-semibold transition-colors">Hủy</button>
+          <button type="submit" [disabled]="isSaving" class="rounded-full bg-primary hover:bg-primary-container px-5 py-2.5 font-semibold text-on-primary shadow-sm transition-colors disabled:cursor-wait disabled:opacity-60">
+            {{ isSaving ? 'Đang lưu...' : 'Lưu thay đổi' }}
+          </button>
         </div>
       </form>
     </div>
