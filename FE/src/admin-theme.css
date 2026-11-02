@@ -1,0 +1,239 @@
+/*
+ * Giao diện quản trị (admin) — chuyển từ bản thiết kế "Coastal market morning".
+ * Mọi quy tắc nằm trong phạm vi .ad-root nên KHÔNG ảnh hưởng trang công khai.
+ */
+.ad-root {
+  --ad-bg: 42 42% 97%;
+  --ad-fg: 160 12% 14%;
+  --ad-card: 0 0% 100%;
+  --ad-muted: 40 20% 93%;
+  --ad-muted-fg: 160 5% 43%;
+  --ad-border: 36 18% 87%;
+  --ad-primary: 11 73% 52%;
+  --ad-ring: 11 73% 57%;
+  --ad-shadow: 0 1px 2px rgb(37 44 41 / 0.05);
+  min-height: 100vh;
+  background: hsl(var(--ad-bg));
+  color: hsl(var(--ad-fg));
+  font-family: 'Inter Variable', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+}
+.ad-root :focus-visible { outline: 2px solid hsl(var(--ad-ring)); outline-offset: 2px; }
+.ad-skip { position: absolute; left: -9999px; top: 8px; z-index: 100; padding: 8px 12px; border-radius: 8px; background: hsl(var(--ad-card)); }
+.ad-skip:focus { left: 16px; }
+
+.ad-shell { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+.ad-shell.is-collapsed { grid-template-columns: 76px minmax(0, 1fr); }
+
+/* Thanh bên */
+.ad-sidebar {
+  position: sticky; top: 0; align-self: start; height: 100vh;
+  display: flex; flex-direction: column; gap: 4px; padding: 16px 12px; overflow-y: auto;
+  border-right: 1px solid hsl(var(--ad-border)); background: hsl(var(--ad-card)); z-index: 40;
+}
+.ad-brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; }
+.ad-brand-mark {
+  display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 12px;
+  background: hsl(var(--ad-primary)); color: #fff; font-weight: 700; font-size: 13px;
+}
+.ad-brand-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.ad-brand-text strong { font-size: 15px; font-weight: 650; }
+.ad-brand-text small { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--ad-muted-fg)); }
+.ad-nav-group + .ad-nav-group { margin-top: 12px; }
+.ad-nav-title { margin: 0 0 4px; padding: 0 10px; font-size: 11px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--ad-muted-fg)); }
+.ad-nav-link {
+  display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 10px; border-radius: 10px;
+  color: hsl(var(--ad-muted-fg)); font-size: 14px; font-weight: 550; text-decoration: none; transition: background .15s, color .15s;
+}
+.ad-nav-link:hover { background: hsl(var(--ad-muted)); color: hsl(var(--ad-fg)); }
+.ad-nav-link.active { background: hsl(var(--ad-primary) / .12); color: hsl(11 70% 40%); }
+.ad-nav-icon { width: 20px; text-align: center; flex: none; font-size: 15px; }
+.ad-nav-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid hsl(var(--ad-border)); }
+.ad-collapse {
+  display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 10px; border: 0; border-radius: 10px;
+  background: transparent; color: hsl(var(--ad-muted-fg)); font: inherit; font-size: 14px; font-weight: 550; cursor: pointer;
+}
+.ad-collapse:hover { background: hsl(var(--ad-muted)); color: hsl(var(--ad-fg)); }
+.ad-collapse i { width: 20px; text-align: center; }
+.ad-shell.is-collapsed .ad-brand-text,
+.ad-shell.is-collapsed .ad-nav-label,
+.ad-shell.is-collapsed .ad-nav-title { display: none; }
+.ad-shell.is-collapsed .ad-nav-link,
+.ad-shell.is-collapsed .ad-collapse { justify-content: center; }
+.ad-shell.is-collapsed .ad-brand { justify-content: center; padding-inline: 0; }
+.ad-scrim { display: none; }
+
+/* Cột chính + thanh trên */
+.ad-main-col { min-width: 0; display: flex; flex-direction: column; }
+.ad-topbar {
+  position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 24px;
+  border-bottom: 1px solid hsl(var(--ad-border)); background: hsl(var(--ad-bg) / .92); backdrop-filter: blur(10px);
+}
+.ad-crumbs ol { display: flex; align-items: center; margin: 0; padding: 0; list-style: none; font-size: 14px; color: hsl(var(--ad-muted-fg)); }
+.ad-crumbs li + li::before { content: '/'; margin: 0 8px; opacity: .6; }
+.ad-crumbs li[aria-current='page'] { color: hsl(var(--ad-fg)); font-weight: 650; }
+.ad-topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.ad-search {
+  display: flex; align-items: center; gap: 8px; width: min(320px, 34vw); height: 38px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid hsl(var(--ad-border)); background: hsl(var(--ad-card)); color: hsl(var(--ad-muted-fg));
+}
+.ad-search:focus-within { border-color: hsl(var(--ad-ring)); box-shadow: 0 0 0 3px hsl(var(--ad-ring) / .15); }
+.ad-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 14px; color: hsl(var(--ad-fg)); }
+.ad-icon-btn {
+  display: inline-grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 10px;
+  border: 1px solid hsl(var(--ad-border)); background: hsl(var(--ad-card)); color: hsl(var(--ad-muted-fg)); cursor: pointer;
+}
+.ad-icon-btn:hover { background: hsl(var(--ad-muted)); color: hsl(var(--ad-fg)); }
+.ad-icon-btn--danger:hover { color: hsl(0 72% 45%); }
+.ad-menu-btn { display: none; }
+.ad-account { display: flex; align-items: center; gap: 8px; padding: 3px 10px 3px 3px; border-radius: 999px; border: 1px solid hsl(var(--ad-border)); background: hsl(var(--ad-card)); }
+.ad-avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: hsl(var(--ad-primary)); color: #fff; font-size: 12px; font-weight: 700; }
+.ad-account-name { display: flex; flex-direction: column; line-height: 1.15; }
+.ad-account-name strong { font-size: 13px; font-weight: 650; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-account-name small { font-size: 11px; color: hsl(var(--ad-muted-fg)); }
+.ad-content { min-width: 0; flex: 1; }
+.ad-page { display: block; width: 100%; padding: 24px; }
+
+/* Thẻ nội dung: viền mảnh + bóng nhẹ như panel của bản thiết kế */
+.ad-root .rounded-xl.bg-surface-container-lowest,
+.ad-root .rounded-xl.bg-surface-container-high,
+.ad-root .rounded-xl.bg-surface-container-low {
+  border-color: hsl(var(--ad-border));
+  border-width: 1px; border-style: solid;
+  box-shadow: var(--ad-shadow);
+}
+.ad-root .shadow-sm, .ad-root .shadow-md, .ad-root .shadow-xs { box-shadow: var(--ad-shadow); }
+.ad-root table th { font-weight: 650; }
+.ad-root .no-scrollbar { scrollbar-width: none; }
+.ad-root .no-scrollbar::-webkit-scrollbar { display: none; }
+
+@media (max-width: 960px) {
+  .ad-shell, .ad-shell.is-collapsed { grid-template-columns: minmax(0, 1fr); }
+  .ad-sidebar { position: fixed; inset: 0 auto 0 0; width: 264px; transform: translateX(-100%); transition: transform .2s; box-shadow: 0 10px 30px rgb(0 0 0 / .15); }
+  .ad-sidebar.is-open { transform: none; }
+  .ad-shell.is-collapsed .ad-brand-text, .ad-shell.is-collapsed .ad-nav-label, .ad-shell.is-collapsed .ad-nav-title { display: revert; }
+  .ad-scrim { display: block; position: fixed; inset: 0; z-index: 35; border: 0; background: rgb(20 28 24 / .4); }
+  .ad-menu-btn { display: inline-grid; }
+  .ad-account-name, .ad-collapse { display: none; }
+  .ad-search { width: 38px; padding: 0; justify-content: center; }
+  .ad-search input { display: none; }
+  .ad-topbar { padding-inline: 14px; }
+  .ad-page { padding: 16px; }
+}
+/* ---- sinh tự động: màu cho các class tiện ích dùng trong trang admin ---- */
+.ad-root .accent-primary{accent-color:hsl(11 73% 52%)}
+.ad-root .bg-error{background-color:hsl(0 72% 45%)}
+.ad-root .bg-error-container{background-color:hsl(0 80% 95%)}
+.ad-root .bg-error-container\/20{background-color:hsl(0 80% 95% / 0.20)}
+.ad-root .bg-error-container\/30{background-color:hsl(0 80% 95% / 0.30)}
+.ad-root .bg-error-container\/40{background-color:hsl(0 80% 95% / 0.40)}
+.ad-root .bg-inverse-surface\/10{background-color:hsl(160 12% 14% / 0.10)}
+.ad-root .bg-inverse-surface\/50{background-color:hsl(160 12% 14% / 0.50)}
+.ad-root .bg-inverse-surface\/85{background-color:hsl(160 12% 14% / 0.85)}
+.ad-root .bg-outline-variant{background-color:hsl(36 18% 87%)}
+.ad-root .bg-primary{background-color:hsl(11 73% 52%)}
+.ad-root .bg-primary\/10{background-color:hsl(11 73% 52% / 0.10)}
+.ad-root .bg-primary\/20{background-color:hsl(11 73% 52% / 0.20)}
+.ad-root .bg-primary\/25{background-color:hsl(11 73% 52% / 0.25)}
+.ad-root .bg-primary\/30{background-color:hsl(11 73% 52% / 0.30)}
+.ad-root .bg-primary\/40{background-color:hsl(11 73% 52% / 0.40)}
+.ad-root .bg-primary\/60{background-color:hsl(11 73% 52% / 0.60)}
+.ad-root .bg-primary-container{background-color:hsl(11 75% 92%)}
+.ad-root .bg-primary-container\/30{background-color:hsl(11 75% 92% / 0.30)}
+.ad-root .bg-primary-fixed{background-color:hsl(39 55% 91%)}
+.ad-root .bg-primary-fixed-dim{background-color:hsl(39 55% 80%)}
+.ad-root .bg-primary-fixed-dim\/40{background-color:hsl(39 55% 80% / 0.40)}
+.ad-root .bg-secondary{background-color:hsl(176 42% 29%)}
+.ad-root .bg-secondary-container{background-color:hsl(174 30% 92%)}
+.ad-root .bg-secondary-container\/30{background-color:hsl(174 30% 92% / 0.30)}
+.ad-root .bg-secondary-container\/40{background-color:hsl(174 30% 92% / 0.40)}
+.ad-root .bg-secondary-fixed\/50{background-color:hsl(174 30% 88% / 0.50)}
+.ad-root .bg-secondary-fixed\/60{background-color:hsl(174 30% 88% / 0.60)}
+.ad-root .bg-surface\/90{background-color:hsl(42 42% 97% / 0.90)}
+.ad-root .bg-surface-container{background-color:hsl(40 20% 93%)}
+.ad-root .bg-surface-container\/30{background-color:hsl(40 20% 93% / 0.30)}
+.ad-root .bg-surface-container\/40{background-color:hsl(40 20% 93% / 0.40)}
+.ad-root .bg-surface-container\/50{background-color:hsl(40 20% 93% / 0.50)}
+.ad-root .bg-surface-container-high{background-color:hsl(38 18% 90%)}
+.ad-root .bg-surface-container-low{background-color:hsl(40 25% 95%)}
+.ad-root .bg-surface-container-low\/50{background-color:hsl(40 25% 95% / 0.50)}
+.ad-root .bg-surface-container-lowest{background-color:hsl(0 0% 100%)}
+.ad-root .bg-surface-container-lowest\/30{background-color:hsl(0 0% 100% / 0.30)}
+.ad-root .bg-surface-container-lowest\/60{background-color:hsl(0 0% 100% / 0.60)}
+.ad-root .bg-surface-container-lowest\/90{background-color:hsl(0 0% 100% / 0.90)}
+.ad-root .bg-surface-variant{background-color:hsl(38 18% 90%)}
+.ad-root .bg-tertiary{background-color:hsl(34 80% 33%)}
+.ad-root .bg-tertiary-container{background-color:hsl(39 60% 90%)}
+.ad-root .bg-tertiary-container\/30{background-color:hsl(39 60% 90% / 0.30)}
+.ad-root .bg-tertiary-fixed{background-color:hsl(39 70% 88%)}
+.ad-root .bg-tertiary-fixed\/10{background-color:hsl(39 70% 88% / 0.10)}
+.ad-root .bg-tertiary-fixed\/30{background-color:hsl(39 70% 88% / 0.30)}
+.ad-root .bg-tertiary-fixed\/40{background-color:hsl(39 70% 88% / 0.40)}
+.ad-root .border-error\/20{border-color:hsl(0 72% 45% / 0.20)}
+.ad-root .border-error\/30{border-color:hsl(0 72% 45% / 0.30)}
+.ad-root .border-outline-variant{border-color:hsl(36 18% 87%)}
+.ad-root .border-outline-variant\/10{border-color:hsl(36 18% 87% / 0.10)}
+.ad-root .border-outline-variant\/20{border-color:hsl(36 18% 87% / 0.20)}
+.ad-root .border-outline-variant\/30{border-color:hsl(36 18% 87% / 0.30)}
+.ad-root .border-primary{border-color:hsl(11 73% 52%)}
+.ad-root .border-secondary\/20{border-color:hsl(176 42% 29% / 0.20)}
+.ad-root .border-secondary\/30{border-color:hsl(176 42% 29% / 0.30)}
+.ad-root .from-inverse-surface\/90{--tw-gradient-from:hsl(160 12% 14% / 0.90)}
+.ad-root .ring-surface{--tw-ring-color:hsl(42 42% 97%)}
+.ad-root .text-error{color:hsl(0 72% 45%)}
+.ad-root .text-inverse-on-surface{color:hsl(42 30% 94%)}
+.ad-root .text-on-error{color:hsl(0 0% 100%)}
+.ad-root .text-on-error-container{color:hsl(0 60% 30%)}
+.ad-root .text-on-primary{color:hsl(0 0% 100%)}
+.ad-root .text-on-primary-container{color:hsl(11 60% 30%)}
+.ad-root .text-on-primary-fixed{color:hsl(22 35% 30%)}
+.ad-root .text-on-secondary{color:hsl(0 0% 100%)}
+.ad-root .text-on-secondary-container{color:hsl(176 42% 24%)}
+.ad-root .text-on-secondary-fixed{color:hsl(176 42% 22%)}
+.ad-root .text-on-surface{color:hsl(160 12% 14%)}
+.ad-root .text-on-surface-variant{color:hsl(160 5% 43%)}
+.ad-root .text-on-tertiary{color:hsl(0 0% 100%)}
+.ad-root .text-on-tertiary-container{color:hsl(30 60% 22%)}
+.ad-root .text-on-tertiary-fixed{color:hsl(30 60% 22%)}
+.ad-root .text-outline{color:hsl(160 5% 50%)}
+.ad-root .text-outline-variant{color:hsl(36 18% 87%)}
+.ad-root .text-primary{color:hsl(11 73% 52%)}
+.ad-root .text-secondary{color:hsl(176 42% 29%)}
+.ad-root .text-secondary-fixed{color:hsl(174 30% 88%)}
+.ad-root .text-surface-bright{color:hsl(0 0% 100%)}
+.ad-root .text-surface-container-high{color:hsl(38 18% 90%)}
+.ad-root .text-tertiary{color:hsl(34 80% 33%)}
+.ad-root .text-tertiary-fixed{color:hsl(39 70% 88%)}
+.ad-root .focus\:bg-surface-container-lowest:focus{background-color:hsl(0 0% 100%)}
+.ad-root .focus\:border-primary:focus{border-color:hsl(11 73% 52%)}
+.ad-root .focus\:ring-primary\/20:focus{--tw-ring-color:hsl(11 73% 52% / 0.20)}
+.ad-root .focus\:ring-primary\/30:focus{--tw-ring-color:hsl(11 73% 52% / 0.30)}
+.ad-root .group:hover .group-hover\:text-primary{color:hsl(11 73% 52%)}
+.ad-root .hover\:bg-error-container:hover{background-color:hsl(0 80% 95%)}
+.ad-root .hover\:bg-error-container\/30:hover{background-color:hsl(0 80% 95% / 0.30)}
+.ad-root .hover\:bg-error-container\/80:hover{background-color:hsl(0 80% 95% / 0.80)}
+.ad-root .hover\:bg-on-error-container:hover{background-color:hsl(0 60% 30%)}
+.ad-root .hover\:bg-primary:hover{background-color:hsl(11 73% 52%)}
+.ad-root .hover\:bg-primary-container:hover{background-color:hsl(11 73% 45%)}
+.ad-root .hover\:bg-surface-container:hover{background-color:hsl(40 20% 93%)}
+.ad-root .hover\:bg-surface-container-high:hover{background-color:hsl(38 18% 90%)}
+.ad-root .hover\:bg-surface-container-low:hover{background-color:hsl(40 25% 95%)}
+.ad-root .hover\:bg-surface-variant:hover{background-color:hsl(38 18% 90%)}
+.ad-root .hover\:text-on-error-container:hover{color:hsl(0 60% 30%)}
+.ad-root .hover\:text-on-primary:hover{color:hsl(0 0% 100%)}
+.ad-root .hover\:text-on-surface:hover{color:hsl(160 12% 14%)}
+.ad-root .hover\:text-primary:hover{color:hsl(11 73% 52%)}
+.ad-root .placeholder\:text-outline::placeholder{color:hsl(160 5% 50%)}
+/* ---- cỡ chữ ---- */
+.ad-root .text-display-hero{font-size:2rem;line-height:1.1;font-weight:700;letter-spacing:-.02em}
+.ad-root .text-headline-lg{font-size:1.625rem;line-height:1.25;font-weight:650;letter-spacing:-.015em}
+.ad-root .text-headline-md{font-size:1.125rem;line-height:1.35;font-weight:650}
+.ad-root .text-headline-sm{font-size:1rem;line-height:1.4;font-weight:650}
+.ad-root .text-title-md{font-size:.9375rem;line-height:1.4;font-weight:600}
+.ad-root .text-body-md{font-size:.9375rem;line-height:1.55}
+.ad-root .text-body-sm{font-size:.875rem;line-height:1.5}
+.ad-root .text-label-lg{font-size:.9375rem;line-height:1.3;font-weight:600}
+.ad-root .text-label-md{font-size:.875rem;line-height:1.3;font-weight:550}
+.ad-root .text-label-sm{font-size:.8125rem;line-height:1.3;font-weight:550}
+.ad-root .text-label-xs{font-size:.75rem;line-height:1.3;font-weight:600}

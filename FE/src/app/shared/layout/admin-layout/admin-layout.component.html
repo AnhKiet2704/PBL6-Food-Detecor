@@ -1,122 +1,99 @@
-<!-- Sidebar / Drawer -->
-<aside [class.-translate-x-full]="!mobileMenuOpen" [class.translate-x-0]="mobileMenuOpen" class="fixed left-0 top-0 z-50 flex h-full w-72 flex-col justify-between bg-inverse-surface text-inverse-on-surface shadow-lg transition-transform md:translate-x-0">
-  <div>
-    <!-- Logo & Brand -->
-    <div class="flex h-16 items-center gap-space-sm px-space-lg border-b border-inverse-on-surface/10">
-      <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary font-headline-sm text-on-primary font-bold">ĐN</div>
-      <div class="flex flex-col">
-        <span class="font-headline-sm leading-none text-surface font-bold">Đà Nẵng Food</span>
-        <span class="mt-1 font-label-xs uppercase tracking-wider text-outline-variant">Cổng Quản Trị</span>
-      </div>
-    </div>
+<div class="ad-root">
+  <a class="ad-skip" href="#ad-main">Bỏ qua điều hướng</a>
 
-    <!-- Server Status -->
-    <div class="px-space-md py-space-sm mt-2">
-      <div class="flex items-center justify-between rounded-xl bg-surface-container-highest/10 px-space-md py-space-sm text-surface-container-high border border-inverse-on-surface/5">
-        <div class="flex items-center gap-space-sm">
-          <span class="h-2 w-2 rounded-full bg-secondary-fixed animate-pulse"></span>
-          <span class="font-label-md">Máy chủ: Trung tâm</span>
-        </div>
-        <span class="rounded bg-surface-container-highest/20 px-space-xs py-0.5 font-label-xs text-surface-bright font-bold border border-inverse-on-surface/10">v2.4</span>
+  <div class="ad-shell" [class.is-collapsed]="collapsed">
+    <!-- Thanh bên -->
+    <aside class="ad-sidebar" [class.is-open]="mobileMenuOpen" aria-label="Điều hướng quản trị">
+      <div class="ad-brand">
+        <span class="ad-brand-mark">ĐN</span>
+        <span class="ad-brand-text">
+          <strong>Đà Nẵng Food</strong>
+          <small>Cổng quản trị</small>
+        </span>
       </div>
-    </div>
 
-    <!-- Navigation Menu -->
-    <nav class="mt-space-sm flex flex-col gap-1.5 px-space-md" aria-label="Điều hướng quản trị">
-      @for (nav of navItems; track nav.path) {
-        <a
-          [routerLink]="nav.path"
-          routerLinkActive="bg-primary text-on-primary font-semibold shadow-sm"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="mobileMenuOpen = false"
-          class="flex items-center gap-space-md rounded-xl px-space-md py-space-sm text-inverse-on-surface transition-all hover:bg-surface-container-highest/15 hover:text-surface group"
-        >
-          <div class="w-6 flex justify-center">
-            <i class="{{ nav.icon }} text-[18px] group-[.active]:text-on-primary"></i>
-          </div>
-          <span class="font-label-lg">{{ nav.label }}</span>
-        </a>
+      @for (group of navGroups; track group.label) {
+        <nav class="ad-nav-group" [attr.aria-label]="group.label">
+          <p class="ad-nav-title">{{ group.label }}</p>
+          @for (nav of group.items; track nav.path) {
+            <a
+              [routerLink]="nav.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="mobileMenuOpen = false"
+              class="ad-nav-link"
+              [attr.title]="collapsed ? nav.label : null"
+            >
+              <i [class]="nav.icon + ' ad-nav-icon'" aria-hidden="true"></i>
+              <span class="ad-nav-label">{{ nav.label }}</span>
+            </a>
+          }
+        </nav>
       }
-    </nav>
-  </div>
 
-  <!-- Bottom CTA (Public Portal Link) -->
-  <div class="p-space-md">
-    <div class="flex flex-col gap-space-sm rounded-xl bg-surface-container-highest/10 p-space-md border border-inverse-on-surface/10">
-      <div class="flex items-center justify-between">
-        <span class="font-label-xs uppercase tracking-wider text-outline-variant font-bold">Kênh công khai</span>
-        <i class="fa-solid fa-circle-check text-[16px] text-secondary-fixed"></i>
+      <div class="ad-sidebar-foot">
+        <a routerLink="/home" class="ad-nav-link">
+          <i class="fa-solid fa-arrow-up-right-from-square ad-nav-icon" aria-hidden="true"></i>
+          <span class="ad-nav-label">Mở trang cẩm nang</span>
+        </a>
+        <button type="button" class="ad-collapse" (click)="toggleCollapsed()" [attr.aria-pressed]="collapsed">
+          <i [class]="collapsed ? 'fa-solid fa-angles-right' : 'fa-solid fa-angles-left'" aria-hidden="true"></i>
+          <span class="ad-nav-label">Thu gọn thanh bên</span>
+        </button>
       </div>
-      <p class="font-body-sm text-surface-container-high">Xem trạng thái trải nghiệm thực tế của thực khách trên Cẩm nang.</p>
-      <a routerLink="/home" class="inline-flex items-center justify-center gap-space-xs rounded-full bg-primary-fixed px-space-md py-space-xs font-label-md text-on-primary-fixed transition-colors hover:bg-primary-fixed-dim shadow-sm mt-1">
-        <i class="fa-solid fa-arrow-up-right-from-square text-[14px]"></i>
-        <span>Mở trang cẩm nang</span>
-      </a>
-    </div>
-  </div>
-</aside>
+    </aside>
 
-<!-- Mobile Overlay Backdrop -->
-@if (mobileMenuOpen) {
-  <button type="button" (click)="mobileMenuOpen = false" class="fixed inset-0 z-40 bg-inverse-surface/40 backdrop-blur-sm md:hidden" aria-label="Đóng menu"></button>
-}
+    @if (mobileMenuOpen) {
+      <button type="button" class="ad-scrim" (click)="mobileMenuOpen = false" aria-label="Đóng menu"></button>
+    }
 
-<!-- Main Content Area -->
-<div class="min-h-screen md:pl-72 bg-surface">
-  <!-- Topbar Header -->
-  <header class="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between bg-surface/90 px-gutter shadow-sm backdrop-blur-xl md:left-72 border-b border-outline-variant/20">
-    <div class="flex w-full max-w-md items-center gap-space-md">
-      <button type="button" (click)="mobileMenuOpen = !mobileMenuOpen" class="rounded-full w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container md:hidden transition-colors" aria-label="Menu quản trị">
-        <i class="fa-solid fa-bars text-[18px]"></i>
-      </button>
-      <div class="relative w-full">
-        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant"></i>
-        <input
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="searchAdmin()"
-          type="search"
-          class="w-full rounded-full bg-surface-container py-2 pl-11 pr-4 font-body-sm text-on-surface transition-all placeholder:text-on-surface-variant focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/20 border border-transparent focus:border-primary/30"
-          placeholder="Tìm kiếm quán, món ăn, mã duyệt..."
-          aria-label="Tìm kiếm trong trang quản trị"
-        />
-      </div>
-    </div>
+    <!-- Cột nội dung -->
+    <div class="ad-main-col">
+      <header class="ad-topbar">
+        <button type="button" class="ad-icon-btn ad-menu-btn" (click)="mobileMenuOpen = !mobileMenuOpen" aria-label="Mở menu quản trị">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
 
-    <div class="ml-space-md flex shrink-0 items-center gap-space-md">
-      <a routerLink="/home" class="hidden items-center gap-2 rounded-full bg-surface-container px-4 py-2 font-label-md text-on-surface transition-colors hover:bg-surface-container-high sm:flex">
-        <i class="fa-solid fa-store text-[14px]"></i>
-        <span>Xem portal</span>
-      </a>
+        <nav class="ad-crumbs" aria-label="Vị trí hiện tại">
+          <ol>
+            <li>Quản trị</li>
+            <li aria-current="page">{{ currentTitle }}</li>
+          </ol>
+        </nav>
 
-      <button type="button" class="relative rounded-full w-10 h-10 flex items-center justify-center text-on-surface-variant transition-colors hover:bg-surface-container" aria-label="Thông báo">
-        <i class="fa-regular fa-bell text-[20px]"></i>
-        <span class="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-error border border-surface"></span>
-      </button>
+        <div class="ad-topbar-right">
+          <label class="ad-search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="searchAdmin()"
+              type="search"
+              placeholder="Tìm quán, món ăn, mã duyệt..."
+              aria-label="Tìm kiếm trong trang quản trị"
+            />
+          </label>
 
-      <div class="hidden h-6 w-px bg-outline-variant/50 sm:block"></div>
+          <button type="button" class="ad-icon-btn" aria-label="Thông báo">
+            <i class="fa-regular fa-bell" aria-hidden="true"></i>
+          </button>
 
-      <div class="flex items-center gap-space-sm px-2 py-1.5">
-        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-on-primary shadow-sm">
-          <i class="fa-solid fa-user text-[16px]"></i>
+          <div class="ad-account">
+            <span class="ad-avatar" aria-hidden="true">{{ initials }}</span>
+            <span class="ad-account-name">
+              <strong>{{ userName }}</strong>
+              <small>{{ userRole }}</small>
+            </span>
+          </div>
+
+          <button type="button" class="ad-icon-btn ad-icon-btn--danger" (click)="logout()" aria-label="Đăng xuất" title="Đăng xuất">
+            <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+          </button>
         </div>
-        <div class="hidden flex-col text-left md:flex">
-          <span class="font-label-md font-bold leading-tight text-on-surface">{{ userName }}</span>
-          <span class="font-label-xs text-on-surface-variant">{{ userRole }}</span>
-        </div>
-      </div>
-      <button
-        type="button"
-        (click)="logout()"
-        class="rounded-full px-3 py-2 text-sm font-semibold text-on-surface-variant transition-colors hover:bg-error-container/40 hover:text-error"
-        aria-label="Đăng xuất"
-        title="Đăng xuất"
-      >
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-        <span class="sr-only">Đăng xuất</span>
-      </button>
-    </div>
-  </header>
+      </header>
 
-  <!-- Router Outlet Area -->
-  <router-outlet></router-outlet>
+      <div class="ad-content" id="ad-main" tabindex="-1">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
 </div>
