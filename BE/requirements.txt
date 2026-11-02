@@ -29,9 +29,12 @@ packaging==26.3
 pillow==13.0.0
 polars==2.0.0
 polars-runtime-32==2.0.0
+PyMySQL==1.1.2
 psutil==7.2.2
-pydantic==2.14.1
+pwdlib[argon2]==0.3.0
+pydantic[email]==2.14.1
 pydantic_core==2.50.1
+python-dotenv==1.1.1
 pyparsing==3.3.3
 python-dateutil==3.0.0
 python-multipart==0.0.32

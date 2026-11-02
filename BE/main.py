@@ -1,19 +1,74 @@
 import io
+import logging
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().with_name(".env"))
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image, ImageOps
 from ultralytics import YOLO
+from database.database import Base, engine
+from create_admin import ensure_admin_account
+from models import Role, User
+from models.admin import AdminRestaurantState, FoodModerationSample, PriceChangeRequest
+from models.associations import restaurant_favorites, user_roles
+from routes.admin import router as admin_router
+from routes.auth import router as auth_router
+from routes.foods import router as foods_router
+from routes.restaurants import router as restaurants_router
 
-app = FastAPI(title="Da Nang Food Detection API")
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    Base.metadata.create_all(
+        bind=engine,
+        tables=[
+            User.__table__,
+            Role.__table__,
+            user_roles,
+            AdminRestaurantState.__table__,
+            FoodModerationSample.__table__,
+            PriceChangeRequest.__table__,
+            restaurant_favorites,
+        ],
+    )
+    admin_config_keys = ("ADMIN_EMAIL", "ADMIN_PHONE", "ADMIN_NAME", "ADMIN_PASSWORD")
+    if any(os.environ.get(key) for key in admin_config_keys):
+        created = ensure_admin_account()
+        if created:
+            logger.info("Admin account created during startup.")
+        else:
+            logger.info("Configured admin account already exists.")
+    else:
+        logger.info("Admin bootstrap skipped; ADMIN_* environment variables are unset.")
+    yield
+
+
+app = FastAPI(title="Da Nang Food Detection API", lifespan=lifespan)
 
 # Cấu hình CORS cho phép Frontend gọi API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(auth_router)
+app.include_router(foods_router)
+app.include_router(restaurants_router)
+app.include_router(admin_router)
 
 # ---------- CẤU HÌNH MÔ HÌNH & BẢNG MÀU ----------
 MODEL_PATH = "best.pt"  # Đường dẫn file mô hình của bạn

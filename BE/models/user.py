@@ -12,9 +12,10 @@ class User(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    username = Column(String(50), unique=True, nullable=False)
     email = Column(String(100), unique=True, nullable=False)
+    phone = Column(String(20), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
+
 
     full_name = Column(String(100))
     avatar_url = Column(String(500))

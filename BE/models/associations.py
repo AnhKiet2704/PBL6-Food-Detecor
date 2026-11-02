@@ -59,6 +59,34 @@ favorites = Table(
     ),
 )
 
+restaurant_favorites = Table(
+    "restaurant_favorites",
+    Base.metadata,
+    Column(
+        "user_id",
+        BigInteger,
+        ForeignKey(
+            "users.id",
+            ondelete="CASCADE"
+        ),
+        primary_key=True
+    ),
+    Column(
+        "restaurant_id",
+        BigInteger,
+        ForeignKey(
+            "restaurants.id",
+            ondelete="CASCADE"
+        ),
+        primary_key=True
+    ),
+    Column(
+        "created_at",
+        DateTime,
+        server_default=func.now()
+    ),
+)
+
 food_restaurants = Table(
     "food_restaurants",
     Base.metadata,
